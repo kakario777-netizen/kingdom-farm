@@ -62,7 +62,7 @@ button:focus-visible{outline:3px solid var(--mojo);outline-offset:2px}
 .stage.dusk::after{opacity:.14}
 .stage.night::after{opacity:.3}
 .isle{position:relative;z-index:1}
-.board{--ts:52px;--gap:4px;position:relative;display:grid;grid-template-columns:repeat(10,var(--ts));grid-template-rows:repeat(6,var(--ts));gap:var(--gap);
+.board{--ts:52px;--gap:4px;position:relative;display:grid;grid-template-columns:repeat(12,var(--ts));grid-template-rows:repeat(7,var(--ts));gap:var(--gap);
   padding:10px;background:var(--island);border-radius:26px;
   box-shadow:0 7px 0 #5aa040,0 16px 0 var(--cliff),0 24px 0 var(--cliff2),0 34px 30px #3b7a2a40}
 .fx{position:absolute;inset:0;pointer-events:none;z-index:5}
@@ -101,6 +101,14 @@ button:focus-visible{outline:3px solid var(--mojo);outline-offset:2px}
 .blade{transform-origin:20px 15px;animation:spin 3s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+.tile>svg.full{left:0;top:0;width:100%;height:100%}
+.glowfx{position:absolute;inset:-25%;border-radius:50%;background:radial-gradient(#fff6a8 0,#fff6a855 35%,transparent 68%);animation:pulse 2.4s ease-in-out infinite;pointer-events:none}
+@keyframes pulse{50%{opacity:.55;transform:scale(.9)}}
+.qs{display:flex;flex-direction:column;gap:8px}
+.q{display:flex;align-items:center;gap:10px;background:var(--paper);border:2.5px solid var(--ink);border-radius:16px;padding:6px 10px}
+.qi{width:42px;height:42px;flex:none}.qi svg{width:100%;height:100%;overflow:visible}
+.qt{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.qt b{font-weight:400;font-size:15px}
+.qbar{height:9px;background:#f1e4d6;border-radius:99px;overflow:hidden;border:2px solid var(--ink)}.qbar i{display:block;height:100%;background:var(--mint)}
 /* 성 (2×2) */
 .castle{grid-area:1/1/3/3;position:relative;border:0;padding:0;background:transparent;z-index:2}
 .castle>svg{position:absolute;left:-4%;top:-14%;width:108%;height:112%;overflow:visible}
@@ -264,9 +272,9 @@ button:focus-visible{outline:3px solid var(--mojo);outline-offset:2px}
    최종 빌드: DEV=false 로 바꾸면 리얼타임(×1) + 테스트 버튼 숨김 */
 const DEV = true;
 const DEV_SPEED = 20;
-const VERSION = 'v0.2';
+const VERSION = 'v0.3';
 
-const COLS=10, ROWS=6, M=60, H=3600, DAY=86400;
+const COLS=12, ROWS=7, M=60, H=3600, DAY=86400;
 
 /* ===== 원작 위룰 기준 데이터 =====
    작물: 원작 표 그대로(해금 레벨·씨앗값·시간·골드·경험치)
@@ -283,35 +291,81 @@ const CROPS={
   potato:{n:'감자',lv:10,cost:50,t:6*H,g:250,x:80},
   asparagus:{n:'마법 아스파라거스',lv:11,cost:400,t:12*H,g:1200,x:250},
   peas:{n:'완두콩',lv:12,cost:20,t:30*M,g:100,x:33},
-  melon:{n:'수박',lv:13,cost:75,t:16*H,g:375,x:125}
+  melon:{n:'수박',lv:13,cost:75,t:16*H,g:375,x:125},
+  artichoke:{n:'아티초크',lv:14,cost:80,t:18*H,g:425,x:155},
+  rice:{n:'벼',lv:15,cost:10,t:15*M,g:65,x:22},
+  peppers:{n:'고추',lv:16,cost:60,t:10*H,g:315,x:105},
+  cauliflower:{n:'마법 콜리플라워',lv:17,cost:700,t:12*H,g:2000,x:350},
+  broccoli:{n:'브로콜리',lv:18,cost:45,t:2*H,g:175,x:58},
+  lettuce:{n:'상추',lv:19,cost:55,t:4*H,g:215,x:70},
+  eggplant:{n:'가지',lv:20,cost:15,t:20*M,g:75,x:25},
+  oats:{n:'귀리',lv:21,cost:60,t:8*H,g:300,x:100},
+  cotton:{n:'목화',lv:22,cost:100,t:DAY,g:500,x:165},
+  pineapple:{n:'파인애플',lv:23,cost:70,t:15*H,g:375,x:130},
+  tomato:{n:'토마토',lv:24,cost:20,t:30*M,g:115,x:35},
+  radish:{n:'무',lv:25,cost:50,t:5*H,g:250,x:85}
 };
 const LV_XP=[0,0,100,200,450,800,1300,2025,3075,4575,7350,10500,15400,21200,30000,39800,54250,70000,92750,116500,150000,185000,235000,285000,350000,435000,530000,630000,735000,835500,935500];
 const LV_MOJO={2:3,3:4,20:5,24:10,25:5,30:5};
 const PLOT_COST=250;
 const plotCap=()=>5+Math.floor(S.level/2);
-/* 땅: 0=처음, 1=튜토리얼 넓히기, 2=Lv4 성 업그레이드, 4=Lv10 요새 */
+/* 땅: 원작 성 업그레이드 단계(Lv4 성, Lv10 요새, Lv20 성채)를 따라 넓어짐 */
 const LANDS=[{w:6,h:4,cost:0,lv:1,n:'작은 성'},{w:7,h:5,cost:200,lv:1,n:'작은 성'},{w:8,h:5,cost:1500,lv:4,n:'성'},
-  {w:9,h:6,cost:4000,lv:7,n:'성'},{w:10,h:6,cost:10000,lv:10,n:'요새'}];
-const castleTier=()=>S.land>=4?3:S.land>=2?2:1;
-/* 건물: 집(세금) · 가게(원작 상품·시간·주인 수익) · 장식 */
+  {w:9,h:6,cost:4000,lv:7,n:'성'},{w:10,h:6,cost:10000,lv:10,n:'요새'},{w:11,h:7,cost:30000,lv:15,n:'요새'},{w:12,h:7,cost:75000,lv:20,n:'성채'}];
+const castleTier=()=>S.land>=6?4:S.land>=4?3:S.land>=2?2:1;
+/* 건물: 집(세금) · 가게(원작 상품·시간, 이웃이 없으니 주인 수익+이웃 보상을 합쳐서 받음) · 장식 · 길 */
 const BUILDS={
   cottage_o:{n:'주황 오두막',cat:'house',lv:1,cost:100,t:1*M,every:5*M,g:10,x:10,d:'5분마다 세금 10골드'},
   cottage_b:{n:'갈색 오두막',cat:'house',lv:6,cost:300,t:10*M,every:15*M,g:30,x:25,d:'15분마다 세금 30골드'},
   cottage_s:{n:'짚 오두막',cat:'house',lv:8,cost:600,t:20*M,every:30*M,g:60,x:40,d:'30분마다 세금 60골드'},
-  quarry:{n:'채석장',cat:'shop',lv:3,cost:1000,t:1*H,x:60,item:'돌 블록 1,000개',jt:12*H,g:250,jx:90},
-  pond:{n:'연못',cat:'shop',lv:4,cost:1500,t:1*H,x:70,item:'상품 물고기',jt:8*H,g:200,jx:80},
-  tailor:{n:'재봉소',cat:'shop',lv:5,cost:1500,t:1*H,x:70,item:'왕실 드레스 20벌',jt:8*H,g:225,jx:85},
-  school:{n:'학교',cat:'shop',lv:6,cost:2500,t:2*H,x:90,item:'과학 과제 10개',jt:12*H,g:275,jx:95},
-  lumber:{n:'제재소',cat:'shop',lv:8,cost:4000,t:2*H,x:110,item:'장작 5묶음',jt:12*H,g:300,jx:100},
-  windmill:{n:'풍차',cat:'shop',lv:10,cost:6000,t:3*H,x:130,item:'곡물 100자루',jt:15*H,g:350,jx:110},
+  quarry:{n:'채석장',cat:'shop',lv:3,cost:1000,t:1*H,x:60,item:'돌 블록 1,000개',jt:12*H,g:400,jx:140},
+  pond:{n:'연못',cat:'shop',lv:4,cost:1500,t:1*H,x:70,item:'상품 물고기',jt:8*H,g:350,jx:130},
+  tailor:{n:'재봉소',cat:'shop',lv:5,cost:1500,t:1*H,x:70,item:'왕실 드레스 20벌',jt:8*H,g:400,jx:140},
+  school:{n:'학교',cat:'shop',lv:6,cost:2500,t:2*H,x:90,item:'과학 과제 10개',jt:12*H,g:475,jx:165},
+  lumber:{n:'제재소',cat:'shop',lv:8,cost:4000,t:2*H,x:110,item:'장작 5묶음',jt:12*H,g:525,jx:175},
+  windmill:{n:'풍차',cat:'shop',lv:10,cost:6000,t:3*H,x:130,item:'곡물 100자루',jt:15*H,g:600,jx:190},
+  guild:{n:'길드 회관',cat:'shop',lv:11,cost:7500,t:3*H,x:140,item:'검투사 10명',jt:15*H,g:675,jx:205},
+  barn:{n:'외양간',cat:'shop',lv:12,cost:6500,t:3*H,x:140,item:'최상급 황소 10마리',jt:15*H,g:655,jx:210},
+  wizard:{n:'마법사의 탑',cat:'shop',lv:13,cost:11000,t:4*H,x:160,item:'마법 주문 10개',jt:18*H,g:775,jx:220},
+  bakery:{n:'빵집',cat:'shop',lv:14,cost:12000,t:4*H,x:170,item:'컵케이크 500개',jt:18*H,g:850,jx:235},
+  hotdog:{n:'핫도그 가게',cat:'shop',lv:15,cost:14000,t:4*H,x:180,item:'핫도그 2,000개',jt:18*H,g:900,jx:245},
+  smith:{n:'대장간',cat:'shop',lv:16,cost:16000,t:5*H,x:190,item:'검 75자루',jt:24*H,g:1010,jx:285},
+  stables:{n:'마구간',cat:'shop',lv:17,cost:18000,t:5*H,x:200,item:'말 8마리',jt:24*H,g:975,jx:275},
+  watch:{n:'망루',cat:'shop',lv:18,cost:18000,t:5*H,x:200,item:'정찰 보고서 4장',jt:24*H,g:1050,jx:295},
+  cobbler:{n:'구둣방',cat:'shop',lv:19,cost:18750,t:5*H,x:200,item:'고친 구두 4켤레',jt:30*H,g:950,jx:525},
+  tavern:{n:'주점',cat:'shop',lv:20,cost:22000,t:6*H,x:220,item:'음료 100잔',jt:24*H,g:1100,jx:320},
+  candle:{n:'양초 가게',cat:'shop',lv:21,cost:25000,t:6*H,x:240,item:'작은 양초 1,000개',jt:36*H,g:1250,jx:350},
+  jewelry:{n:'보석상',cat:'shop',lv:22,cost:40000,t:8*H,x:280,item:'다이아 반지 5개',jt:48*H,g:1400,jx:550},
+  emporium:{n:'마법 잡화점',cat:'shop',lv:23,cost:55000,t:8*H,x:300,item:'날아다니는 빗자루 10개',jt:36*H,g:1350,jx:390},
+  griffin:{n:'그리핀 둥지',cat:'shop',lv:24,cost:75000,t:10*H,x:340,item:'아기 그리핀 5마리',jt:48*H,g:1450,jx:485},
+  dragon:{n:'드래곤 굴',cat:'shop',lv:25,cost:100000,t:12*H,x:400,item:'드래곤 비늘 100개',jt:48*H,g:1600,jx:500},
   pine:{n:'소나무',cat:'deco',lv:1,cost:10,t:0,x:3,d:'뾰족뾰족 사철 푸른 나무'},
+  mailbox:{n:'우체통',cat:'deco',lv:2,cost:20,t:0,x:4,d:'왕국 소식이 도착하는 곳'},
   oak:{n:'참나무',cat:'deco',lv:2,cost:25,t:0,x:5,d:'동글동글 큰 그늘'},
   tulip:{n:'튤립 화단',cat:'deco',lv:2,cost:15,t:0,x:4,d:'알록달록 봄 꽃밭'},
-  lamp:{n:'가로등',cat:'deco',lv:3,cost:50,t:0,x:8,d:'밤이면 노랗게 반짝'},
+  ash:{n:'물푸레나무',cat:'deco',lv:3,cost:30,t:0,x:6,d:'푸르스름한 둥근 나무'},
+  rose:{n:'장미 화단',cat:'deco',lv:3,cost:30,t:0,x:6,d:'빨간 장미가 소복이'},
+  lamp:{n:'가로등',cat:'deco',lv:3,cost:50,t:0,x:8,d:'밤이면 노랗게 반짝',glow:1},
+  fir:{n:'전나무',cat:'deco',lv:4,cost:40,t:0,x:7,d:'키다리 상록수'},
+  picnic:{n:'피크닉 테이블',cat:'deco',lv:4,cost:60,t:0,x:10,d:'주민들의 점심 자리'},
   fountain:{n:'분수',cat:'deco',lv:4,cost:300,t:0,x:30,d:'왕국 광장의 자랑'},
-  banner:{n:'왕국 깃발',cat:'deco',lv:5,cost:80,t:0,x:12,d:'펄럭이는 분홍 깃발'}
+  lily:{n:'백합 화단',cat:'deco',lv:5,cost:45,t:0,x:8,d:'하얀 별 모양 꽃'},
+  banner:{n:'왕국 깃발',cat:'deco',lv:5,cost:80,t:0,x:12,d:'펄럭이는 분홍 깃발'},
+  maple:{n:'단풍나무',cat:'deco',lv:6,cost:60,t:0,x:10,d:'일 년 내내 가을 색'},
+  orchid:{n:'난초 화단',cat:'deco',lv:8,cost:70,t:0,x:12,d:'우아한 보라 꽃'},
+  st_knight:{n:'기사 동상',cat:'deco',lv:8,cost:400,t:0,x:40,d:'왕국을 지키는 용감한 기사'},
+  firefly:{n:'반딧불 나무',cat:'deco',lv:9,cost:150,t:0,x:20,d:'밤이 되면 반딧불이 모여요',glow:1},
+  st_teacher:{n:'선생님 동상',cat:'deco',lv:11,cost:600,t:0,x:55,d:'지혜로운 왕국의 스승'},
+  willow:{n:'수양버들',cat:'deco',lv:12,cost:120,t:0,x:16,d:'하늘하늘 늘어진 가지'},
+  st_wizard:{n:'마법사 동상',cat:'deco',lv:14,cost:900,t:0,x:75,d:'신비로운 대마법사'},
+  st_dragon:{n:'드래곤 동상',cat:'deco',lv:18,cost:2000,t:0,x:140,d:'왕국의 수호룡'},
+  road_dirt:{n:'흙길',cat:'road',lv:1,cost:5,t:0,x:1,col:['#e6c58f','#c9a26a'],d:'이어 붙이면 저절로 연결돼요'},
+  road_stone:{n:'돌길',cat:'road',lv:6,cost:20,t:0,x:2,col:['#d3ccc0','#b1a897'],d:'단단한 돌로 깐 길'},
+  road_gold:{n:'황금길',cat:'road',lv:15,cost:200,t:0,x:10,col:['#ffd96b','#f2b42a'],d:'반짝반짝 황금 벽돌 길'},
+  fence_wood:{n:'나무 울타리',cat:'fence',lv:7,cost:15,t:0,x:2,col:'#f6e2c4',d:'하얀 나무 울타리'},
+  fence_iron:{n:'철 울타리',cat:'fence',lv:10,cost:40,t:0,x:4,col:'#6b6d80',d:'튼튼한 철 울타리'}
 };
-/* 원작 튜토리얼 목표(8번 '친구 고용'은 이웃 기능과 함께 추가 예정) */
+/* 원작 튜토리얼 목표 7개 + 8번(원작 '친구 고용' 대신 길 깔기, 보상은 원작과 같음) */
 const GOALS=[
   {t:'옥수수 심고 거두기',d:'빈 밭을 눌러 옥수수를 심어보세요. 다 자라면 한 번 더 눌러서 거두면 돼요!',k:'corn',n:1,g:500,x:25,ic:'corn'},
   {t:'밭 2개 더 만들기',d:'방금 받은 골드로 밭을 늘려봐요. 빈 풀밭을 누르면 밭을 만들 수 있어요.',k:'plots',n:2,x:40,ic:'plot'},
@@ -319,7 +373,8 @@ const GOALS=[
   {t:'소나무 5그루 심기',d:'왕국이 좀 휑하죠? 상점의 장식에서 소나무를 골라 다섯 그루 심어주세요.',k:'pine',n:5,x:50,ic:'pine'},
   {t:'주황 오두막 짓기',d:'백성이 살 집이 필요해요. 상점의 집에서 주황 오두막을 지어주세요.',k:'cottage',n:1,x:50,ic:'cottage_o'},
   {t:'세금 걷기',d:'오두막 위에 동전이 뜨면 눌러서 세금을 걷어요. 조금만 기다려 보세요.',k:'tax',n:1,x:50,ic:'coin'},
-  {t:'왕국 넓히기',d:'마지막이에요! 성을 눌러서 땅을 넓혀보세요.',k:'expand',n:1,x:100,ic:'land'}
+  {t:'왕국 넓히기',d:'성을 눌러서 땅을 넓혀보세요.',k:'expand',n:1,x:100,ic:'land'},
+  {t:'길 3칸 깔기',d:'마지막이에요! 상점의 길에서 흙길을 골라 깔아보세요. 붙여서 깔면 저절로 이어져요.',k:'road',n:3,g:1000,x:300,ic:'road_dirt'}
 ];
 const RULERS=[{k:'king',n:'왕'},{k:'queen',n:'여왕'},{k:'prince',n:'왕자'},{k:'princess',n:'공주'}];
 const CHAT=['안녕하세요, 폐하!','오늘 날씨 좋네요~','폐하 만세!','배고파요… 옥수수 먹고 싶다','이 왕국 너무 좋아요','헤헤, 산책 중이에요','세금은 꼬박꼬박 낼게요!','소나무 냄새 좋다~'];
@@ -331,6 +386,9 @@ const face=(x,y)=>`${blush(x,y)}<circle cx="${x-3}" cy="${y}" r="1.3" fill="#3a2
 const leaf=(x,y)=>`<path d="M${x} ${y}C${x-5} ${y-6} ${x-8} ${y-5} ${x-9} ${y-8}M${x} ${y}C${x} ${y-7} ${x+1} ${y-9} ${x+3} ${y-10}M${x} ${y}C${x+4} ${y-6} ${x+7} ${y-6} ${x+9} ${y-8}" stroke="#4aa043" stroke-width="3" stroke-linecap="round" fill="none"/>`;
 const ro=n=>{const c=n.charCodeAt(n.length-1)-0xAC00;return c>=0&&c%28&&c%28!==8?n+'으로':n+'로'};
 const house=(roofC,wallC,extra='')=>`<ellipse cx="20" cy="37.5" rx="15" ry="2.5" fill="#00000022"/><rect x="9" y="19" width="22" height="18" rx="2" fill="${wallC}" ${st}/><path d="M5 21L20 6L35 21Z" fill="${roofC}" ${st}/><rect x="16" y="27" width="7" height="10" rx="2.5" fill="#a96b44" ${st}/><rect x="25" y="23" width="4.5" height="4.5" rx="1" fill="#9fe0ff" ${st}/>${extra}`;
+const sg=c=>`<circle cx="31" cy="11" r="6.5" fill="#fff" ${st}/>${c}`;
+const bed=fl=>`<ellipse cx="20" cy="33" rx="16" ry="5" fill="#8a5a3a" ${st}/><g stroke="#4aa043" stroke-width="2"><path d="M10 33V23M20 33V19M30 33V23"/></g>${fl(10,22)}${fl(20,18)}${fl(30,22)}`;
+const statue=fig=>`<ellipse cx="20" cy="38" rx="11" ry="2" fill="#00000022"/><rect x="10" y="29" width="20" height="8" rx="1.5" fill="#d8d2c4" ${st}/><rect x="8" y="35" width="24" height="3" rx="1" fill="#c4bcaa" ${st}/>${fig}`;
 const SV={
  sprout:`<path d="M20 37V23" stroke="#3f8f3a" stroke-width="3" stroke-linecap="round"/><ellipse cx="14.5" cy="21" rx="6" ry="3.6" fill="#86dc5c" ${st} transform="rotate(-28 14.5 21)"/><ellipse cx="25.5" cy="21" rx="6" ry="3.6" fill="#86dc5c" ${st} transform="rotate(28 25.5 21)"/>`,
  plot:`<rect x="4" y="10" width="32" height="24" rx="6" fill="#c0824f" ${st}/><path d="M8 17h24M8 22h24M8 27h24" stroke="#a86c3e" stroke-width="2"/>`,
@@ -370,7 +428,54 @@ const SV={
  open:`<rect x="18.5" y="20" width="3" height="18" fill="#a96b44" ${st}/><rect x="4" y="6" width="32" height="16" rx="4" fill="#fff36b" ${st}/><text x="20" y="18.5" text-anchor="middle" font-size="10" font-family="Jua,sans-serif" fill="${O}">OPEN</text>`,
  star:`<path d="M20 2l4.8 11 11.9 1-9 7.8 2.8 11.7L20 27.4 9.5 33.5l2.8-11.7-9-7.8 11.9-1z" fill="#fff36b" ${st}/>${face(20,19)}`,
  land:`<path d="M4 30q16-10 32 0v6H4z" fill="#8fd16a" ${st}/><path d="M20 8v16M13 15h14" stroke="${O}" stroke-width="3.2" stroke-linecap="round"/>`,
- hand:`<path d="M15 4c2-1 4 0 4 2v12l1-1c1-2 4-2 5 0l1 1c1-2 4-2 5 0 1-1 4-1 4 2v8c0 6-4 10-10 10h-3c-4 0-6-2-8-5l-6-8c-1-2 1-4 3-3l3 2V6c0-1 1-2 2-2z" fill="#fff" ${st}/>`
+ hand:`<path d="M15 4c2-1 4 0 4 2v12l1-1c1-2 4-2 5 0l1 1c1-2 4-2 5 0 1-1 4-1 4 2v8c0 6-4 10-10 10h-3c-4 0-6-2-8-5l-6-8c-1-2 1-4 3-3l3 2V6c0-1 1-2 2-2z" fill="#fff" ${st}/>`,
+ artichoke:`<path d="M20 38V31" stroke="#4aa043" stroke-width="3"/><ellipse cx="20" cy="25" rx="11" ry="9" fill="#5fb06e" ${st}/><ellipse cx="20" cy="18" rx="8.5" ry="8" fill="#7cc78a" ${st}/><ellipse cx="20" cy="11.5" rx="5.5" ry="6" fill="#9adba4" ${st}/>${face(20,26)}`,
+ rice:`<path d="M12 38Q14 22 22 12M20 38Q20 22 28 14M28 38Q26 26 32 20" stroke="#8fbf4a" stroke-width="2.2" fill="none" stroke-linecap="round"/><g fill="#fff3c2" ${st}><ellipse cx="22" cy="11" rx="2" ry="3"/><ellipse cx="25" cy="15" rx="2" ry="3"/><ellipse cx="28" cy="12" rx="2" ry="3"/><ellipse cx="31" cy="18" rx="2" ry="3"/><ellipse cx="18" cy="16" rx="2" ry="3"/></g>`,
+ peppers:`<path d="M20 9q2-5 6-5" stroke="#4aa043" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M14 11Q20 7 26 11C30 20 25 32 12 37C10 37 9 35 11 33C17 27 13 20 14 11Z" fill="#ff4f4f" ${st}/><path d="M14 11Q20 7 26 11L24 14Q20 12 16 14Z" fill="#5cc04a" ${st}/>${face(20,20)}`,
+ cauliflower:`<path d="M11 28Q20 40 29 28Z" fill="#6cc04a" ${st}/><circle cx="13.5" cy="23" r="7" fill="#c9a6ff" ${st}/><circle cx="26.5" cy="23" r="7" fill="#c9a6ff" ${st}/><circle cx="20" cy="17" r="8.5" fill="#e6d4ff" ${st}/>${face(20,19)}<path d="M33 4l1.2 3.3 3.3 1.2-3.3 1.2L33 13l-1.2-3.3-3.3-1.2 3.3-1.2z" fill="#fff36b" ${st}/>`,
+ broccoli:`<path d="M17 38V26h6v12z" fill="#8fd16a" ${st}/><circle cx="12" cy="21" r="7" fill="#3fa34d" ${st}/><circle cx="28" cy="21" r="7" fill="#3fa34d" ${st}/><circle cx="20" cy="15" r="9" fill="#4fb85c" ${st}/>${face(20,17)}`,
+ lettuce:`<path d="M5 26Q8 12 20 10Q32 12 35 26Q30 37 20 37Q10 37 5 26Z" fill="#a6e67e" ${st}/><path d="M9 22Q14 15 20 14Q26 15 31 22" stroke="#7cc95a" stroke-width="2" fill="none"/>${face(20,27)}`,
+ eggplant:`<path d="M24 12C32 16 33 28 26 34C19 39 10 36 9 29C8 22 15 20 18 15Z" fill="#8a4fc8" ${st}/><path d="M17 15L22 9L27 13L24 17Z" fill="#5cc04a" ${st}/><path d="M23 9q1-5 4-6" stroke="#4aa043" stroke-width="2.5" stroke-linecap="round"/>${face(19,27)}`,
+ oats:`<path d="M20 38V6" stroke="#c9a85a" stroke-width="2"/><path d="M20 12L14 12M20 14L26 14M20 21L13 21M20 23L27 23" stroke="#c9a85a" stroke-width="1.2"/><g fill="#f3e2a9" ${st}><ellipse cx="13" cy="13" rx="2.6" ry="4" transform="rotate(30 13 13)"/><ellipse cx="27" cy="15" rx="2.6" ry="4" transform="rotate(-30 27 15)"/><ellipse cx="12" cy="22" rx="2.6" ry="4" transform="rotate(30 12 22)"/><ellipse cx="28" cy="24" rx="2.6" ry="4" transform="rotate(-30 28 24)"/><ellipse cx="20" cy="6" rx="2.6" ry="4"/></g>`,
+ cotton:`<path d="M20 38V22M20 29L12 22M20 26L28 20" stroke="#8a5a3a" stroke-width="2.4" stroke-linecap="round"/><g fill="#fff" ${st}><circle cx="11" cy="19" r="6"/><circle cx="29" cy="17" r="6"/><circle cx="20" cy="13" r="7.5"/></g>${face(20,13)}`,
+ pineapple:`<path d="M20 14L14 3L19 8L20 1L21 8L26 3Z" fill="#4aa043" ${st}/><ellipse cx="20" cy="25" rx="10" ry="12.5" fill="#ffc93c" ${st}/><path d="M13 18l14 14M12 26l9 9M18 13l10 10M27 18L13 32M28 26l-9 9M22 13L12 23" stroke="#e09a20" stroke-width="1.2"/>`,
+ tomato:`<circle cx="20" cy="24" r="13" fill="#ff5a4a" ${st}/><path d="M13 13l4 2 3-5 3 5 4-2-2 5H15z" fill="#5cc04a" ${st}/>${face(20,25)}`,
+ radish:`${leaf(20,14)}<circle cx="20" cy="23" r="10" fill="#ff6f9f" ${st}/><path d="M20 33q1 4-1 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" fill="none"/>${face(20,23)}`,
+ guild:house('#e8554e','#fff4d6',sg(`<path d="M28 7h6v4q0 4-3 6q-3-2-3-6z" fill="#ffc93c" stroke="${O}" stroke-width="1"/>`)),
+ barn:`<ellipse cx="20" cy="37.5" rx="16" ry="2.5" fill="#00000022"/><path d="M5 37V19L11 10H29L35 19V37Z" fill="#e8554e" ${st}/><path d="M5 19H35" stroke="${O}" stroke-width="1.7"/><rect x="13" y="24" width="14" height="13" fill="#fff" ${st}/><path d="M13 24L27 37M27 24L13 37" stroke="#e8554e" stroke-width="2"/><rect x="16" y="13" width="8" height="5" rx="1" fill="#fff" ${st}/>`,
+ wizard:`<ellipse cx="20" cy="37.5" rx="10" ry="2.2" fill="#00000022"/><path d="M13 37L15 14H25L27 37Z" fill="#c9b6ff" ${st}/><path d="M11 15L20 -2L29 15Z" fill="#6b4fd8" ${st}/><circle cx="20" cy="22" r="2.5" fill="#fff36b" ${st}/><rect x="17.5" y="29" width="5" height="8" rx="2.5" fill="#a96b44" ${st}/><path d="M23 4l1 2.4 2.4 1-2.4 1-1 2.4-1-2.4-2.4-1 2.4-1z" fill="#fff36b"/>`,
+ bakery:`<ellipse cx="20" cy="37.5" rx="15" ry="2.5" fill="#00000022"/><rect x="7" y="18" width="26" height="19" rx="2" fill="#fff4d6" ${st}/><path d="M5 18h30l-3-6H8z" fill="#c98a4b" ${st}/><path d="M7 18h26v4.5H7z" fill="#fff" ${st}/><path d="M11 18v4.5M17 18v4.5M23 18v4.5M29 18v4.5" stroke="#ff9cc0" stroke-width="3"/><path d="M15 9q5-7 10 0z" fill="#ff9cc0" ${st}/><rect x="15" y="9" width="10" height="3" fill="#f2b45c" ${st}/><circle cx="20" cy="4.5" r="1.6" fill="#ff4f6e"/><rect x="11" y="26" width="7" height="11" rx="2" fill="#a96b44" ${st}/><rect x="22" y="26" width="7" height="6" rx="1" fill="#9fe0ff" ${st}/>`,
+ hotdog:house('#ffb02e','#fff4d6',sg(`<rect x="26" y="9" width="10" height="4.5" rx="2.2" fill="#f2b45c" stroke="${O}" stroke-width="1"/><rect x="25.5" y="10.2" width="11" height="2" rx="1" fill="#e8554e"/>`)),
+ smith:house('#5d5f73','#e6e2dc',sg(`<path d="M27 9h8l-2 3h-4z" fill="#5d5f73"/><rect x="29.5" y="12" width="3" height="3" fill="#5d5f73"/>`)),
+ stables:house('#9a5f3a','#f3dcc0',sg(`<path d="M28 15V10a3 3 0 0 1 6 0v5" stroke="#8a8a8a" stroke-width="2" fill="none"/>`)),
+ watch:`<ellipse cx="20" cy="37.5" rx="10" ry="2.2" fill="#00000022"/><path d="M14 37L15.5 14H24.5L26 37Z" fill="#d8d2c4" ${st}/><path d="M15 21h10M14.7 28h10.6" stroke="#b5ad9a" stroke-width="1.3"/><rect x="11" y="8" width="18" height="7" fill="#d8d2c4" ${st}/><path d="M10 8L20 0L30 8Z" fill="#4f9ae8" ${st}/><rect x="17" y="10" width="6" height="4" fill="#3a2a4f"/><circle cx="20" cy="12" r="1" fill="#fff36b"/><rect x="17.5" y="30" width="5" height="7" rx="2.5" fill="#a96b44" ${st}/>`,
+ cobbler:house('#4fcfa8','#fff4d6',sg(`<path d="M28 7v6h7v-1.5q-3 0-4-4.5z" fill="#a96b44" stroke="${O}" stroke-width="1"/>`)),
+ tavern:house('#c9773f','#fff1d6',sg(`<rect x="28" y="8" width="5" height="7" rx="1" fill="#ffc93c" stroke="${O}" stroke-width="1"/><path d="M33 9.5h1.5v3H33" stroke="${O}" stroke-width="1" fill="none"/><rect x="28" y="7" width="5" height="2" fill="#fff"/>`)),
+ candle:house('#ff9cc0','#fff4d6',sg(`<rect x="29.5" y="10" width="3" height="6" fill="#fff" stroke="${O}" stroke-width="1"/><path d="M31 5q2 2.5 0 4q-2-1.5 0-4z" fill="#ffb02e"/>`)),
+ jewelry:house('#4fcfa8','#eefcff',sg(`<path d="M27.5 9.5L29.5 7h3l2 2.5L31 15z" fill="#9fe0ff" stroke="${O}" stroke-width="1"/>`)),
+ emporium:house('#8b6cff','#f4eeff',sg(`<path d="M27 15L34 7" stroke="#a96b44" stroke-width="1.6"/><path d="M25.5 16.5l2-4.5 2.5 2.5z" fill="#ffc93c" stroke="${O}" stroke-width=".8"/>`)),
+ griffin:`<ellipse cx="20" cy="37" rx="16" ry="3" fill="#00000022"/><path d="M4 36L8 24L20 20L32 24L36 36Z" fill="#b8b2c8" ${st}/><ellipse cx="20" cy="22" rx="13" ry="5" fill="#c99a5b" ${st}/><path d="M9 21l5 3M15 19l3 4M24 19l-2 4M31 21l-5 3" stroke="#9a6a35" stroke-width="1.3"/><path d="M15 12q-4-5-1-7q2 3 3 5" fill="#fff1c9" ${st}/><circle cx="20" cy="15" r="6" fill="#fff1c9" ${st}/><path d="M24.5 14l4 1.5-4 1.5z" fill="#ffb02e" ${st}/><circle cx="21.5" cy="13.5" r="1" fill="#3a2418"/>`,
+ dragon:`<ellipse cx="20" cy="37" rx="17" ry="3" fill="#00000022"/><path d="M2 37Q4 12 20 8Q36 12 38 37Z" fill="#9c93a8" ${st}/><path d="M10 37Q11 20 20 18Q29 20 30 37Z" fill="#3a2a4f" ${st}/><path d="M14 37Q14 27 20 25Q26 27 26 37Z" fill="#5cc06a" ${st}/><path d="M15 27l-2-4 4 2zM25 27l2-4-4 2z" fill="#ffc93c" ${st}/><circle cx="17.5" cy="30" r="1.4" fill="#fff36b"/><circle cx="22.5" cy="30" r="1.4" fill="#fff36b"/><path d="M18 34q2 1.2 4 0" stroke="${O}" stroke-width="1" fill="none"/>`,
+ ash:`<ellipse cx="20" cy="37.5" rx="10" ry="2" fill="#00000022"/><rect x="18" y="25" width="4" height="12" rx="1.5" fill="#a3683f" ${st}/><ellipse cx="20" cy="16" rx="11" ry="12" fill="#6fd0b0" ${st}/><ellipse cx="15" cy="11" rx="3" ry="4" fill="#a8ecd6"/>`,
+ fir:`<ellipse cx="20" cy="37.5" rx="7" ry="1.8" fill="#00000022"/><rect x="18.5" y="31" width="3" height="6" fill="#a3683f" ${st}/><path d="M20 14L31 31H9Z" fill="#1f8a5a" ${st}/><path d="M20 7L29 21H11Z" fill="#23996a" ${st}/><path d="M20 1L27 13H13Z" fill="#2aa874" ${st}/>`,
+ maple:`<ellipse cx="20" cy="37.5" rx="11" ry="2.2" fill="#00000022"/><rect x="17.5" y="26" width="5" height="11" rx="1.5" fill="#a3683f" ${st}/><circle cx="20" cy="16" r="12" fill="#ff8a3c" ${st}/><circle cx="13" cy="13" r="5" fill="#ff6f4f"/><circle cx="26" cy="19" r="4" fill="#ffb02e"/>`,
+ firefly:`<ellipse cx="20" cy="37.5" rx="11" ry="2.2" fill="#00000022"/><rect x="17.5" y="26" width="5" height="11" rx="1.5" fill="#8a5a3a" ${st}/><circle cx="20" cy="16" r="12" fill="#2f8a6a" ${st}/><g fill="#fff36b"><circle cx="13" cy="12" r="1.6"/><circle cx="25" cy="10" r="1.3"/><circle cx="27" cy="20" r="1.6"/><circle cx="16" cy="21" r="1.3"/><circle cx="21" cy="15" r="1.1"/></g>`,
+ willow:`<ellipse cx="20" cy="37.5" rx="12" ry="2.2" fill="#00000022"/><rect x="18" y="20" width="4" height="17" rx="1.5" fill="#a3683f" ${st}/><path d="M6 30Q5 10 20 6Q35 10 34 30Q30 26 28 30Q25 24 22 30Q20 24 18 30Q15 24 12 30Q10 26 6 30Z" fill="#8fd16a" ${st}/>`,
+ rose:bed((x,y)=>`<circle cx="${x}" cy="${y}" r="4" fill="#ff4f6e" ${st}/><path d="M${x-1.5} ${y}q1.5-2 3 0" stroke="${O}" stroke-width="1" fill="none"/>`),
+ lily:bed((x,y)=>`<path d="M${x} ${y-5}l1.6 3.5 3.6.5-2.6 2.6.6 3.6-3.2-1.7-3.2 1.7.6-3.6-2.6-2.6 3.6-.5z" fill="#fff" ${st}/><circle cx="${x}" cy="${y}" r="1.2" fill="#ffb02e"/>`),
+ orchid:bed((x,y)=>`<g ${st}><ellipse cx="${x-2.5}" cy="${y}" rx="2.6" ry="3.4" fill="#e7a6ff"/><ellipse cx="${x+2.5}" cy="${y}" rx="2.6" ry="3.4" fill="#e7a6ff"/><ellipse cx="${x}" cy="${y+2}" rx="2" ry="2.4" fill="#b16bd8"/></g>`),
+ mailbox:`<ellipse cx="20" cy="37.5" rx="7" ry="1.8" fill="#00000022"/><rect x="18" y="22" width="4" height="15" fill="#a96b44" ${st}/><path d="M10 22V14a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8z" fill="#e8554e" ${st}/><rect x="14" y="13" width="12" height="2.5" rx="1.2" fill="#3a2418"/><path d="M30 12V6h5v3h-5" fill="#ffc93c" ${st}/>`,
+ picnic:`<ellipse cx="20" cy="36" rx="16" ry="3" fill="#00000022"/><path d="M11 26l-3 9M29 26l3 9M4 30h10M26 30h10" stroke="#a96b44" stroke-width="2.6" stroke-linecap="round"/><path d="M6 18h28l-3 8H9z" fill="#fff" ${st}/><path d="M10 18l-1.5 8M16 18l-1 8M22 18v8M28 18l1 8" stroke="#ff6f9f" stroke-width="2.5"/><circle cx="17" cy="15" r="3" fill="#ff5a4a" ${st}/><rect x="22" y="12" width="5" height="6" rx="1" fill="#ffd84a" ${st}/>`,
+ st_knight:statue(`<g fill="#eceae4" ${st}><path d="M14 29v-8a6 6 0 0 1 12 0v8z"/><rect x="15" y="5" width="10" height="11" rx="4"/></g><path d="M16 10h8" stroke="${O}" stroke-width="1.6"/><path d="M29 3v24M26 20h6" stroke="${O}" stroke-width="2.2"/>`),
+ st_teacher:statue(`<g fill="#eceae4" ${st}><path d="M13 29q0-11 7-11t7 11z"/><circle cx="20" cy="12" r="6"/><rect x="23" y="18" width="8" height="6" rx="1"/></g><circle cx="17.5" cy="12" r="2" fill="none" stroke="${O}" stroke-width="1"/><circle cx="22.5" cy="12" r="2" fill="none" stroke="${O}" stroke-width="1"/>`),
+ st_wizard:statue(`<g fill="#eceae4" ${st}><path d="M12 29l3-12h10l3 12z"/><path d="M15 15q5 12 10 0q-2 6-5 6t-5-6z"/><circle cx="20" cy="13" r="5"/><path d="M13 11L20 -2L27 11Z"/></g><path d="M30 6v23" stroke="${O}" stroke-width="2"/><circle cx="30" cy="5" r="2.2" fill="#c9a6ff" ${st}/>`),
+ st_dragon:statue(`<g fill="#eceae4" ${st}><path d="M14 20l-6-8 9 5z"/><path d="M26 29q6-2 5-8q3 6-1 9z"/><path d="M10 29q0-10 9-12q-1-6 4-10q5 1 6 6l-4 2q1 6-2 14z"/></g><circle cx="25" cy="10" r="1" fill="#3a2418"/>`),
+ road_dirt:`<rect x="1" y="12" width="38" height="16" rx="4" fill="#e6c58f" ${st}/><g fill="#c9a26a"><circle cx="9" cy="18" r="1.6"/><circle cx="20" cy="23" r="1.4"/><circle cx="30" cy="17" r="1.6"/></g>`,
+ road_stone:`<rect x="1" y="12" width="38" height="16" rx="4" fill="#d3ccc0" ${st}/><path d="M10 12v16M20 12v8M20 20v8M30 12v16M1 20h38" stroke="#b1a897" stroke-width="1.4"/>`,
+ road_gold:`<rect x="1" y="12" width="38" height="16" rx="4" fill="#ffd96b" ${st}/><path d="M10 12v8M20 20v8M30 12v8M1 20h38" stroke="#f2b42a" stroke-width="1.4"/><path d="M33 4l1 2.4 2.4 1-2.4 1-1 2.4-1-2.4-2.4-1 2.4-1z" fill="#fff"/>`,
+ fence_wood:`<g fill="#f6e2c4" ${st}><rect x="3" y="18" width="34" height="4" rx="1"/><rect x="3" y="27" width="34" height="4" rx="1"/><path d="M6 35V14l3-3 3 3v21z"/><path d="M17 35V14l3-3 3 3v21z"/><path d="M28 35V14l3-3 3 3v21z"/></g>`,
+ fence_iron:`<g fill="#6b6d80" ${st}><rect x="3" y="18" width="34" height="3" rx="1"/><rect x="3" y="28" width="34" height="3" rx="1"/><path d="M7 35V13l2-4 2 4v22z"/><path d="M15 35V13l2-4 2 4v22z"/><path d="M23 35V13l2-4 2 4v22z"/><path d="M31 35V13l2-4 2 4v22z"/></g>`,
+ scroll:`<rect x="8" y="7" width="24" height="27" rx="3" fill="#fff6dc" ${st}/><path d="M6 8a3 3 0 0 1 6 0v2H6zM28 33a3 3 0 0 0 6 0v-2h-6z" fill="#f2c27a" ${st}/><path d="M13 15h14M13 20h14M13 25h9" stroke="#c9a26a" stroke-width="2" stroke-linecap="round"/><circle cx="27" cy="27" r="4" fill="#ff6f9f" ${st}/>`
 };
 /* 성 3단계 (80×80) */
 const tower=(x,y,w,h,roofC)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="#fff2f7" ${st}/><path d="M${x-2} ${y+1}L${x+w/2} ${y-14}L${x+w+2} ${y+1}Z" fill="${roofC}" ${st}/><rect x="${x+w/2-2}" y="${y+6}" width="4" height="6" rx="2" fill="#9fe0ff" ${st}/>`;
@@ -378,7 +483,8 @@ const flag=(x,y,c)=>`<path d="M${x} ${y}v-9" stroke="${O}" stroke-width="1.6"/><
 const CASTLE={
  1:`<ellipse cx="40" cy="74" rx="34" ry="5" fill="#00000022"/>${tower(10,30,16,42,'#ff6f9f')}${tower(54,30,16,42,'#ff6f9f')}<rect x="22" y="40" width="36" height="32" fill="#ffe3ee" ${st}/><path d="M22 40h36l-3-6H25z" fill="#ff9cc0" ${st}/><path d="M34 72V60a6 6 0 0 1 12 0v12z" fill="#a96b44" ${st}/>${flag(18,16,'#ffd84a')}${flag(62,16,'#ffd84a')}<circle cx="40" cy="50" r="4" fill="#ffd84a" ${st}/>`,
  2:`<ellipse cx="40" cy="75" rx="37" ry="5" fill="#00000022"/>${tower(4,34,14,39,'#ff6f9f')}${tower(62,34,14,39,'#ff6f9f')}<rect x="16" y="42" width="48" height="31" fill="#ffe3ee" ${st}/>${tower(29,16,22,30,'#a678e8')}<path d="M16 42h48" stroke="${O}" stroke-width="1.7"/><path d="M16 42v-4h5v4h5v-4h5v4M49 42v-4h5v4h5v-4h5v4" fill="none" ${st}/><path d="M34 73V61a6 6 0 0 1 12 0v12z" fill="#a96b44" ${st}/>${flag(40,2,'#ffd84a')}${flag(11,20,'#4fcfa8')}${flag(69,20,'#4fcfa8')}<circle cx="40" cy="30" r="3.5" fill="#ffd84a" ${st}/>`,
- 3:`<ellipse cx="40" cy="76" rx="39" ry="5" fill="#00000022"/><rect x="2" y="50" width="76" height="24" rx="2" fill="#f4e9ff" ${st}/><path d="M2 50v-5h6v5h6v-5h6v5h6v-5h6v5h6v-5h6v5h6v-5h6v5h6v-5h6v5" fill="none" ${st}/>${tower(2,30,14,44,'#8b6cff')}${tower(64,30,14,44,'#8b6cff')}${tower(18,22,14,30,'#ff6f9f')}${tower(48,22,14,30,'#ff6f9f')}${tower(30,8,20,44,'#ffc93c')}<path d="M33 74V61a7 7 0 0 1 14 0v13z" fill="#a96b44" ${st}/><path d="M33 64h14M33 68h14" stroke="${O}" stroke-width="1"/>${flag(40,-6,'#ff6f9f')}${flag(9,16,'#ffd84a')}${flag(71,16,'#ffd84a')}<path d="M34 22l3-4 3 4 3-4 3 4" fill="none" stroke="#ffc93c" stroke-width="2"/>`
+ 3:`<ellipse cx="40" cy="76" rx="39" ry="5" fill="#00000022"/><rect x="2" y="50" width="76" height="24" rx="2" fill="#f4e9ff" ${st}/><path d="M2 50v-5h6v5h6v-5h6v5h6v-5h6v5h6v-5h6v5h6v-5h6v5h6v-5h6v5" fill="none" ${st}/>${tower(2,30,14,44,'#8b6cff')}${tower(64,30,14,44,'#8b6cff')}${tower(18,22,14,30,'#ff6f9f')}${tower(48,22,14,30,'#ff6f9f')}${tower(30,8,20,44,'#ffc93c')}<path d="M33 74V61a7 7 0 0 1 14 0v13z" fill="#a96b44" ${st}/><path d="M33 64h14M33 68h14" stroke="${O}" stroke-width="1"/>${flag(40,-6,'#ff6f9f')}${flag(9,16,'#ffd84a')}${flag(71,16,'#ffd84a')}<path d="M34 22l3-4 3 4 3-4 3 4" fill="none" stroke="#ffc93c" stroke-width="2"/>`,
+ 4:`<ellipse cx="40" cy="76" rx="39" ry="5" fill="#00000022"/><rect x="2" y="48" width="76" height="26" rx="2" fill="#ffe3ee" ${st}/><path d="M2 48v-5h6v5h6v-5h6v5h6v-5h6v5h6v-5h6v5h6v-5h6v5h6v-5h6v5" fill="none" ${st}/>${tower(2,26,14,48,'#e8457a')}${tower(64,26,14,48,'#e8457a')}${tower(17,18,14,34,'#ffc93c')}${tower(49,18,14,34,'#ffc93c')}${tower(29,6,22,46,'#e8457a')}<path d="M33 74V60a7 7 0 0 1 14 0v14z" fill="#a96b44" ${st}/><circle cx="40" cy="24" r="4.5" fill="#ff4f6e" ${st}/><path d="M38 22.5l1.5 1.5" stroke="#fff" stroke-width="1.2"/>${flag(40,-8,'#ffd84a')}${flag(9,12,'#4fcfa8')}${flag(71,12,'#4fcfa8')}${flag(24,4,'#8b6cff')}${flag(56,4,'#8b6cff')}`
 };
 /* 인물 */
 const head=(skin='#ffe0c7')=>`<circle cx="20" cy="22" r="11" fill="${skin}" ${st}/>`;
@@ -404,11 +510,15 @@ function fresh(){
   const at=(c,r)=>r*COLS+c;
   for(const i of[at(0,0),at(1,0),at(0,1),at(1,1)])tiles[i]={t:'castle'};
   for(const c of[0,1,2])tiles[at(c,3)]={t:'plot'};
-  return {v:2,gt:8*H,real:Date.now(),gold:250,xp:0,level:1,mojo:10,land:0,speed:DEV?DEV_SPEED:1,
+  return {v:3,gt:8*H,real:Date.now(),gold:250,xp:0,level:1,mojo:10,land:0,speed:DEV?DEV_SPEED:1,
     tiles,star:null,nextStar:8*H+40*M,daily:'',name:'말랑 왕국',ruler:'king',started:false,
-    goal:0,gbase:0,st:{corn:0,plots:0,mojo:0,pine:0,cottage:0,tax:0,expand:0}};
+    goal:0,gbase:0,quests:null,st:{corn:0,plots:0,mojo:0,pine:0,cottage:0,tax:0,expand:0,road:0}};
 }
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.v===2)return s}catch(e){}return fresh()}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));
+  if(s&&s.v===2){ // v0.2 저장(10×6)을 12×7로 옮기기
+    const t=Array.from({length:COLS*ROWS},()=>({t:'grass'}));const mv=i=>((i/10)|0)*COLS+i%10;
+    s.tiles.forEach((T,i)=>{t[mv(i)]=T});if(s.star)s.star.i=mv(s.star.i);s.tiles=t;s.v=3;return s}
+  if(s&&s.v===3)return s}catch(e){}return fresh()}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 let S=load();
 if(!DEV)S.speed=1;
@@ -421,6 +531,8 @@ const clamp=v=>Math.max(0,Math.min(1,v));
 const prog=(a,b)=>b<=a?1:clamp((S.gt-a)/(b-a));
 const rnd=(a,b)=>a+Math.random()*(b-a);
 const unlocked=(c,r)=>c<LANDS[S.land].w&&r<LANDS[S.land].h;
+const view=()=>LANDS[S.land+1]||LANDS[S.land];
+const isNight=()=>{const h=Math.floor(S.gt%DAY/H);return h<5||h>=20};
 const isNext=(c,r)=>{const n=LANDS[S.land+1];return n&&c<n.w&&r<n.h};
 const lvXp=l=>LV_XP[l]??(LV_XP[LV_XP.length-1]+(l-LV_XP.length+1)*120000);
 const cnt=fn=>S.tiles.filter((T,i)=>unlocked(i%COLS,(i/COLS)|0)&&fn(T)).length;
@@ -470,6 +582,24 @@ function flowers(i){const h=hash(i);if(h>28)return'';
   const c=['#ffffff','#ffd84a','#ff8fb0'][h%3];
   return`<svg class="fl" style="--fx:${10+h%55}%;--fy:${12+(h*7)%55}%" viewBox="0 0 10 10"><g fill="${c}"><circle cx="5" cy="2.6" r="2"/><circle cx="7.4" cy="5" r="2"/><circle cx="5" cy="7.4" r="2"/><circle cx="2.6" cy="5" r="2"/></g><circle cx="5" cy="5" r="1.6" fill="#ffb02e"/></svg>`}
 
+function mask(i,cat){const c=i%COLS,r=(i/COLS)|0;let m=0;
+  const same=(cc,rr)=>{if(cc<0||rr<0||cc>=COLS||rr>=ROWS)return false;const T=S.tiles[rr*COLS+cc];
+    return (T.t==='bld'&&BUILDS[T.b]?.cat===cat)||(cat==='road'&&T.t==='castle')};
+  if(same(c,r-1))m|=1;if(same(c+1,r))m|=2;if(same(c,r+1))m|=4;if(same(c-1,r))m|=8;return m}
+function roadSvg(m,c){const e=5;let s=`<rect x="10" y="10" width="20" height="20" rx="6" fill="${c[0]}"/>`;
+  if(m&1)s+=`<rect x="10" y="${-e}" width="20" height="${20+e}" fill="${c[0]}"/>`;
+  if(m&2)s+=`<rect x="20" y="10" width="${20+e}" height="20" fill="${c[0]}"/>`;
+  if(m&4)s+=`<rect x="10" y="20" width="20" height="${20+e}" fill="${c[0]}"/>`;
+  if(m&8)s+=`<rect x="${-e}" y="10" width="${20+e}" height="20" fill="${c[0]}"/>`;
+  s+=`<g fill="${c[1]}"><circle cx="15" cy="16" r="1.6"/><circle cx="25" cy="22" r="1.4"/><circle cx="18" cy="26" r="1.2"/></g>`;
+  return`<svg class="full" viewBox="0 0 40 40" aria-hidden="true">${s}</svg>`}
+function fenceSvg(m,c){const e=5,ln=(a,b,x,y,w)=>`<path d="M${a} ${b}L${x} ${y}" stroke="${O}" stroke-width="${w+2.4}" stroke-linecap="round"/><path d="M${a} ${b}L${x} ${y}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`;
+  const Hz=(x1,x2)=>ln(x1,18,x2,18,3)+ln(x1,27,x2,27,3);let s='';
+  if(!m)s+=Hz(5,35);
+  if(m&2)s+=Hz(20,40+e);if(m&8)s+=Hz(-e,20);
+  if(m&1)s+=ln(20,-e,20,22,4);if(m&4)s+=ln(20,22,20,40+e,4);
+  s+=`<path d="M16.5 33V13l3.5-4 3.5 4v20z" fill="${c}" ${st}/>`;
+  return`<svg class="full" viewBox="0 0 40 40" aria-hidden="true">${s}</svg>`}
 function tileView(i){
   const c=i%COLS,r=(i/COLS)|0,T=S.tiles[i];
   if(T.t==='castle')return{sig:'C',cls:'tile',html:'',hide:true};
@@ -482,10 +612,13 @@ function tileView(i){
       html=(g===0?spr('sprout','s0'):spr(T.crop,'s'+g))+bar(p)}
     else if(s==='ready'){cls+=' ready';html=spr(T.crop,'bob')+badge('coin')}
     else if(s==='dead'){cls+=' dead';html=spr('wither')}
+  }else if(BUILDS[T.b].cat==='road'||BUILDS[T.b].cat==='fence'){
+    const B=BUILDS[T.b],m=mask(i,B.cat);cls+=' grass'+(hash(i)%2?' alt':'');sig+=T.b+m;
+    html=B.cat==='road'?roadSvg(m,B.col):fenceSvg(m,B.col);
   }else{
     cls+=' grass'+(hash(i)%2?' alt':'');const s=bldState(T),B=BUILDS[T.b];sig+=T.b+s;
     if(s==='build'){const p=prog(T.startAt,T.doneAt);sig+=Math.floor(p*30);html=spr('build')+bar(p)}
-    else{html=spr(T.b);
+    else{html=spr(T.b);if(B.glow&&isNight()){html='<span class="glowfx"></span>'+html;sig+='n'}
       if(s==='tax'||s==='done'){cls+=' ready';html=spr(T.b,'bob')+badge(s==='tax'?'coin':'box')}
       else if(s==='work'){const p=prog(T.job.startAt,T.job.doneAt);sig+=Math.floor(p*30);html+=bar(p)+badge('dots')}
       else if(s==='open'){html+=`<span class="sign">${spr('open')}</span>`}
@@ -496,7 +629,11 @@ function tileView(i){
   return{sig,cls,html};
 }
 function render(){
-  for(let i=0;i<cache.length;i++){const v=tileView(i),e=cache[i];
+  const V=view();
+  for(let i=0;i<cache.length;i++){const e=cache[i];
+    if(i%COLS>=V.w||((i/COLS)|0)>=V.h){if(e.sig!=='X'){e.el.style.display='none';e.sig='X';e.cls=''}continue}
+    if(e.sig==='X')e.el.style.display='';
+    const v=tileView(i);
     if(v.sig!==e.sig||v.cls!==e.cls){e.el.className=v.cls;e.el.innerHTML=v.html;e.el.style.visibility=v.hide?'hidden':'';e.sig=v.sig;e.cls=v.cls}}
   const cs='T'+castleTier();
   if(cs!==castleSig){castleSig=cs;castleEl.innerHTML=castleSvg(castleTier())}
@@ -518,9 +655,10 @@ function readyCount(){return cnt(T=>(T.t==='plot'&&cropState(T)==='ready')||(T.t
 
 let TS=52,GAP=4;
 function resize(){
-  const r=stage.getBoundingClientRect(),gap=r.width<520?3:4;
-  const ts=Math.floor(Math.min((r.width-28-gap*(COLS-1))/COLS,(r.height-64-gap*(ROWS-1))/ROWS));
+  const V=view(),r=stage.getBoundingClientRect(),gap=r.width<520?3:4;
+  const ts=Math.floor(Math.min((r.width-28-gap*(V.w-1))/V.w,(r.height-60-gap*(V.h-1))/V.h));
   TS=Math.max(24,Math.min(96,ts));GAP=gap;
+  board.style.gridTemplateColumns=`repeat(${V.w},var(--ts))`;board.style.gridTemplateRows=`repeat(${V.h},var(--ts))`;
   board.style.setProperty('--ts',TS+'px');board.style.setProperty('--gap',gap+'px');
   walkers.forEach(w=>place(w,w.x,w.y,0));
 }
@@ -532,7 +670,7 @@ const tileXY=(c,r)=>({x:10+c*(TS+GAP),y:10+r*(TS+GAP)});
 function place(w,c,r,dur){w.x=c;w.y=r;const p=tileXY(c,r);
   w.el.style.transitionDuration=dur+'s';w.el.style.left=(p.x+TS*w.ox)+'px';w.el.style.top=(p.y+TS*w.oy)+'px'}
 function syncWalkers(){
-  const want=Math.min(14,cnt(T=>T.t==='bld'&&BUILDS[T.b].cat==='house'&&bldState(T)!=='build')*2+cnt(T=>T.t==='bld'&&BUILDS[T.b].cat==='shop'&&bldState(T)!=='build'));
+  const want=Math.min(10+S.land*2,cnt(T=>T.t==='bld'&&BUILDS[T.b].cat==='house'&&bldState(T)!=='build')*2+cnt(T=>T.t==='bld'&&BUILDS[T.b].cat==='shop'&&bldState(T)!=='build'));
   while(walkers.length<want){
     const el=document.createElement('div');el.className='walker';const n=walkers.length;
     el.innerHTML=villager(VCOL[n%VCOL.length],n%3===0?VCOL[(n+3)%VCOL.length]:null);
@@ -575,6 +713,8 @@ function confetti(){const cs=['#ff6f9f','#ffc93c','#4fcfa8','#8b6cff','#6cc7ff']
     d.style.animationDelay=rnd(0,.5)+'s';d.style.animationDuration=rnd(1.4,2.4)+'s';document.body.appendChild(d);setTimeout(()=>d.remove(),3200)}}
 
 /* ===== 경제 ===== */
+function inc(k,n=1){S.st[k]=(S.st[k]||0)+n}
+const stv=k=>S.st[k]||0;
 function pay(n){if(S.gold<n){toast(`골드가 ${n-Math.floor(S.gold)} 모자라요`);return false}S.gold-=n;return true}
 const lvQueue=[];
 function gainXP(x,i){
@@ -593,9 +733,9 @@ function showLevelUp(){
 }
 $('lvOk').onclick=()=>{$('lvup').hidden=true;if(lvQueue.length)setTimeout(showLevelUp,200)};
 
-function harvest(i){const T=S.tiles[i],C=CROPS[T.crop];S.gold+=C.g;pop(i,`+${C.g}`,'gd');if(T.crop==='corn')S.st.corn++;gainXP(C.x,i);T.crop=null}
+function harvest(i){const T=S.tiles[i],C=CROPS[T.crop];S.gold+=C.g;pop(i,`+${C.g}`,'gd');if(T.crop==='corn')S.st.corn++;inc('harvest');inc('c_'+T.crop);gainXP(C.x,i);T.crop=null}
 function collectTax(i){const T=S.tiles[i],B=BUILDS[T.b];S.gold+=B.g;pop(i,`+${B.g}`,'gd');S.st.tax++;gainXP(Math.max(1,Math.round(B.g/10)),i);T.taxAt=S.gt+B.every}
-function collectJob(i){const T=S.tiles[i],B=BUILDS[T.b];S.gold+=B.g;pop(i,`+${B.g}`,'gd');gainXP(B.jx,i);T.job=null}
+function collectJob(i){const T=S.tiles[i],B=BUILDS[T.b];S.gold+=B.g;pop(i,`+${B.g}`,'gd');inc('job');gainXP(B.jx,i);T.job=null}
 function collectAll(){let n=0;S.tiles.forEach((T,i)=>{if(!unlocked(i%COLS,(i/COLS)|0))return;
   if(T.t==='plot'&&cropState(T)==='ready'){harvest(i);n++}
   else if(T.t==='bld'){const s=bldState(T);if(s==='tax'){collectTax(i);n++}else if(s==='done'){collectJob(i);n++}}});
@@ -610,7 +750,7 @@ function doBuild(i,k){
   if(!pay(B.cost))return false;
   const T={t:'bld',b:k,startAt:S.gt,doneAt:S.gt+B.t};if(B.cat==='house')T.taxAt=T.doneAt+B.every;
   S.tiles[i]=T;pop(i,`-${B.cost}`,'gd');gainXP(B.x,i);
-  if(k==='pine')S.st.pine++;if(B.cat==='house')S.st.cottage++;
+  if(k==='pine')S.st.pine++;if(B.cat==='house')S.st.cottage++;inc('b_'+k);if(B.cat==='deco')inc('deco');if(B.cat==='road')inc('road');
   if(B.t)toast(`${B.n} 공사 시작! ${fmt(B.t)} 뒤에 완성돼요`);
   syncWalkers();return true;
 }
@@ -634,13 +774,17 @@ function starTick(){
 
 /* ===== 목표(튜토리얼) ===== */
 const goalNow=()=>GOALS[S.goal];
-const goalProg=()=>{const g=goalNow();return g?Math.min(g.n,S.st[g.k]-S.gbase):0};
+const goalProg=()=>{const g=goalNow();return g?Math.min(g.n,stv(g.k)-S.gbase):0};
 const goalReady=()=>{const g=goalNow();return g&&goalProg()>=g.n};
-function setGoal(n){S.goal=n;const g=goalNow();if(g)S.gbase=S.st[g.k];save()}
+function setGoal(n){S.goal=n;const g=goalNow();if(g)S.gbase=stv(g.k);save()}
 function renderGoal(){
   const g=goalNow(),el=$('goal');
-  if(!g||!S.started){el.hidden=true;return}
-  el.hidden=false;const sig=S.goal+'|'+goalProg();
+  if(!S.started){el.hidden=true;return}
+  el.hidden=false;
+  if(!g){ensureQuests();const done=S.quests.filter(qDone).length,sig='Q'+done;
+    if(el.dataset.sig!==sig){el.dataset.sig=sig;$('goalIc').innerHTML=spr('scroll');$('goalT').textContent='왕국 목표';
+      $('goalP').textContent=done?`${done}개 완료! 보상 받기`:'눌러서 목표 보기'}return}
+  const sig=S.goal+'|'+goalProg();
   if(el.dataset.sig!==sig){el.dataset.sig=sig;$('goalIc').innerHTML=spr(g.ic);$('goalT').textContent=g.t;
     $('goalP').textContent=goalReady()?'완료! 눌러서 보상 받기':`${goalProg()} / ${g.n}`}
 }
@@ -653,7 +797,7 @@ function goalTarget(){
     case'corn':return find(T=>T.t==='plot'&&cropState(T)==='ready')||find(T=>T.t==='plot'&&cropState(T)==='empty')||find(T=>T.t==='plot'&&cropState(T)==='grow');
     case'plots':return grassNear();
     case'mojo':return find(T=>T.t==='plot'&&cropState(T)==='grow')||find(T=>T.t==='plot'&&cropState(T)==='ready')||find(T=>T.t==='plot'&&cropState(T)==='empty');
-    case'pine':case'cottage':return placing?grassNear():$('shopBtn');
+    case'pine':case'cottage':case'road':return placing?grassNear():$('shopBtn');
     case'tax':return find(T=>T.t==='bld'&&bldState(T)==='tax')||find(T=>T.t==='bld'&&bldState(T)==='build')||find(T=>T.t==='bld'&&BUILDS[T.b].cat==='house');
     case'expand':return castleEl;
   }
@@ -672,11 +816,42 @@ function claimGoal(){
     S.gold+=g.g||0;pop(0,g.g?`+${g.g}`:'목표 완료','gd');gainXP(g.x,0);setGoal(S.goal+1);
     const n=goalNow();
     if(n)say([{t:n.d,btn:'알겠어요'}]);
-    else say([{t:'기본은 모두 익히셨어요! 이제 이 왕국은 온전히 폐하의 것이에요.'},{t:'레벨이 오르면 새 작물과 가게가 열려요. 가게를 지으면 상품을 만들어 큰돈을 벌 수 있답니다.',btn:'시작!'}]);
+    else say([{t:'기본은 모두 익히셨어요! 이제 이 왕국은 온전히 폐하의 것이에요.'},{t:'이제부터는 왕국 목표가 3개씩 생겨요. 레벨을 올려 새 작물과 가게를 열고, 빈 땅을 알뜰하게 채워보세요!',btn:'시작!'},{t:'왼쪽 위 두루마리를 누르면 목표를 볼 수 있어요.',btn:'알겠어요'}]);
     save();render();
   }}]);
 }
-$('goal').onclick=()=>{if(goalReady())claimGoal();else{const g=goalNow();if(g)say([{t:g.d,btn:'알겠어요'}])}};
+$('goal').onclick=()=>{if(talking)return;if(!goalNow())return openQuests();if(goalReady())claimGoal();else{const g=goalNow();if(g)say([{t:g.d,btn:'알겠어요'}])}};
+
+/* ===== 왕국 목표(원작 Deluxe '목표' 방식, 3개씩) ===== */
+const qProg=q=>Math.max(0,Math.min(q.n,stv(q.k)-q.base));
+const qDone=q=>qProg(q)>=q.n;
+const emptyCount=()=>cnt(T=>T.t==='grass');
+function newQuest(){
+  const lv=S.level,used=(S.quests||[]).map(q=>q.type);
+  const has=c=>cnt(T=>T.t==='bld'&&BUILDS[T.b].cat===c&&bldState(T)!=='build')>0;
+  const crops=Object.keys(CROPS).filter(k=>CROPS[k].lv<=lv&&CROPS[k].t<=6*H);
+  const unbuilt=Object.keys(BUILDS).filter(k=>['house','shop'].includes(BUILDS[k].cat)&&BUILDS[k].lv<=lv&&!cnt(T=>T.t==='bld'&&T.b===k))
+    .sort((a,b)=>BUILDS[a].cost-BUILDS[b].cost);
+  const opts=[()=>{const n=8+lv*2;return{type:'harvest',k:'harvest',n,t:`작물 ${n}번 거두기`,ic:'wheat'}},
+    ()=>{const n=3+Math.floor(lv/2);return{type:'deco',k:'deco',n,t:`장식 ${n}개 놓기`,ic:'tulip'}},
+    ()=>{const n=4+lv;return{type:'road',k:'road',n,t:`길 ${n}칸 깔기`,ic:'road_dirt'}}];
+  if(crops.length)opts.push(()=>{const c=crops[Math.floor(Math.random()*crops.length)],n=3+Math.floor(lv/3);return{type:'crop',k:'c_'+c,n,t:`${CROPS[c].n} ${n}번 거두기`,ic:c}});
+  if(has('house'))opts.push(()=>{const n=4+lv;return{type:'tax',k:'tax',n,t:`세금 ${n}번 걷기`,ic:'coin'}});
+  if(has('shop'))opts.push(()=>{const n=1+Math.floor(lv/8);return{type:'job',k:'job',n,t:`가게 상품 ${n}번 완성하기`,ic:'box'}});
+  if(unbuilt.length)opts.push(()=>{const b=unbuilt[0];return{type:'build',k:'b_'+b,n:1,t:`${BUILDS[b].n} 짓기`,ic:b,bonus:Math.round(BUILDS[b].cost*.15)}});
+  const pool=opts.filter((f,k)=>!used.includes(f().type));
+  const q=(pool.length?pool:opts)[Math.floor(Math.random()*(pool.length||opts.length))]();
+  q.base=stv(q.k);q.g=50+lv*35+(q.bonus||0);q.x=15+lv*10;q.mj=q.type==='build'?2:Math.random()<.25?1:0;
+  return q;
+}
+function ensureQuests(){if(!S.quests)S.quests=[];while(S.quests.length<3)S.quests.push(newQuest())}
+function openQuests(){
+  ensureQuests();
+  openSheet('왕국 목표',`<div class="qs">${S.quests.map((q,k)=>{const p=qProg(q),d=qDone(q);
+    return`<div class="q"><span class="qi">${spr(q.ic)}</span><div class="qt"><b>${q.t}</b><span class="qbar"><i style="width:${Math.round(p/q.n*100)}%"></i></span>
+    <div class="reward"><span>+${q.g.toLocaleString()}G</span><span>+${q.x}XP</span>${q.mj?`<span>모조 +${q.mj}</span>`:''}</div></div>
+    <button class="btn ${d?'y':'w'}" data-act="qclaim" data-k="${k}" ${d?'':'disabled'}>${d?'받기':`${p}/${q.n}`}</button></div>`}).join('')}</div>
+    <p class="sec">목표를 이루면 새 목표가 생겨요 · 빈 풀밭 ${emptyCount()}칸</p>`)}
 
 /* ===== 대신 대화 ===== */
 let talkQ=[];
@@ -712,9 +887,9 @@ const info=(pic,lines,btns='')=>`<div class="info"><div class="pic">${pic}</div>
 function mojoBtn(T){const c=mojoCost(remainOf(T));return`<button class="btn m" data-act="mojo" data-k="${c}" ${S.mojo<c?'disabled':''}>모조 ${c}개로 바로 완성</button>`}
 const editBtns=(B)=>`<button class="btn w" data-act="move">옮기기</button><button class="btn w" data-act="sell">팔기 +${Math.floor(B.cost/4)}G</button>`;
 
-const TABS=[['farm','농사'],['house','집'],['shop','가게'],['deco','장식']];
+const TABS=[['farm','농사'],['house','집'],['shop','가게'],['deco','장식'],['road','길·울타리']];
 function openShop(here){
-  const items=shopTab==='farm'?plotCard(here):Object.keys(BUILDS).filter(k=>BUILDS[k].cat===shopTab).map(k=>bldCard(k,here?'buildHere':'place')).join('');
+  const items=shopTab==='farm'?plotCard(here):Object.keys(BUILDS).filter(k=>shopTab==='road'?['road','fence'].includes(BUILDS[k].cat):BUILDS[k].cat===shopTab).map(k=>bldCard(k,here?'buildHere':'place')).join('');
   openSheet(here?'여기에 무엇을 지을까요?':'상점',`<div class="tabs">${TABS.map(([k,n])=>`<button class="tab ${shopTab===k?'on':''}" data-act="tab" data-k="${k}" data-here="${here?1:''}">${n}</button>`).join('')}</div><div class="cards">${items}</div>`);
 }
 function openSeeds(){openSheet('무엇을 심을까요?',`<div class="cards">${Object.keys(CROPS).map(cropCard).join('')}</div>`)}
@@ -736,7 +911,11 @@ function openCastle(){
   const n=LANDS[S.land+1];
   openSheet(S.name,`${info(castleSvg(castleTier()),`<span class="big">${LANDS[S.land].n} · 레벨 ${S.level}</span><span class="sub">다음 레벨까지 ${(lvXp(S.level+1)-S.xp).toLocaleString()} XP · 밭 ${cnt(T=>T.t==='plot')}/${plotCap()}</span>`,
    n?`<button class="btn y" data-act="expand" ${S.level<n.lv||S.gold<n.cost?'disabled':''}>${n.n!==LANDS[S.land].n?ro(n.n)+' 업그레이드':'땅 넓히기'} · ${n.cost.toLocaleString()}G${S.level<n.lv?' (Lv.'+n.lv+')':''}</button>`:'<span class="sub">지금은 여기까지 넓힐 수 있어요</span>')}
-   <p class="sec">모조 얻는 법</p><ul class="list"><li>매일 처음 들어오면 출석 선물 +2</li><li>레벨이 오를 때마다 +3~10</li><li>가끔 왕국에 떨어지는 반짝별을 누르면 +1</li></ul>`)}
+   <p class="sec">왕국 현황</p>${kStats()}
+   <p class="sec">모조 얻는 법</p><ul class="list"><li>매일 처음 들어오면 출석 선물 +2</li><li>레벨이 오를 때마다 +3~10</li><li>왕국 목표 보상으로 가끔 +1~2</li><li>가끔 왕국에 떨어지는 반짝별을 누르면 +1</li></ul>`)}
+function kStats(){
+  const c=k=>cnt(T=>T.t==='bld'&&BUILDS[T.b].cat===k),all=cnt(T=>T.t!=='castle'),e=emptyCount();
+  return`<div class="reward"><span>집 ${c('house')}채</span><span>가게 ${c('shop')}곳</span><span>장식 ${c('deco')}개</span><span>길·울타리 ${c('road')+c('fence')}칸</span><span>밭 ${cnt(T=>T.t==='plot')}칸</span><span>빈 풀밭 ${e}칸</span><span>채움 ${Math.round((all-e)/all*100)}%</span></div>`}
 function openExpand(){const n=LANDS[S.land+1];if(!n)return;
   openSheet('땅 넓히기',info(spr('land'),`<span class="big">${n.w}×${n.h} 크기로 넓혀요</span><span class="sub">레벨 ${n.lv} 이상 · ${n.cost.toLocaleString()}G</span>`,
   `<button class="btn y" data-act="expand" ${S.level<n.lv||S.gold<n.cost?'disabled':''}>넓히기</button>`))}
@@ -760,6 +939,8 @@ function act(a,k,b){
      pop(sel,C.cost?`-${C.cost}`:'심었어요',C.cost?'gd':'');closeSheet();break}
    case'buildHere':if(doBuild(sel,k))closeSheet();break;
    case'place':startPlacing({kind:'new',k});return;
+   case'qclaim':{const q=S.quests[+k];if(!q||!qDone(q))return;S.gold+=q.g;S.mojo+=q.mj;closeSheet();pop(0,`+${q.g}`,'gd');gainXP(q.x,0);
+     if(q.mj)pop(0,`모조 +${q.mj}`,'mj',500);S.quests.splice(+k,1);S.quests.splice(+k,0,newQuest());save();render();setTimeout(openQuests,900);return}
    case'mojo':{const c=+k;if(S.mojo<c){toast('모조가 모자라요');return}S.mojo-=c;S.st.mojo++;finishNow(T);pop(sel,'뿅! 완성','mj');closeSheet();break}
    case'job':{const B=BUILDS[T.b];T.job={startAt:S.gt,doneAt:S.gt+B.jt};pop(sel,'일 시작!');closeSheet();break}
    case'clear':T.crop=null;closeSheet();break;
@@ -785,7 +966,7 @@ function act(a,k,b){
 /* ===== 배치 모드 ===== */
 function startPlacing(p){placing=p;closeSheet();
   const nm=p.kind==='plot'?'밭':p.kind==='move'?BUILDS[S.tiles[p.from].b].n:BUILDS[p.k].n;
-  $('placeTxt').textContent=p.kind==='move'?`${nm}을(를) 옮길 풀밭을 눌러주세요`:`${nm} 놓을 풀밭을 눌러주세요`+(p.kind==='plot'||BUILDS[p.k]?.cat==='deco'?' · 여러 개 가능':'');
+  $('placeTxt').textContent=p.kind==='move'?`${nm}을(를) 옮길 풀밭을 눌러주세요`:`${nm} 놓을 풀밭을 눌러주세요`+(p.kind==='plot'||['deco','road','fence'].includes(BUILDS[p.k]?.cat)?' · 여러 개 가능':'');
   $('placeBar').hidden=false;render()}
 function stopPlacing(){placing=null;$('placeBar').hidden=true}
 $('placeCancel').onclick=()=>{stopPlacing();render()};
@@ -793,7 +974,7 @@ function placeAt(i){
   const p=placing;
   if(p.kind==='plot'){if(!makePlot(i))stopPlacing()}
   else if(p.kind==='move'){S.tiles[i]=S.tiles[p.from];S.tiles[p.from]={t:'grass'};pop(i,'옮겼어요');stopPlacing()}
-  else{const ok=doBuild(i,p.k);if(!ok||BUILDS[p.k].cat!=='deco')stopPlacing()}
+  else{const ok=doBuild(i,p.k);if(!ok||!['deco','road','fence'].includes(BUILDS[p.k].cat))stopPlacing()}
   save();render();
 }
 
@@ -824,7 +1005,7 @@ function tap(i){
   return openDeco();
 }
 $('allBtn').onclick=collectAll;
-$('shopBtn').onclick=()=>{if(talking)return;stopPlacing();if(goalNow()?.k==='pine')shopTab='deco';if(goalNow()?.k==='cottage')shopTab='house';openShop(false)};
+$('shopBtn').onclick=()=>{if(talking)return;stopPlacing();if(goalNow()?.k==='pine')shopTab='deco';if(goalNow()?.k==='cottage')shopTab='house';if(goalNow()?.k==='road')shopTab='road';openShop(false)};
 $('devBtn').onclick=openDev;
 $('meBtn').onclick=openMe;
 $('devBtn').hidden=!DEV;
