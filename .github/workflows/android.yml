@@ -42,6 +42,11 @@ jobs:
           # 상단 상태바 숨기기(전체 화면)
           perl -0pi -e 's/(<style name="AppTheme.NoActionBar"[^>]*>)/$1\n        <item name="android:windowFullscreen">true<\/item>/' android/app/src/main/res/values/styles.xml
 
+      - name: 고정 서명 열쇠 쓰기(빌드마다 같은 서명 → 덮어 설치 가능)
+        run: |
+          mkdir -p ~/.android
+          cp keystore/debug.keystore ~/.android/debug.keystore
+
       - name: APK 빌드
         working-directory: android
         run: |
