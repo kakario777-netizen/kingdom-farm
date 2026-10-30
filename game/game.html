@@ -234,7 +234,7 @@ button:focus-visible{outline:3px solid var(--mojo);outline-offset:2px}
 .lvcard{background:none;border-style:solid;border-color:transparent;border-width:18px;border-image:url(ui/panel.png) 22 fill stretch;border-radius:0;box-shadow:none}
 .lvcard h3{-webkit-text-stroke:0;color:#ffd84a;font-size:34px;text-shadow:0 3px 0 var(--ol),3px 0 0 var(--ol),-3px 0 0 var(--ol),0 -3px 0 var(--ol),2px 2px 0 var(--ol),-2px 2px 0 var(--ol),2px -2px 0 var(--ol),-2px -2px 0 var(--ol)}
 .reward span{background:none;border-style:solid;border-color:transparent;border-width:5px;border-image:url(ui/inset.png) 14 fill stretch;border-radius:0;padding:0 6px}
-.lvnum{background:url(ui/star.png) center/contain no-repeat;border:0;border-radius:0;width:38px;height:36px;min-width:0;margin:-6px -2px -6px -6px;font-size:14px;padding-top:4px;box-sizing:border-box;
+.lvnum{background:url(ui/star.svg) center/contain no-repeat;border:0;border-radius:0;width:38px;height:36px;min-width:0;margin:-6px -2px -6px -6px;font-size:14px;padding-top:4px;box-sizing:border-box;
   text-shadow:0 1.5px 0 var(--ol),1.5px 0 0 var(--ol),-1.5px 0 0 var(--ol),0 -1.5px 0 var(--ol)}
 .xp,.qbar{border:0;border-radius:0;height:14px;border-style:solid;border-color:transparent;border-width:0 6px;border-image:url(ui/bar_back.png) 0 9 fill stretch;background:none;overflow:visible}
 .xp i,.qbar i{height:100%;border-radius:0;border-style:solid;border-color:transparent;border-width:0 5px;margin:0 -5px;border-image:url(ui/bar_green.png) 0 9 fill stretch;background:none;box-sizing:border-box;min-width:10px}
@@ -445,7 +445,7 @@ html.tall .talk .box{max-width:760px}
    최종 빌드: DEV=false 로 바꾸면 리얼타임(×1) + 테스트 버튼 숨김 */
 const DEV = true;
 const DEV_SPEED = 20;
-const VERSION = 'v0.13';
+const VERSION = 'v0.14';
 
 const COLS=58, ROWS=58, M=60, H=3600, DAY=86400;
 
@@ -1410,7 +1410,7 @@ function stepWalkers(dt){
   }
 }
 /* --- 고정 그림 저장(스프라이트) --- */
-const SPRS={},SBK=[.3,.5,.8,1.2,1.8,2.6,3.4];
+const SPRS={},SBK=[.3,.5,.8,1.2,1.8,2.6,3.4,4.6,6.2,8.4,10.4];
 function sbucket(sc){for(const b of SBK)if(b>=sc*.92)return b;return SBK[SBK.length-1]}
 function sprite(key,fn,big){const sc=sbucket(cam.z*DPR),id=key+'|'+sc,now=performance.now();let s=SPRS[id];if(s){s.used=now;return s}
   const w=big?250:136,h=big?300:180,ay=big?70:40,c=document.createElement('canvas');c.width=Math.ceil(w*sc);c.height=Math.ceil(h*sc);
@@ -1444,11 +1444,11 @@ function bar(x,y,p){g.fillStyle='rgba(90,58,40,.75)';rrect(x-22,y-4,44,8,4);g.fi
 function openSign(x,y){g.fillStyle='#8a5a3a';g.fillRect(x-.8,y-2,1.6,9);g.fillStyle='#fff36b';rrect(x-11,y-9,22,9,3);g.fill();g.strokeStyle='#5a3a28';g.lineWidth=1.1;g.stroke();txt('OPEN',x,y-4.3,6.5,'#5a3a28')}
 
 /* --- 이미지 스프라이트: 오픈소스(CC0) 3D 모델을 게임 시점으로 렌더해 가공한 그림 묶음 --- */
-const ATL={s:(window.ATLAS&&window.ATLAS.s)||{},img:[]};let ATL_READY=false;
+const ATL={s:(window.ATLAS&&window.ATLAS.s)||{},lo:(window.ATLAS&&window.ATLAS.lo)||null,img:[]};let SPR_LO=false;let ATL_READY=false;
 (window.ATLAS?Promise.all(window.ATLAS.sheets.map((f,n)=>new Promise(res=>{const im=new Image();im.onload=()=>{ATL.img[n]=im;res()};im.onerror=()=>res();im.src='sprites/'+f}))):Promise.resolve())
   .then(()=>{ATL_READY=ATL.img.length>0;for(const k in thumbs)delete thumbs[k];document.querySelectorAll('img.th').forEach(()=>{})});
 const hasSpr=k=>ATL_READY&&!!ATL.s[k];
-function drawSpr(k,x,y,flip=false){const a=ATL.s[k];if(!a)return false;const[sh,sx,sy,w,h,ax,ay,res]=a,im=ATL.img[sh];if(!im)return false;
+function drawSpr(k,x,y,flip=false){const a=(SPR_LO&&ATL.lo&&ATL.lo[k])||ATL.s[k];if(!a)return false;const[sh,sx,sy,w,h,ax,ay,res]=a,im=ATL.img[sh];if(!im)return false;
   if(flip){g.save();g.translate(x,y);g.scale(-1,1);g.drawImage(im,sx,sy,w,h,-ax/res,-ay/res,w/res,h/res);g.restore()}else g.drawImage(im,sx,sy,w,h,x-ax/res,y-ay/res,w/res,h/res);return true}
 const sprH=k=>{const a=ATL.s[k];return a?a[6]/a[7]-8:0};
 const cropKey=(T)=>{const st2=cropState(T),p=st2==='grow'?prog(T.plantedAt,T.readyAt):1,stage=st2==='grow'?(p<.34?0:p<.72?1:2):2;return stage===0?'crop_sprout':`crop_${T.crop}_${stage}`};
@@ -1537,7 +1537,7 @@ function tileRange(v){const cs=[[v.x0,v.y0],[v.x1,v.y0],[v.x0,v.y1],[v.x1,v.y1]]
   return{c0:Math.max(0,Math.floor(Math.min(...us))-1),c1:Math.min(COLS-1,Math.ceil(Math.max(...us))+4),r0:Math.max(0,Math.floor(Math.min(...vs))-1),r1:Math.min(ROWS-1,Math.ceil(Math.max(...vs))+4)}}
 function draw(t){
   g=ctx;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height);
-  const sc=cam.z*DPR;g.setTransform(sc,0,0,sc,cam.x*DPR,cam.y*DPR);
+  const sc=cam.z*DPR;SPR_LO=sc<3.2;g.imageSmoothingQuality="high";g.setTransform(sc,0,0,sc,cam.x*DPR,cam.y*DPR);
   const view=screenView();drawGroundChunks(view);
   {const NR=RECTS[S.land+1];if(NR){const R0=RECTS[S.land];g.save();g.setLineDash([8,6]);path([[R0.x0,R0.y0],[R0.x1,R0.y0],[R0.x1,R0.y1],[R0.x0,R0.y1]]);g.strokeStyle='rgba(255,255,255,.75)';g.lineWidth=2.4;g.stroke();g.restore()}}
   const TR=tileRange(view),list=[];
@@ -1613,7 +1613,7 @@ function clampCam(){const x0=P(0,ROWS)[0],x1=P(COLS,0)[0],y0=-150,y1=(COLS+ROWS)
   cam.x=Math.min(CW-m-x0*cam.z,Math.max(m-x1*cam.z,cam.x));cam.y=Math.min(CH-m-y0*cam.z,Math.max(m-y1*cam.z,cam.y))}
 let ZMIN=.12;
 function resize(){
-  const r=stage.getBoundingClientRect();DPR=Math.min(3,window.devicePixelRatio||1);CW=r.width;CH=r.height;
+  const r=stage.getBoundingClientRect();DPR=Math.min(4,window.devicePixelRatio||1);CW=r.width;CH=r.height;
   cv.width=Math.round(CW*DPR);cv.height=Math.round(CH*DPR);cv.style.width=CW+'px';cv.style.height=CH+'px';{const x0=P(0,ROWS)[0],x1=P(COLS,0)[0];ZMIN=Math.min(.3,CW/(x1-x0)*.9)}fitCam();
 }
 addEventListener('resize',resize);
@@ -1741,7 +1741,7 @@ function bumpTxt(id,v){const e=$(id);if(e.textContent===v)return;const first=!e.
 function uiFit(){const w=innerWidth,h=innerHeight;const k=Math.max(.82,Math.min(1.3,Math.min(h/400,w/860)));document.documentElement.style.setProperty('--ui',k.toFixed(3));document.documentElement.classList.toggle('tall',h/w>.7)}
 addEventListener('resize',uiFit);uiFit();
 function rwG(n){return`<span class="rw"><i>${spr('coin')}</i>${(+n).toLocaleString()}</span>`}
-function rwX(n){return`<span class="rw"><i><img src="ui/star.png" alt=""></i>${n}</span>`}
+function rwX(n){return`<span class="rw"><i><img src="ui/star.svg" alt=""></i>${n}</span>`}
 function rwM(n){return`<span class="rw"><i>${spr('mojo')}</i>${n}</span>`}
 function checkDaily(){if(S.daily!==today()){S.daily=today();S.mojo+=2;setTimeout(()=>toast('오늘의 출석 선물! 모조 +2',3000),600);save()}}
 function starTick(){

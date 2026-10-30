@@ -22,7 +22,7 @@ const NPAL={leafsGreen:'#9be37f',leafsDark:'#6cc85f',leafsFall:'#ff8a3c',grass:'
 const QPAL={Plaster:'#fff1d6',Beige:'#f6dfb4',RoofTiles:'#ff8a5c',RoofTiles_Red:'#e8554e',Stone:'#cfc8ba',Stone_Dark:'#a29b90',Stone_Light:'#ebe5da',Windows:'#8fd0f5',
  Wood:'#8a5a3a',Wood_Light:'#d29a62',Wood_Side:'#aa7448',WoodSide:'#aa7448',DarkWood:'#7a4e30',Metal:'#b4bac6',DarkMetal:'#5d6070',Green:'#5cbf6a',Bell:'#ffc93c',
  Hay:'#f2cf5b',Bag:'#ead6ad',Bag_Inside:'#c9a87a',Red:'#e8554e',Orange:'#ff9a3c',Soup:'#7fd45a',Leather:'#a96b44',Fire:'#ffb02e',Smoke:'#e8e8e8'};
-window.renderModel=async function(spec){RES=spec.res||3;S=67.88*RES;
+window.renderModel=async function(spec){const MUL=window.MUL||1;RES=(spec.res||3)*MUL;S=67.88*RES;
   const scene=new THREE.Scene(),group=new THREE.Group();scene.add(group);
   let mixerInfo=null;
   const flat=[];for(const p of spec.parts){if(p.stack){let y=p.y||0;for(const src of p.stack){const r=await load(src);const tmp=r.scene.clone(true);if(p.scale)tmp.scale.multiplyScalar(p.scale);tmp.updateMatrixWorld(true);const bb=new THREE.Box3().setFromObject(tmp);
@@ -54,11 +54,11 @@ window.renderModel=async function(spec){RES=spec.res||3;S=67.88*RES;
   if(spec.offset){group.position.x+=spec.offset[0];group.position.z+=spec.offset[1]}
   if(spec.rotY)group.rotation.y=spec.rotY*Math.PI/180;
   scene.add(new THREE.HemisphereLight(0xfff4e0,0x6f9a5a,1.25));
-  const sun=new THREE.DirectionalLight(0xfff1d8,2.3);sun.position.set(-2.4,9,3.4);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);
+  const sun=new THREE.DirectionalLight(0xfff1d8,2.3);sun.position.set(-2.4,9,3.4);sun.castShadow=true;sun.shadow.mapSize.set(2048*MUL,2048*MUL);
   Object.assign(sun.shadow.camera,{left:-4,right:4,top:4,bottom:-4,near:.1,far:30});sun.shadow.bias=-.0005;sun.shadow.radius=4;scene.add(sun);
   const fill=new THREE.DirectionalLight(0xcfe6ff,.55);fill.position.set(5,3,-2);scene.add(fill);
   if(!spec.noShadow){const pl=new THREE.Mesh(new THREE.PlaneGeometry(20,20),new THREE.ShadowMaterial({opacity:.28}));pl.rotation.x=-Math.PI/2;pl.receiveShadow=true;scene.add(pl)}
-  const W=spec.W||Math.round(400*RES),H=spec.H||Math.round(440*RES),Ha=spec.Ha||Math.round(350*RES);renderer.setSize(W,H,false);
+  const W=spec.W?Math.round(spec.W*MUL):Math.round(400*RES),H=spec.H?Math.round(spec.H*MUL):Math.round(440*RES),Ha=spec.Ha?Math.round(spec.Ha*MUL):Math.round(350*RES);renderer.setSize(W,H,false);
   const cam=new THREE.OrthographicCamera(-W/2/S,W/2/S,Ha/S,-(H-Ha)/S,.1,200);
   const d=40;cam.position.set(d*Math.cos(ELEV)*Math.SQRT1_2,d*Math.sin(ELEV),d*Math.cos(ELEV)*Math.SQRT1_2);cam.lookAt(0,0,0);
   renderer.render(scene,cam);
@@ -67,11 +67,11 @@ window.renderModel=async function(spec){RES=spec.res||3;S=67.88*RES;
   const img=t.getImageData(0,0,W,H),a=img.data;let x0=W,y0=H,x1=0,y1=0;
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){if(a[(y*W+x)*4+3]>8){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}}
   if(x1<x0)return null;
-  const pad=8;x0=Math.max(0,x0-pad);y0=Math.max(0,y0-pad);x1=Math.min(W-1,x1+pad);y1=Math.min(H-1,y1+pad);
+  const pad=Math.round(8*MUL);x0=Math.max(0,x0-pad);y0=Math.max(0,y0-pad);x1=Math.min(W-1,x1+pad);y1=Math.min(H-1,y1+pad);
   const cw=x1-x0+1,ch=y1-y0+1,out=document.createElement('canvas');out.width=cw;out.height=ch;const o=out.getContext('2d');
   if(spec.outline!==false){const m=document.createElement('canvas');m.width=cw;m.height=ch;const mx=m.getContext('2d');const sub=t.getImageData(x0,y0,cw,ch);
     for(let i=3;i<sub.data.length;i+=4){const solid=sub.data[i]>150;sub.data[i-3]=74;sub.data[i-2]=44;sub.data[i-1]=28;sub.data[i]=solid?255:0}mx.putImageData(sub,0,0);
-    const r=spec.outline||4;for(let k=0;k<16;k++)o.drawImage(m,Math.cos(k*Math.PI/8)*r,Math.sin(k*Math.PI/8)*r)}
+    const r=(spec.outline||4)*MUL;for(let k=0;k<24;k++)o.drawImage(m,Math.cos(k*Math.PI/12)*r,Math.sin(k*Math.PI/12)*r)}
   o.filter='saturate(1.18) contrast(1.04)';o.drawImage(tc,x0,y0,cw,ch,0,0,cw,ch);
   return {url:out.toDataURL('image/png'),w:cw,h:ch,ax:W/2-x0,ay:Ha-y0,res:RES,anims:mixerInfo&&mixerInfo.names};
 };
