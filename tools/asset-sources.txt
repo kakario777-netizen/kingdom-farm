@@ -1,0 +1,6 @@
+# 이름|주소  (모두 CC0 — 자유 사용·수정·배포 가능)
+medieval-village|https://opengameart.org/sites/default/files/medieval_village_pack_-_dec_2020.zip
+castle-kit|https://opengameart.org/sites/default/files/kenney_castle-kit.zip
+nature-kit|https://opengameart.org/sites/default/files/Nature%20Kit%20%282.1%29.zip
+fantasy-town|https://opengameart.org/sites/default/files/kenney_fantasy-town-kit_2.0.zip
+mini-characters|https://opengameart.org/sites/default/files/kenney_mini-characters.zip

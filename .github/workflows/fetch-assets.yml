@@ -1,0 +1,45 @@
+name: 오픈소스 에셋 받기
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [tools/asset-sources.txt]
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 에셋 내려받기
+        run: |
+          mkdir -p assets-src
+          grep -v '^#' tools/asset-sources.txt | while IFS='|' read -r name url; do
+            [ -z "$name" ] && continue
+            echo "== $name"
+            curl -fL --retry 3 -A "Mozilla/5.0" -o "/tmp/$name.zip" "$url"
+            rm -rf "assets-src/$name"; mkdir -p "assets-src/$name"
+            unzip -q -o "/tmp/$name.zip" -d "assets-src/$name"
+          done
+          # 필요 없는 큰 파일 정리(블렌더 원본·유니티 패키지 등)
+          find assets-src -type f \( -iname '*.blend' -o -iname '*.blend1' -o -iname '*.unitypackage' -o -iname '*.fbx' \) -delete
+          find assets-src -type d -empty -delete
+          du -sh assets-src/*
+          find assets-src -maxdepth 3 | head -100
+      - name: three.js 받기
+        run: |
+          mkdir -p tools/three && cd /tmp && npm pack three@0.160.0 >/dev/null && tar xzf three-0.160.0.tgz
+          cp package/build/three.module.js $GITHUB_WORKSPACE/tools/three/
+          mkdir -p $GITHUB_WORKSPACE/tools/three/jsm
+          cp -r package/examples/jsm/loaders package/examples/jsm/utils $GITHUB_WORKSPACE/tools/three/jsm/
+          ls -la $GITHUB_WORKSPACE/tools/three
+      - name: 저장소에 올리기
+        run: |
+          git config user.name "asset-bot"
+          git config user.email "asset-bot@users.noreply.github.com"
+          git add assets-src tools/three
+          git commit -m "오픈소스(CC0) 에셋 원본 받기" || echo "변경 없음"
+          git push
