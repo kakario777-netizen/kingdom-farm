@@ -36,10 +36,16 @@ jobs:
           mkdir -p $GITHUB_WORKSPACE/tools/three/jsm
           cp -r package/examples/jsm/loaders package/examples/jsm/utils $GITHUB_WORKSPACE/tools/three/jsm/
           ls -la $GITHUB_WORKSPACE/tools/three
+      - name: 글꼴 받기(OFL)
+        run: |
+          mkdir -p game/fonts
+          curl -fL --retry 3 -o game/fonts/Jua-Regular.ttf https://raw.githubusercontent.com/google/fonts/main/ofl/jua/Jua-Regular.ttf
+          curl -fL --retry 3 -o game/fonts/OFL-Jua.txt https://raw.githubusercontent.com/google/fonts/main/ofl/jua/OFL.txt
+          ls -la game/fonts
       - name: 저장소에 올리기
         run: |
           git config user.name "asset-bot"
           git config user.email "asset-bot@users.noreply.github.com"
-          git add assets-src tools/three
+          git add assets-src tools/three game/fonts
           git commit -m "오픈소스(CC0) 에셋 원본 받기" || echo "변경 없음"
           git push
