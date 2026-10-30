@@ -402,6 +402,10 @@ html.tall .talk .box{max-width:760px}
 #devBtn{padding:4px 9px 7px!important}
 .hud .btn{white-space:nowrap}
 .toast{top:calc(64px * var(--ui))!important}
+/* 4단계: 3D 초상화 */
+.me .face{background:radial-gradient(circle at 50% 40%,#fff7d6,#ffd9a0)!important}
+.talk .who{width:120px!important;height:120px!important;filter:drop-shadow(0 4px 0 rgba(74,42,23,.35))}
+.ruler img{width:84px!important;height:84px!important}
 </style>
 
 <div id="app">
@@ -445,7 +449,7 @@ html.tall .talk .box{max-width:760px}
    최종 빌드: DEV=false 로 바꾸면 리얼타임(×1) + 테스트 버튼 숨김 */
 const DEV = true;
 const DEV_SPEED = 20;
-const VERSION = 'v0.14';
+const VERSION = 'v0.15';
 
 const COLS=58, ROWS=58, M=60, H=3600, DAY=86400;
 
@@ -1356,7 +1360,11 @@ function drawAdvisor(t=0){ // 대신 몽실: 찹쌀떡 몸에 외알 안경·콧
   g.fillStyle='#ff6f9f';g.beginPath();g.moveTo(-4.6,-42);g.lineTo(9,-42.6);g.lineTo(9,-40.4);g.lineTo(-4.8,-39.8);g.fill();
   g.restore()}
 const CIMG={};
-function charImg(k,mode='full'){const id=k+mode;if(CIMG[id])return CIMG[id];const c=document.createElement('canvas');c.width=c.height=160;const prev=g;g=c.getContext('2d');
+function charImg(k,mode='full'){const id=k+mode;if(CIMG[id])return CIMG[id];
+  if(hasSpr('pt_'+k)){const[sh,sx,sy,w,h]=ATL.s['pt_'+k],N=360,c=document.createElement('canvas');c.width=c.height=N;const t2=c.getContext('2d');t2.imageSmoothingQuality='high';
+    if(mode==='face'){const cw=w*.6,ch=h*.58,z=Math.min(N/cw,N/ch);t2.drawImage(ATL.img[sh],sx+w*.2,sy,cw,ch,(N-cw*z)/2,N-ch*z+N*.04,cw*z,ch*z)}
+    else{const z=Math.min(N/w,N/h)*.98;t2.drawImage(ATL.img[sh],sx,sy,w,h,(N-w*z)/2,N-h*z,w*z,h*z)}
+    return CIMG[id]=c.toDataURL()}const c=document.createElement('canvas');c.width=c.height=160;const prev=g;g=c.getContext('2d');
   if(mode==='face'){g.setTransform(4.2,0,0,4.2,80,80+(k==='advisor'?20:31)*4.2)}else{g.setTransform(2.6,0,0,2.6,80,150)}
   if(k==='advisor')drawAdvisor(0);else drawChar(k,{t:0});g=prev;CIMG[id]=c.toDataURL();return CIMG[id]}
 
@@ -1446,7 +1454,7 @@ function openSign(x,y){g.fillStyle='#8a5a3a';g.fillRect(x-.8,y-2,1.6,9);g.fillSt
 /* --- 이미지 스프라이트: 오픈소스(CC0) 3D 모델을 게임 시점으로 렌더해 가공한 그림 묶음 --- */
 const ATL={s:(window.ATLAS&&window.ATLAS.s)||{},lo:(window.ATLAS&&window.ATLAS.lo)||null,img:[]};let SPR_LO=false;let ATL_READY=false;
 (window.ATLAS?Promise.all(window.ATLAS.sheets.map((f,n)=>new Promise(res=>{const im=new Image();im.onload=()=>{ATL.img[n]=im;res()};im.onerror=()=>res();im.src='sprites/'+f}))):Promise.resolve())
-  .then(()=>{ATL_READY=ATL.img.length>0;for(const k in thumbs)delete thumbs[k];document.querySelectorAll('img.th').forEach(()=>{})});
+  .then(()=>{ATL_READY=ATL.img.length>0;for(const k in thumbs)delete thumbs[k];for(const k in CIMG)delete CIMG[k];if($('meFace'))$('meFace').dataset.k='';if(!$('talk').hidden)$('talkWho').innerHTML=spr('advisor');{const ia=document.querySelector('#intro .art');if(ia)ia.innerHTML=castleArt()}if(typeof render==='function')try{render()}catch(e){}document.querySelectorAll('img.th').forEach(()=>{})});
 const hasSpr=k=>ATL_READY&&!!ATL.s[k];
 function drawSpr(k,x,y,flip=false){const a=(SPR_LO&&ATL.lo&&ATL.lo[k])||ATL.s[k];if(!a)return false;const[sh,sx,sy,w,h,ax,ay,res]=a,im=ATL.img[sh];if(!im)return false;
   if(flip){g.save();g.translate(x,y);g.scale(-1,1);g.drawImage(im,sx,sy,w,h,-ax/res,-ay/res,w/res,h/res);g.restore()}else g.drawImage(im,sx,sy,w,h,x-ax/res,y-ay/res,w/res,h/res);return true}
@@ -1992,9 +2000,10 @@ $('devBtn').hidden=!DEV;
 $('icGold').innerHTML=spr('coin');$('icMojo').innerHTML=spr('mojo');$('hand').innerHTML=spr('hand');
 
 /* ===== 오프닝 ===== */
+function castleArt(){if(!hasSpr('castle4'))return castleSvg(2);if(CIMG.castleArt)return CIMG.castleArt;const[sh,sx,sy,w,h]=ATL.s.castle4,c=document.createElement('canvas'),N=420;c.width=c.height=N;const t2=c.getContext('2d');t2.imageSmoothingQuality='high';const z=Math.min(N/w,N/h);t2.drawImage(ATL.img[sh],sx,sy,w,h,(N-w*z)/2,N-h*z,w*z,h*z);return CIMG.castleArt=`<img src="${c.toDataURL()}" alt="" style="width:100%;height:100%;object-fit:contain">`}
 function showIntro(){
   const el=$('intro');el.hidden=false;
-  el.innerHTML=`<h1>말랑 왕국</h1><div class="art">${castleSvg(2)}</div><p>작은 왕국을 말랑말랑 키워봐요</p><button class="btn big" id="goStart">시작하기</button><small style="color:var(--ink-soft)">${VERSION}</small>`;
+  el.innerHTML=`<h1>말랑 왕국</h1><div class="art">${castleArt()}</div><p>작은 왕국을 말랑말랑 키워봐요</p><button class="btn big" id="goStart">시작하기</button><small style="color:var(--ink-soft)">${VERSION}</small>`;
   $('goStart').onclick=pickRuler;
 }
 function pickRuler(){
