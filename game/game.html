@@ -246,6 +246,21 @@ button:focus-visible{outline:3px solid var(--mojo);outline-offset:2px}
 .placebar{background:none;box-shadow:none;border-style:solid;border-color:transparent;border-width:10px;border-image:url(ui/panel.png) 18 fill stretch;border-radius:0}
 .namein{border:0;background:url(ui/inset.png) center/100% 100%;padding:10px 16px}
 .intro h1{-webkit-text-stroke:0;color:#ff7aa8;text-shadow:0 5px 0 var(--ol),4px 0 0 var(--ol),-4px 0 0 var(--ol),0 -4px 0 var(--ol),3px 3px 0 var(--ol),-3px 3px 0 var(--ol),3px -3px 0 var(--ol),-3px -3px 0 var(--ol),0 9px 0 rgba(90,52,32,.35)}
+/* ===== 1단계: 글꼴·글자 ===== */
+:root{--ink:#4e2e1c;--ink-soft:#7a5238}
+body,button,input{-webkit-font-smoothing:antialiased;letter-spacing:-.2px}
+.gtx{background:linear-gradient(#fffbe0 0%,#ffe36a 45%,#ffb52e 100%);-webkit-background-clip:text;background-clip:text;color:transparent!important;text-shadow:none!important;-webkit-text-stroke:0!important;filter:drop-shadow(0 2px 0 #5a3420) drop-shadow(2px 0 0 #5a3420) drop-shadow(-2px 0 0 #5a3420) drop-shadow(0 -2px 0 #5a3420) drop-shadow(0 3px 0 rgba(70,35,15,.45))}
+.sheet h2{background:linear-gradient(#ffffff 0%,#fff3c4 55%,#ffd36b 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 2px 0 #5a3420) drop-shadow(2px 0 0 #5a3420) drop-shadow(-2px 0 0 #5a3420) drop-shadow(0 -2px 0 #5a3420) drop-shadow(0 3px 0 rgba(70,35,15,.45));font-size:24px;padding:0 4px}
+.lvcard h3{background:linear-gradient(#fffbe0 0%,#ffe36a 45%,#ff9f1c 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;font-size:40px;padding:0 6px;
+  filter:drop-shadow(0 3px 0 #5a3420) drop-shadow(3px 0 0 #5a3420) drop-shadow(-3px 0 0 #5a3420) drop-shadow(0 -3px 0 #5a3420) drop-shadow(0 5px 0 rgba(70,35,15,.4))}
+.intro h1{background:linear-gradient(#fff 0%,#ffc2d8 45%,#ff6f9f 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;
+  filter:drop-shadow(0 4px 0 #5a3420) drop-shadow(4px 0 0 #5a3420) drop-shadow(-4px 0 0 #5a3420) drop-shadow(0 -4px 0 #5a3420) drop-shadow(0 8px 0 rgba(70,35,15,.35))}
+.chip b,.chip .v,#gold,#mojo{font-size:21px;color:var(--ink)}
+.card b,.card .nm{font-size:17px;color:var(--ink)}
+.card .earn{color:#c2560c}
+.card small,.card .sub,.goal small,.goal .sub{color:var(--ink-soft)}
+.talk .box p,.talk .box .t{font-size:19px;line-height:1.5;color:var(--ink)}
+.btn.big{font-size:24px}
 </style>
 
 <div id="app">
@@ -289,7 +304,7 @@ button:focus-visible{outline:3px solid var(--mojo);outline-offset:2px}
    최종 빌드: DEV=false 로 바꾸면 리얼타임(×1) + 테스트 버튼 숨김 */
 const DEV = true;
 const DEV_SPEED = 20;
-const VERSION = 'v0.10';
+const VERSION = 'v0.11';
 
 const COLS=58, ROWS=58, M=60, H=3600, DAY=86400;
 

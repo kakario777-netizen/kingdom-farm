@@ -15,10 +15,12 @@
 
 ## 그림 출처 (모두 CC0)
 - Quaternius Lowpoly Medieval Village Pack, Kenney Castle Kit · Nature Kit · Fantasy Town Kit · Mini Characters
+- 글꼴: Jua (Google Fonts, SIL OFL 1.1)
 - UI: Kenney UI Pack, UI Pack RPG Expansion, Game Icons Expansion (OpenGameArt) → `tools/ui/process_ui.py` 로 색·외곽선·눌림 상태 가공
 - 3D 모델을 게임 시점으로 렌더하고 색·조립·테두리를 가공해 씀 → `tools/render/README.md`
 
 ## 업데이트 기록
+- v0.11 글꼴(주아체) 게임 안에 내장 — 오프라인 APK에서도 둥근 글꼴, 제목은 노란 그라데이션+갈색 테두리
 - v0.10 UI를 이미지 UI로 교체: 광택 버튼 6색(눌림 상태 포함), 양피지 패널·나무 현판 제목, 별 레벨 배지, 게이지 바, 둥근 아이콘 버튼(확대·축소·왕국·닫기), 상점·테스트 아이콘
 - v0.9 오픈소스(CC0) 3D 에셋으로 그래픽 교체: 집·가게 16종, 특수 건물, 성 4단계(성 키트 조립), 나무·꽃밭·석상·우물·정자, 작물 24종 성장 단계, 야생 숲·바위·버섯, 주민 12명(걷기·쉬기·인사 애니메이션, 4방향)
 - v0.8 캐릭터 개성: 쿠키런 비율 주민 9명(농부 감자·빵순이·꼬마 기사 단단·메이드 나나·견습마법사 별이·상인 금복·꼬마 딸기·수염 할아범·냥냥이), 왕·여왕·왕자·공주·대신 몽실이 새 그림, 눌렀을 때 이름·말버릇·하트/음표, 가게에 맞는 주민 등장, 건물·나무에 스티커 테두리

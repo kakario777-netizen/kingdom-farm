@@ -3,7 +3,7 @@ const fs = require('fs');
 let body = fs.readFileSync('game/game.html', 'utf8');
 fs.mkdirSync('www', { recursive: true });
 // 앱 안에서는 인터넷 없이도 글꼴이 나오도록, 받아둔 글꼴 파일이 있으면 그걸 씀
-if (fs.existsSync('www/fonts/Jua-Regular.ttf')) {
+if (fs.existsSync('game/fonts/Jua-Regular.ttf')) {
   body = body.replace(/<link[^>]*fonts\.googleapis[^>]*>/,
     '<style>@font-face{font-family:"Jua";src:url(fonts/Jua-Regular.ttf) format("truetype");font-display:swap}</style>');
 }
@@ -18,6 +18,6 @@ ${body}
 </body></html>`;
 fs.writeFileSync('www/index.html', html);
 // 그림 묶음·UI 이미지 복사
-for (const d of ['ui']) if (fs.existsSync('game/'+d)) { fs.mkdirSync('www/'+d, { recursive: true }); for (const f of fs.readdirSync('game/'+d)) fs.copyFileSync('game/'+d+'/' + f, 'www/'+d+'/' + f); }
+for (const d of ['ui','fonts']) if (fs.existsSync('game/'+d)) { fs.mkdirSync('www/'+d, { recursive: true }); for (const f of fs.readdirSync('game/'+d)) fs.copyFileSync('game/'+d+'/' + f, 'www/'+d+'/' + f); }
 if (fs.existsSync('game/sprites')) { fs.mkdirSync('www/sprites', { recursive: true }); for (const f of fs.readdirSync('game/sprites')) fs.copyFileSync('game/sprites/' + f, 'www/sprites/' + f); }
 console.log('www/index.html', html.length, 'bytes');
