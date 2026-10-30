@@ -449,7 +449,7 @@ html.tall .talk .box{max-width:760px}
    최종 빌드: DEV=false 로 바꾸면 리얼타임(×1) + 테스트 버튼 숨김 */
 const DEV = true;
 const DEV_SPEED = 20;
-const VERSION = 'v0.15';
+const VERSION = 'v0.16';
 
 const COLS=58, ROWS=58, M=60, H=3600, DAY=86400;
 
@@ -1643,11 +1643,13 @@ const endPtr=e=>{if(!ptrs.has(e.pointerId))return;ptrs.delete(e.pointerId);
   if(ptrs.size<2&&pinch){pinch=null;pinching=false;drag=null;return}
   if(drag&&!drag.moved&&e.type==='pointerup'){const rc=cv.getBoundingClientRect();pick(e.clientX-rc.left,e.clientY-rc.top)}
   if(!ptrs.size)drag=null};
-cv.addEventListener('pointerup',endPtr);cv.addEventListener('pointercancel',endPtr);
+cv.addEventListener('pointerup',endPtr);
+// 터치는 손을 뗀 뒤 '클릭'을 한 번 더 보냄 → 방금 열린 창 바깥 배경이 그걸 받아 창이 바로 닫히던 문제 차단
+cv.addEventListener('touchend',e=>{if(e.cancelable)e.preventDefault()},{passive:false});cv.addEventListener('pointercancel',endPtr);
 cv.addEventListener('wheel',e=>{e.preventDefault();const rc=cv.getBoundingClientRect();zoomAt(e.deltaY<0?1.12:.89,e.clientX-rc.left,e.clientY-rc.top)},{passive:false});
 function pick(sx,sy){
   const wx=(sx-cam.x)/cam.z,wy=(sy-cam.y)/cam.z;
-  for(let n=DRAWN.length-1;n>=0;n--){const d=DRAWN[n];
+  if(!placing)for(let n=DRAWN.length-1;n>=0;n--){const d=DRAWN[n];
     if(d.w){const[x,y]=P(d.w.u,d.w.v);if(Math.abs(wx-x)<12&&wy<y+3&&wy>y-44){greet(d.w);return}continue}
     if(!d.h||d.h<34)continue;const c=d.i%COLS,r=(d.i/COLS)|0;
     const[x,y]=d.big?P(CX+1,CY+1):P(c+.5,r+.5),hw=d.big?W2*1.9:W2*.62;
@@ -1784,7 +1786,7 @@ function goalTarget(){
     case'corn':return find(T=>T.t==='plot'&&cropState(T)==='ready')||find(T=>T.t==='plot'&&cropState(T)==='empty')||find(T=>T.t==='plot'&&cropState(T)==='grow');
     case'plots':return grassNear();
     case'mojo':return find(T=>T.t==='plot'&&cropState(T)==='grow')||find(T=>T.t==='plot'&&cropState(T)==='ready')||find(T=>T.t==='plot'&&cropState(T)==='empty');
-    case'pine':case'cottage':case'road':return placing?grassNear():$('shopBtn');
+    case'pine':case'cottage':case'road':{const need={pine:'pine',cottage:'cottage_o',road:'road_dirt'}[g.k];if(placing&&placing.k!==need)return $('placeCancel');return placing?grassNear():$('shopBtn')}
     case'tax':return find(T=>T.t==='bld'&&bldState(T)==='tax')||find(T=>T.t==='bld'&&bldState(T)==='build')||find(T=>T.t==='bld'&&BUILDS[T.b].cat==='house');
     case'expand':return{i:CI};
   }
@@ -1794,7 +1796,7 @@ function updateHand(){
   const t=goalTarget(),h=$('hand');
   if(!t){h.hidden=true;return}
   let x,y;
-  if(t.i!=null){const p=tileScreen(t.i),rc=cv.getBoundingClientRect();x=rc.left+p.x;y=rc.top+p.y+(S.tiles[t.i].t==='castle'?40:14)}
+  if(t.i!=null){const T=S.tiles[t.i],flat=T.t==='grass'||T.t==='plot',rc=cv.getBoundingClientRect();if(flat){const c=t.i%COLS,r=(t.i/COLS)|0,[gx,gy]=P(c+.5,r+.5,0);x=rc.left+cam.x+gx*cam.z;y=rc.top+cam.y+gy*cam.z}else{const p=tileScreen(t.i);x=rc.left+p.x;y=rc.top+p.y+(T.t==='castle'?40:14)}}
   else{const r=t.getBoundingClientRect();x=r.left+r.width/2;y=r.top+r.height*.55}
   h.hidden=false;h.style.left=(x-8)+'px';h.style.top=y+'px';
 }
@@ -1854,10 +1856,11 @@ function nextTalk(){
 }
 
 /* ===== 시트 ===== */
-function openSheet(title,html,live){$('shTitle').textContent=title;$('shBody').innerHTML=html;$('sheetBg').hidden=false;liveFn=live||null;if(liveFn)tickLive()}
+let sheetOpenAt=0;
+function openSheet(title,html,live){sheetOpenAt=performance.now();$('shTitle').textContent=title;$('shBody').innerHTML=html;$('sheetBg').hidden=false;liveFn=live||null;if(liveFn)tickLive()}
 function closeSheet(){$('sheetBg').hidden=true;liveFn=null;resetArm=false}
 $('shClose').onclick=closeSheet;
-$('sheetBg').addEventListener('click',e=>{if(e.target===$('sheetBg'))closeSheet()});
+$('sheetBg').addEventListener('click',e=>{if(e.target===$('sheetBg')&&performance.now()-sheetOpenAt>450)closeSheet()});
 function tickLive(){const el=$('live');if(el&&liveFn)el.textContent=liveFn()}
 
 const lockb=lv=>S.level<lv?`<span class="lockb">Lv.${lv}</span>`:'';
