@@ -235,9 +235,9 @@ button:focus-visible{outline:3px solid var(--mojo);outline-offset:2px}
    최종 빌드: DEV=false 로 바꾸면 리얼타임(×1) + 테스트 버튼 숨김 */
 const DEV = true;
 const DEV_SPEED = 20;
-const VERSION = 'v0.4';
+const VERSION = 'v0.5';
 
-const COLS=12, ROWS=7, M=60, H=3600, DAY=86400;
+const COLS=41, ROWS=41, M=60, H=3600, DAY=86400;
 
 /* ===== 원작 위룰 기준 데이터 =====
    작물: 원작 표 그대로(해금 레벨·씨앗값·시간·골드·경험치)
@@ -271,11 +271,15 @@ const CROPS={
 const LV_XP=[0,0,100,200,450,800,1300,2025,3075,4575,7350,10500,15400,21200,30000,39800,54250,70000,92750,116500,150000,185000,235000,285000,350000,435000,530000,630000,735000,835500,935500];
 const LV_MOJO={2:3,3:4,20:5,24:10,25:5,30:5};
 const PLOT_COST=250;
+const CX=19, CY=19, CI=CY*COLS+CX;   // 성(2×2)의 왼쪽 위 칸 — 섬 한가운데
 const plotCap=()=>5+Math.floor(S.level/2);
 /* 땅: 원작 성 업그레이드 단계(Lv4 성, Lv10 요새, Lv20 성채)를 따라 넓어짐 */
-const LANDS=[{w:6,h:4,cost:0,lv:1,n:'작은 성'},{w:7,h:5,cost:200,lv:1,n:'작은 성'},{w:8,h:5,cost:1500,lv:4,n:'성'},
-  {w:9,h:6,cost:4000,lv:7,n:'성'},{w:10,h:6,cost:10000,lv:10,n:'요새'},{w:11,h:7,cost:30000,lv:15,n:'요새'},{w:12,h:7,cost:75000,lv:20,n:'성채'}];
-const castleTier=()=>S.land>=6?4:S.land>=4?3:S.land>=2?2:1;
+const LANDS=[{w:6,h:4,cost:0,lv:1,n:'작은 성'},{w:7,h:5,cost:200,lv:1,n:'작은 성'},{w:8,h:6,cost:1500,lv:4,n:'성'},{w:10,h:7,cost:4000,lv:7,n:'성'},
+  {w:12,h:8,cost:10000,lv:10,n:'요새'},{w:14,h:10,cost:20000,lv:12,n:'요새'},{w:16,h:12,cost:35000,lv:15,n:'요새'},{w:19,h:14,cost:55000,lv:17,n:'요새'},
+  {w:22,h:16,cost:80000,lv:20,n:'성채'},{w:25,h:19,cost:110000,lv:22,n:'성채'},{w:28,h:22,cost:150000,lv:24,n:'성채'},{w:32,h:25,cost:200000,lv:26,n:'성채'},
+  {w:36,h:29,cost:260000,lv:28,n:'성채'},{w:41,h:33,cost:330000,lv:30,n:'성채'},{w:41,h:37,cost:410000,lv:32,n:'성채'},{w:41,h:41,cost:500000,lv:35,n:'성채'}];
+const RECTS=LANDS.map(L=>{const x0=Math.max(0,Math.min(COLS-L.w,CX+1-Math.floor(L.w/2))),y0=Math.max(0,Math.min(ROWS-L.h,CY+1-Math.floor(L.h/2)));return{x0,y0,x1:x0+L.w,y1:y0+L.h}});
+const castleTier=()=>S.land>=8?4:S.land>=4?3:S.land>=2?2:1;
 /* 건물: 집(세금) · 가게(원작 상품·시간, 이웃이 없으니 주인 수익+이웃 보상을 합쳐서 받음) · 장식 · 길 */
 const BUILDS={
   cottage_o:{n:'주황 오두막',cat:'house',lv:1,cost:100,t:1*M,every:5*M,g:10,x:10,d:'5분마다 세금 10골드'},
@@ -462,17 +466,13 @@ const KEY='malang-kingdom-v2';
 function fresh(){
   const tiles=Array.from({length:COLS*ROWS},()=>({t:'grass'}));
   const at=(c,r)=>r*COLS+c;
-  for(const i of[at(0,0),at(1,0),at(0,1),at(1,1)])tiles[i]={t:'castle'};
-  for(const c of[0,1,2])tiles[at(c,3)]={t:'plot'};
-  return {v:3,gt:8*H,real:Date.now(),gold:250,xp:0,level:1,mojo:10,land:0,speed:DEV?DEV_SPEED:1,
+  for(const i of[at(CX,CY),at(CX+1,CY),at(CX,CY+1),at(CX+1,CY+1)])tiles[i]={t:'castle'};
+  for(const c of[CX-1,CX,CX+1])tiles[at(c,CY+2)]={t:'plot'};
+  return {v:5,gt:8*H,real:Date.now(),gold:250,xp:0,level:1,mojo:10,land:0,speed:DEV?DEV_SPEED:1,
     tiles,star:null,nextStar:8*H+40*M,daily:'',name:'말랑 왕국',ruler:'king',started:false,
     goal:0,gbase:0,quests:null,st:{corn:0,plots:0,mojo:0,pine:0,cottage:0,tax:0,expand:0,road:0}};
 }
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY));
-  if(s&&s.v===2){ // v0.2 저장(10×6)을 12×7로 옮기기
-    const t=Array.from({length:COLS*ROWS},()=>({t:'grass'}));const mv=i=>((i/10)|0)*COLS+i%10;
-    s.tiles.forEach((T,i)=>{t[mv(i)]=T});if(s.star)s.star.i=mv(s.star.i);s.tiles=t;s.v=3;return s}
-  if(s&&s.v===3)return s}catch(e){}return fresh()}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.v===5)return s}catch(e){}return fresh()}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 let S=load();
 if(!DEV)S.speed=1;
@@ -484,10 +484,11 @@ const $=id=>document.getElementById(id);
 const clamp=v=>Math.max(0,Math.min(1,v));
 const prog=(a,b)=>b<=a?1:clamp((S.gt-a)/(b-a));
 const rnd=(a,b)=>a+Math.random()*(b-a);
-const unlocked=(c,r)=>c<LANDS[S.land].w&&r<LANDS[S.land].h;
-const view=()=>LANDS[S.land+1]||LANDS[S.land];
+const inR=(R,c,r)=>c>=R.x0&&c<R.x1&&r>=R.y0&&r<R.y1;
+const unlocked=(c,r)=>inR(RECTS[S.land],c,r);
+const viewR=()=>RECTS[S.land+1]||RECTS[S.land];
 const isNight=()=>{const h=Math.floor(S.gt%DAY/H);return h<5||h>=20};
-const isNext=(c,r)=>{const n=LANDS[S.land+1];return n&&c<n.w&&r<n.h};
+const isNext=(c,r)=>{const n=RECTS[S.land+1];return !!n&&inR(n,c,r)};
 const lvXp=l=>LV_XP[l]??(LV_XP[LV_XP.length-1]+(l-LV_XP.length+1)*120000);
 const cnt=fn=>S.tiles.filter((T,i)=>unlocked(i%COLS,(i/COLS)|0)&&fn(T)).length;
 
@@ -824,19 +825,19 @@ function drawCrops(c,r,T,t){
 const walkers=[];
 function syncWalkers(){
   const want=Math.min(10+S.land*2,cnt(T=>T.t==='bld'&&BUILDS[T.b].cat==='house'&&bldState(T)!=='build')*2+cnt(T=>T.t==='bld'&&BUILDS[T.b].cat==='shop'&&bldState(T)!=='build'));
-  while(walkers.length<want){const n=walkers.length,L=LANDS[S.land];
-    const u=rnd(2.2,L.w-.2),v=rnd(.2,L.h-.2);walkers.push({u,v,tu:u,tv:v,wait:rnd(0,2),col:VCOL[n%VCOL.length],hat:n%3===0?VCOL[(n+3)%VCOL.length]:null,hair:['#7a4a2a','#3a2418','#c98a4b','#5a3a28'][n%4],dir:1,talk:0,say:'',bow:0})}
+  while(walkers.length<want){const n=walkers.length,L=RECTS[S.land];
+    let u,v;do{u=rnd(L.x0+.2,L.x1-.2);v=rnd(L.y0+.2,L.y1-.2)}while(S.tiles[Math.floor(v)*COLS+Math.floor(u)].t==='castle');walkers.push({u,v,tu:u,tv:v,wait:rnd(0,2),col:VCOL[n%VCOL.length],hat:n%3===0?VCOL[(n+3)%VCOL.length]:null,hair:['#7a4a2a','#3a2418','#c98a4b','#5a3a28'][n%4],dir:1,talk:0,say:'',bow:0})}
   walkers.length=Math.min(walkers.length,want);
 }
 function stepWalkers(dt){
-  const L=LANDS[S.land],roads=[];S.tiles.forEach((T,i)=>{if(T.t==='bld'&&BUILDS[T.b]?.cat==='road'&&unlocked(i%COLS,(i/COLS)|0))roads.push(i)});
+  const L=RECTS[S.land],roads=[];S.tiles.forEach((T,i)=>{if(T.t==='bld'&&BUILDS[T.b]?.cat==='road'&&unlocked(i%COLS,(i/COLS)|0))roads.push(i)});
   for(const w of walkers){
     if(w.talk>0)w.talk-=dt;if(w.bow>0)w.bow-=dt;
     const du=w.tu-w.u,dv=w.tv-w.v,d=Math.hypot(du,dv);
     if(d>.02){const sp=.55*dt;w.u+=du/d*Math.min(sp,d);w.v+=dv/d*Math.min(sp,d);w.dir=(du-dv)<0?-1:1;w.moving=true}
     else{w.moving=false;w.wait-=dt;if(w.wait<=0){
       let c,r;if(roads.length&&Math.random()<.55){const i=roads[Math.floor(Math.random()*roads.length)];c=i%COLS;r=(i/COLS)|0}
-      else{c=Math.max(0,Math.min(L.w-1,Math.floor(w.u)+Math.round(rnd(-2,2))));r=Math.max(0,Math.min(L.h-1,Math.floor(w.v)+Math.round(rnd(-2,2))))}
+      else{c=Math.max(L.x0,Math.min(L.x1-1,Math.floor(w.u)+Math.round(rnd(-2,2))));r=Math.max(L.y0,Math.min(L.y1-1,Math.floor(w.v)+Math.round(rnd(-2,2))))}
       if(S.tiles[r*COLS+c].t==='castle'){w.wait=.5;continue}
       w.tu=c+rnd(.25,.75);w.tv=r+rnd(.25,.75);w.wait=rnd(1.5,4.5)}}
   }
@@ -868,79 +869,94 @@ function badge(x,y,kind,t){y+=Math.sin(t*4)*2.5;
 function bar(x,y,p){g.fillStyle='rgba(90,58,40,.75)';rrect(x-22,y-4,44,8,4);g.fill();g.fillStyle='#fff3a6';rrect(x-21,y-3,Math.max(6,42*p),6,3);g.fill()}
 function openSign(x,y){g.fillStyle='#8a5a3a';g.fillRect(x-.8,y-2,1.6,9);g.fillStyle='#fff36b';rrect(x-11,y-9,22,9,3);g.fill();g.strokeStyle='#5a3a28';g.lineWidth=1.1;g.stroke();txt('OPEN',x,y-4.3,6.5,'#5a3a28')}
 
-/* --- 바닥 캐시 --- */
-const gc=document.createElement('canvas');let gSig='',gSc=0;
-const GX0=-ROWS*W2-20,GX1=COLS*W2+20,GY0=-20,GY1=(COLS+ROWS)*H2+110;
-function groundSig(){return S.land+'|'+S.tiles.map(T=>T.t==='plot'?'p':T.t==='castle'?'c':T.t==='bld'&&BUILDS[T.b]?.cat==='road'?T.b[5]:'.').join('')}
-function buildGround(sc){
-  gSc=sc;gc.width=Math.ceil((GX1-GX0)*sc);gc.height=Math.ceil((GY1-GY0)*sc);
-  const prev=g;g=gc.getContext('2d');g.setTransform(sc,0,0,sc,-GX0*sc,-GY0*sc);
-  const R=rng(11);
-  // 절벽(떠 있는 섬)
-  const cliff=(pts,dark)=>{ // pts: 위 가장자리 [u,v] 목록
-    const depth=pts.map((p,k)=>52+Math.sin(k*1.7)*10+R()*16);
-    g.beginPath();pts.forEach((p,k)=>{const[x,y]=P(p[0],p[1]);k?g.lineTo(x,y):g.moveTo(x,y)});
-    for(let k=pts.length-1;k>=0;k--){const[x,y]=P(pts[k][0],pts[k][1]);g.lineTo(x,y+depth[k])}g.closePath();
-    const gr=g.createLinearGradient(0,0,0,GY1);gr.addColorStop(0,dark?'#a8703f':'#c48a55');gr.addColorStop(1,dark?'#6e4426':'#8a5a33');g.fillStyle=gr;g.fill();
-    g.strokeStyle='rgba(74,42,26,.35)';g.lineWidth=1.5;g.stroke();
-    // 지층 줄무늬·돌
-    g.save();g.clip();for(let k=0;k<pts.length;k+=1){const[x,y]=P(pts[k][0],pts[k][1]);g.fillStyle='rgba(255,230,190,.12)';g.fillRect(x-14,y+20+R()*16,26,3);
-      if(R()<.5){g.beginPath();g.ellipse(x+R()*20-10,y+34+R()*14,5+R()*4,3+R()*2,0,0,7);g.fillStyle=dark?'#8a6a55':'#a8876a';g.fill()}}g.restore();
-    // 풀 테두리
-    g.beginPath();pts.forEach((p,k)=>{const[x,y]=P(p[0],p[1]);k?g.lineTo(x,y):g.moveTo(x,y)});
-    for(let k=pts.length-1;k>=0;k--){const[x,y]=P(pts[k][0],pts[k][1]);g.lineTo(x,y+7+Math.sin(k*2.3)*2.5)}g.closePath();g.fillStyle=dark?'#4f9a37':'#5fae45';g.fill();
-    // 뿌리
-    g.strokeStyle='rgba(110,70,40,.55)';g.lineWidth=1.4;for(let k=1;k<pts.length-1;k+=2){const[x,y]=P(pts[k][0],pts[k][1]);g.beginPath();g.moveTo(x,y+depth[k]-2);g.quadraticCurveTo(x+4,y+depth[k]+6,x-2,y+depth[k]+12);g.stroke()}
-  };
-  const L=[],Rt=[];for(let u=0;u<=COLS;u+=.5)L.push([u,ROWS]);for(let v=ROWS;v>=0;v-=.5)Rt.push([COLS,v]);
-  cliff(L,false);cliff(Rt,true);
-  // 윗면
-  path([[0,0],[COLS,0],[COLS,ROWS],[0,ROWS]]);const gr=g.createLinearGradient(0,0,0,(COLS+ROWS)*H2);gr.addColorStop(0,'#a3dd78');gr.addColorStop(1,'#86ca5c');g.fillStyle=gr;g.fill();
-  g.strokeStyle='#c4ee9c';g.lineWidth=2;g.stroke();
-  // 큰 얼룩
-  for(let n=0;n<26;n++){const[x,y]=P(R()*COLS,R()*ROWS);g.beginPath();g.ellipse(x,y,30+R()*40,14+R()*18,0,0,7);g.fillStyle=R()<.5?'rgba(60,130,40,.07)':'rgba(255,255,200,.08)';g.fill()}
-  // 풀잎·꽃·조약돌
-  for(let i=0;i<COLS*ROWS;i++){const c=i%COLS,r=(i/COLS)|0,Rr=rng(i*7+3);
-    for(let n=0;n<22;n++){const[x,y]=P(c+Rr(),r+Rr());g.strokeStyle=Rr()<.6?'rgba(70,140,50,.55)':'rgba(200,240,160,.8)';g.lineWidth=1.1;
+/* --- 바닥: 8×8칸 구역별 캐시(화면에 보이는 구역만 그림) --- */
+const CHK=8,chunks={};
+function chunkBox(cx,cy){const u0=cx*CHK,v0=cy*CHK,u1=Math.min(COLS,u0+CHK),v1=Math.min(ROWS,v0+CHK),edge=v1===ROWS||u1===COLS;
+  return{u0,v0,u1,v1,x0:P(u0,v1)[0]-8,x1:P(u1,v0)[0]+8,y0:P(u0,v0)[1]-8,y1:P(u1,v1)[1]+(edge?150:10)}}
+function chunkSig(b){let s=S.land+'|';for(let v=b.v0;v<b.v1;v++)for(let u=b.u0;u<b.u1;u++){const i=v*COLS+u,T=S.tiles[i];
+  s+=T.t==='plot'?'p':T.t==='castle'?'c':(T.t==='bld'&&BUILDS[T.b]?.cat==='road')?T.b[5]+mask(i,'road'):'.'}return s}
+const cliffDepth=(k,side)=>78+Math.sin(k*.85+side)*14+hash(k*7+side*1000)*22;
+function cliffSeg(a,b,side){ // side 0: 왼쪽 아래 가장자리(v=ROWS), 1: 오른쪽 아래(u=COLS)
+  const pt=s=>side?[COLS,s]:[s,ROWS],ks=[];for(let k=a*2;k<=b*2;k++)ks.push(k);
+  const dk=k=>cliffDepth(k,side);
+  g.beginPath();ks.forEach((k,n)=>{const[x,y]=P(...pt(k/2));n?g.lineTo(x,y):g.moveTo(x,y)});
+  for(let n=ks.length-1;n>=0;n--){const[x,y]=P(...pt(ks[n]/2));g.lineTo(x,y+dk(ks[n]))}g.closePath();
+  const gr=g.createLinearGradient(0,(COLS+ROWS)*H2*.5,0,(COLS+ROWS)*H2+100);gr.addColorStop(0,side?'#a8703f':'#c48a55');gr.addColorStop(1,side?'#6e4426':'#8a5a33');
+  g.fillStyle=gr;g.fill();g.strokeStyle='rgba(74,42,26,.35)';g.lineWidth=1.5;g.stroke();
+  g.save();g.clip();ks.forEach(k=>{const[x,y]=P(...pt(k/2)),h=hash(k*13+side*77);g.fillStyle='rgba(255,230,190,.12)';g.fillRect(x-14,y+22+h*20,26,3);
+    if(h<.5){g.beginPath();g.ellipse(x+h*20-5,y+40+h*18,5+h*5,3+h*2,0,0,7);g.fillStyle=side?'#8a6a55':'#a8876a';g.fill()}});g.restore();
+  g.beginPath();ks.forEach((k,n)=>{const[x,y]=P(...pt(k/2));n?g.lineTo(x,y):g.moveTo(x,y)});
+  for(let n=ks.length-1;n>=0;n--){const k=ks[n],[x,y]=P(...pt(k/2));g.lineTo(x,y+7+Math.sin(k*2.3)*2.5)}g.closePath();g.fillStyle=side?'#4f9a37':'#5fae45';g.fill();
+  g.strokeStyle='rgba(110,70,40,.55)';g.lineWidth=1.4;ks.forEach(k=>{if(k%3)return;const[x,y]=P(...pt(k/2)),d=dk(k);g.beginPath();g.moveTo(x,y+d-2);g.quadraticCurveTo(x+4,y+d+8,x-2,y+d+16);g.stroke()});
+}
+function buildChunk(ch,sc){
+  const b=ch.b;ch.sc=sc;const cvs=ch.cv;cvs.width=Math.max(1,Math.ceil((b.x1-b.x0)*sc));cvs.height=Math.max(1,Math.ceil((b.y1-b.y0)*sc));
+  const prev=g;g=cvs.getContext('2d');g.setTransform(sc,0,0,sc,-b.x0*sc,-b.y0*sc);
+  if(b.v1===ROWS)cliffSeg(b.u0,b.u1,0);if(b.u1===COLS)cliffSeg(b.v0,b.v1,1);
+  g.save();path([[b.u0,b.v0],[b.u1,b.v0],[b.u1,b.v1],[b.u0,b.v1]]);g.clip();
+  const gr=g.createLinearGradient(0,0,0,(COLS+ROWS)*H2);gr.addColorStop(0,'#a6df7a');gr.addColorStop(.5,'#96d56a');gr.addColorStop(1,'#84c75a');g.fillStyle=gr;g.fill();
+  const R=rng(b.u0*31+b.v0*17+5);
+  for(let n=0;n<10;n++){const[x,y]=P(b.u0+R()*(b.u1-b.u0),b.v0+R()*(b.v1-b.v0));g.beginPath();g.ellipse(x,y,40+R()*60,18+R()*26,0,0,7);g.fillStyle=R()<.5?'rgba(60,130,40,.08)':'rgba(255,255,200,.09)';g.fill()}
+  const fine=sc>=.55;
+  for(let r=b.v0;r<b.v1;r++)for(let c=b.u0;c<b.u1;c++){const i=r*COLS+c,Rr=rng(i*7+3);
+    if(fine)for(let n=0;n<20;n++){const[x,y]=P(c+Rr(),r+Rr());g.strokeStyle=Rr()<.6?'rgba(70,140,50,.5)':'rgba(205,242,165,.8)';g.lineWidth=1.1;
       g.beginPath();g.moveTo(x-2,y-4);g.lineTo(x,y);g.lineTo(x+2,y-4.5);g.stroke()}
-    if(Rr()<.35){const[x,y]=P(c+.15+Rr()*.7,r+.15+Rr()*.7);const fc=['#fff','#ffe066','#ff9cc0','#c9b6ff'][Math.floor(Rr()*4)];
+    if(Rr()<.3){const[x,y]=P(c+.15+Rr()*.7,r+.15+Rr()*.7);const fc=['#fff','#ffe066','#ff9cc0','#c9b6ff'][Math.floor(Rr()*4)];
       for(let n=0;n<3;n++){const ox=Rr()*14-7,oy=Rr()*7-3.5;for(let a=0;a<4;a++){g.beginPath();g.arc(x+ox+Math.cos(a*1.57)*1.8,y+oy+Math.sin(a*1.57)*1.8,1.6,0,7);g.fillStyle=fc;g.fill()}g.beginPath();g.arc(x+ox,y+oy,1.1,0,7);g.fillStyle='#ffb02e';g.fill()}}
-    if(Rr()<.15){const[x,y]=P(c+Rr(),r+Rr());g.beginPath();g.ellipse(x,y,3,2,0,0,7);g.fillStyle='#c9c3b4';g.fill()}
-  }
-  // 잠긴 땅(안개)
-  for(let i=0;i<COLS*ROWS;i++){const c=i%COLS,r=(i/COLS)|0;if(!unlocked(c,r)){path([[c,r],[c+1,r],[c+1,r+1],[c,r+1]]);g.fillStyle=isNext(c,r)?'rgba(240,250,255,.42)':'rgba(236,246,252,.62)';g.fill()}}
-  // 성 마당
-  fillP([[.04,.04],[1.96,.04],[1.96,1.96],[.04,1.96]],'#efe2c9','rgba(150,120,80,.4)');
-  for(let n=1;n<8;n++){line3([.04+n*.24,.04,0],[.04+n*.24,1.96,0],'rgba(180,150,110,.35)',1);line3([.04,.04+n*.24,0],[1.96,.04+n*.24,0],'rgba(180,150,110,.35)',1)}
-  // 길·밭
-  S.tiles.forEach((T,i)=>{const c=i%COLS,r=(i/COLS)|0;if(!unlocked(c,r))return;
+    if(Rr()<.12){const[x,y]=P(c+Rr(),r+Rr());g.beginPath();g.ellipse(x,y,3,2,0,0,7);g.fillStyle='#c9c3b4';g.fill()}
+    const T=S.tiles[i];
+    if(!unlocked(c,r)){path([[c,r],[c+1,r],[c+1,r+1],[c,r+1]]);g.fillStyle=isNext(c,r)?'rgba(240,250,255,.34)':'rgba(214,236,206,.5)';g.fill();continue}
+    if(T.t==='castle'){fillP([[c,r],[c+1,r],[c+1,r+1],[c,r+1]],'#efe2c9',null);
+      for(let n=1;n<4;n++){line3([c+n*.25,r,0],[c+n*.25,r+1,0],'rgba(180,150,110,.35)',1);line3([c,r+n*.25,0],[c+1,r+n*.25,0],'rgba(180,150,110,.35)',1)}}
     if(T.t==='bld'&&BUILDS[T.b]?.cat==='road'){const B=BUILDS[T.b],m=mask(i,'road');
-      const sq=(a,b,col)=>{const S2=(u0,v0,u1,v1)=>fillP([[u0,v0],[u1,v0],[u1,v1],[u0,v1]],col,null);S2(c+a,r+a,c+b,r+b);
-        if(m&1)S2(c+a,r,c+b,r+.5);if(m&2)S2(c+.5,r+a,c+1,r+b);if(m&4)S2(c+a,r+.5,c+b,r+1);if(m&8)S2(c,r+a,c+.5,r+b)};
+      const sq=(a,bb,col)=>{const S2=(u0,v0,u1,v1)=>fillP([[u0,v0],[u1,v0],[u1,v1],[u0,v1]],col,null);S2(c+a,r+a,c+bb,r+bb);
+        if(m&1)S2(c+a,r,c+bb,r+.5);if(m&2)S2(c+.5,r+a,c+1,r+bb);if(m&4)S2(c+a,r+.5,c+bb,r+1);if(m&8)S2(c,r+a,c+.5,r+bb)};
       sq(.15,.85,shade(B.col[1],-.15));sq(.2,.8,B.col[0]);
-      const Rr=rng(i+99);for(let n=0;n<9;n++){const[x,y]=P(c+.25+Rr()*.5,r+.25+Rr()*.5);g.beginPath();g.ellipse(x,y,T.b==='road_stone'?5:2,T.b==='road_stone'?2.6:1.2,0,0,7);
+      const Rq=rng(i+99);for(let n=0;n<9;n++){const[x,y]=P(c+.25+Rq()*.5,r+.25+Rq()*.5);g.beginPath();g.ellipse(x,y,T.b==='road_stone'?5:2,T.b==='road_stone'?2.6:1.2,0,0,7);
         g.fillStyle=T.b==='road_stone'?'rgba(255,255,255,.35)':B.col[1];g.fill();if(T.b==='road_stone'){g.strokeStyle='rgba(120,110,95,.4)';g.lineWidth=.8;g.stroke()}}
-      if(T.b==='road_gold'){for(let n=0;n<3;n++){const[x,y]=P(c+.3+Rr()*.4,r+.3+Rr()*.4);starShape(x,y,2.4,'#fff')}}
-    }
+      if(T.b==='road_gold'){for(let n=0;n<3;n++){const[x,y]=P(c+.3+Rq()*.4,r+.3+Rq()*.4);starShape(x,y,2.4,'#fff')}}}
     if(T.t==='plot'){box(c+.07,r+.07,c+.93,r+.93,0,4,'#b9784a',{top:'#a5643a',left:'#c58552',right:'#9c5c35'});
       for(let n=1;n<=4;n++){const v=r+.07+n*.172;line3([c+.12,v,4],[c+.88,v,4],'#8a4f2c',2.2);line3([c+.12,v-.04,4],[c+.88,v-.04,4],'rgba(220,160,110,.55)',1)}}
-  });
-  g=prev;
+  }
+  g.restore();g=prev;
 }
+function drawGroundChunks(view){
+  const sc=Math.min(2.5,cam.z*DPR),now=performance.now();
+  for(let cy=0;cy*CHK<ROWS;cy++)for(let cx=0;cx*CHK<COLS;cx++){
+    const key=cx+','+cy;let ch=chunks[key];if(!ch){ch=chunks[key]={b:chunkBox(cx,cy),cv:document.createElement('canvas'),sig:'',sc:0,used:0}}
+    const b=ch.b;if(b.x1<view.x0||b.x0>view.x1||b.y1<view.y0||b.y0>view.y1)continue;
+    const sig=chunkSig(b);if(sig!==ch.sig||(!pinching&&Math.abs(sc/ch.sc-1)>.3)){ch.sig=sig;buildChunk(ch,sc)}
+    ch.used=now;g.drawImage(ch.cv,b.x0,b.y0,ch.cv.width/ch.sc,ch.cv.height/ch.sc);
+  }
+}
+setInterval(()=>{const now=performance.now();for(const k in chunks){if(now-chunks[k].used>8000){chunks[k].cv.width=chunks[k].cv.height=1;chunks[k].sig='';chunks[k].sc=0}}},4000);
+
+/* --- 야생(아직 안 연 땅의 숲·바위) --- */
+function wildAt(i){const h=hash(i*13+7);if(h<.11)return'wpine';if(h<.17)return'woak';if(h<.205)return'wrock';if(h<.25)return'wbush';return null}
+const wildSpr={};
+function wildSprite(k,sc){const key=k+'|'+Math.round(sc*4);if(wildSpr[key])return wildSpr[key];
+  const c=document.createElement('canvas'),s=Math.min(2.5,Math.max(.2,Math.round(sc*4)/4));c.width=Math.ceil(120*s);c.height=Math.ceil(130*s);const prev=g;g=c.getContext('2d');
+  g.setTransform(s,0,0,s,60*s,(110-24)*s);
+  if(k==='wpine')drawTree(0,0,'pine',0);else if(k==='woak')drawTree(0,0,'oak',0);
+  else if(k==='wrock'){shadow(.5,.5,.25);const[x,y]=P(.5,.5);ball(x-6,y-6,10,'#b8b2c8');ball(x+8,y-4,7,'#a9a3b8');ball(x+1,y-12,6,'#c9c3d6')}
+  else{const[x,y]=P(.5,.5);shadow(.5,.5,.22);ball(x-7,y-7,8,'#4fae4a');ball(x+7,y-6,7,'#5cbf55');ball(x,y-12,8,'#62c45a');ball(x+3,y-9,1.8,'#ff8fb0',false)}
+  g=prev;wildSpr[key]={c,s};return wildSpr[key]}
 
 /* --- 그리기 --- */
 let DRAWN=[];
 function nightAmt(){const hf=(S.gt%DAY)/H;if(hf>=20||hf<5)return 1;if(hf>=18)return(hf-18)/2;if(hf<7)return(7-hf)/2;return 0}
+function screenView(){const x0=-cam.x/cam.z,y0=-cam.y/cam.z,x1=(CW-cam.x)/cam.z,y1=(CH-cam.y)/cam.z;return{x0,y0,x1,y1}}
+function tileRange(v){const cs=[[v.x0,v.y0],[v.x1,v.y0],[v.x0,v.y1],[v.x1,v.y1]].map(([x,y])=>[(x/W2+y/H2)/2,(y/H2-x/W2)/2]);
+  const us=cs.map(p=>p[0]),vs=cs.map(p=>p[1]);
+  return{c0:Math.max(0,Math.floor(Math.min(...us))-1),c1:Math.min(COLS-1,Math.ceil(Math.max(...us))+4),r0:Math.max(0,Math.floor(Math.min(...vs))-1),r1:Math.min(ROWS-1,Math.ceil(Math.max(...vs))+4)}}
 function draw(t){
   g=ctx;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height);
-  const sc=cam.z*DPR,gs=groundSig();
-  if(gs!==gSig||(!pinching&&Math.abs(sc/gSc-1)>.2)){gSig=gs;buildGround(Math.min(3,sc))}
-  g.setTransform(sc,0,0,sc,cam.x*DPR,cam.y*DPR);
-  g.drawImage(gc,GX0,GY0,gc.width/gSc,gc.height/gSc);
-  const V=view(),list=[];
-  for(let i=0;i<S.tiles.length;i++){const c=i%COLS,r=(i/COLS)|0;if(c>=V.w||r>=V.h)continue;const T=S.tiles[i];
-    if(T.t==='castle'){if(i===0)list.push({k:2,i:0,f:()=>drawCastle(castleTier(),t),h:150,big:1});continue}
-    if(!unlocked(c,r))continue;
+  const sc=cam.z*DPR;g.setTransform(sc,0,0,sc,cam.x*DPR,cam.y*DPR);
+  const view=screenView();drawGroundChunks(view);
+  const TR=tileRange(view),list=[];
+  for(let r=TR.r0;r<=TR.r1;r++)for(let c=TR.c0;c<=TR.c1;c++){const i=r*COLS+c,T=S.tiles[i];
+    if(T.t==='castle'){if(i===CI)list.push({k:CX+CY+2,i,f:()=>{g.save();g.translate(...P(CX,CY));drawCastle(castleTier(),t);g.restore()},h:150,big:1});continue}
+    if(!unlocked(c,r)){const w=wildAt(i);if(w){list.push({k:c+r+1,f:()=>{const sp=wildSprite(w,sc),[x,y]=P(c+.5,r+.5);g.globalAlpha=isNext(c,r)?.9:.8;g.drawImage(sp.c,x-60,y-110,sp.c.width/sp.s,sp.c.height/sp.s);g.globalAlpha=1}})}continue}
     if(T.t==='plot'){if(T.crop)list.push({k:c+r+1,i,f:()=>drawCrops(c,r,T,t),h:30});continue}
     if(T.t!=='bld')continue;const B=BUILDS[T.b];if(!B||B.cat==='road')continue;
     const s=bldState(T);
@@ -956,22 +972,21 @@ function draw(t){
   const na=nightAmt();
   if(na>0){g.save();g.setTransform(1,0,0,1,0,0);g.globalCompositeOperation='source-atop';g.fillStyle=`rgba(28,26,92,${na*.42})`;g.fillRect(0,0,cv.width,cv.height);g.restore();
     g.save();g.globalCompositeOperation='lighter';
-    S.tiles.forEach((T,i)=>{if(T.t!=='bld'||!unlocked(i%COLS,(i/COLS)|0))return;const c=i%COLS,r=(i/COLS)|0,B=BUILDS[T.b];
+    for(const d of list){if(d.i==null||d.big)continue;const T=S.tiles[d.i];if(T.t!=='bld')continue;const c=d.i%COLS,r=(d.i/COLS)|0,B=BUILDS[T.b];
       const glow=(z,rad,a)=>{const[x,y]=P(c+.5,r+.5,z);const gr=g.createRadialGradient(x,y,0,x,y,rad);gr.addColorStop(0,`rgba(255,220,120,${a*na})`);gr.addColorStop(1,'rgba(255,200,80,0)');g.fillStyle=gr;g.beginPath();g.arc(x,y,rad,0,7);g.fill()};
-      if(T.b==='lamp')glow(50,70,.55);else if(T.b==='firefly')glow(40,50,.4);else if(B.cat==='house'||B.cat==='shop')glow(14,34,.3)});
-    {const[x,y]=P(1,1.62,30);const gr=g.createRadialGradient(x,y,0,x,y,60);gr.addColorStop(0,`rgba(255,220,140,${.35*na})`);gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.beginPath();g.arc(x,y,60,0,7);g.fill()}
+      if(T.b==='lamp')glow(50,70,.55);else if(T.b==='firefly')glow(40,50,.4);else if(B.cat==='house'||B.cat==='shop')glow(14,34,.3)}
+    {const[x,y]=P(CX+1,CY+1.62,30);const gr=g.createRadialGradient(x,y,0,x,y,60);gr.addColorStop(0,`rgba(255,220,140,${.35*na})`);gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.beginPath();g.arc(x,y,60,0,7);g.fill()}
     g.restore()}
   // 배치 안내
-  if(placing){for(let i=0;i<S.tiles.length;i++){const c=i%COLS,r=(i/COLS)|0;if(!unlocked(c,r)||S.tiles[i].t!=='grass')continue;
+  if(placing){for(let r=TR.r0;r<=TR.r1;r++)for(let c=TR.c0;c<=TR.c1;c++){if(!unlocked(c,r)||S.tiles[r*COLS+c].t!=='grass')continue;
     path([[c+.08,r+.08],[c+.92,r+.08],[c+.92,r+.92],[c+.08,r+.92]]);g.fillStyle=`rgba(255,255,255,${.22+.1*Math.sin(t*4)})`;g.fill();g.setLineDash([5,4]);g.strokeStyle='rgba(255,255,255,.95)';g.lineWidth=1.6;g.stroke();g.setLineDash([])}}
-  // 다음 땅 표시
-  const n=LANDS[S.land+1];if(n){for(let i=0;i<S.tiles.length;i++){const c=i%COLS,r=(i/COLS)|0;if(unlocked(c,r)||!isNext(c,r))continue;if((c+r)%2)continue;
-    const[x,y]=P(c+.5,r+.5);g.globalAlpha=.75;g.beginPath();g.arc(x,y-4,9,0,7);g.fillStyle='#fff';g.fill();g.strokeStyle='#9cc3d6';g.lineWidth=2;g.stroke();txt('+',x,y-3.5,14,'#7fb0c8');g.globalAlpha=1}}
+  // 다음 땅 경계선
+  const NR=RECTS[S.land+1];if(NR){const R0=RECTS[S.land];g.save();g.setLineDash([8,6]);
+    path([[R0.x0,R0.y0],[R0.x1,R0.y0],[R0.x1,R0.y1],[R0.x0,R0.y1]]);g.strokeStyle='rgba(255,255,255,.75)';g.lineWidth=2.4;g.stroke();g.restore()}
   // 뱃지·진행바
-  for(const d of list){if(d.w||d.i==null)continue;const i=d.i,T=S.tiles[i],c=i%COLS,r=(i/COLS)|0;
-    if(T.t==='castle')continue;const[x,y]=P(c+.5,r+.5);
+  for(const d of list){if(d.w||d.i==null||d.big)continue;const i=d.i,T=S.tiles[i],c=i%COLS,r=(i/COLS)|0;const[x,y]=P(c+.5,r+.5);
     if(T.t==='plot'){const s=cropState(T);if(s==='ready')badge(x,y-42,'coin',t+i);else if(s==='grow')bar(x,y+6,prog(T.plantedAt,T.readyAt));continue}
-    const s=bldState(T),B=BUILDS[T.b],top=y-d.h-14;
+    if(T.t!=='bld')continue;const s=bldState(T),top=y-d.h-14;
     if(s==='build')bar(x,y+8,prog(T.startAt,T.doneAt));
     else if(s==='tax')badge(x,top,'coin',t+i);else if(s==='done')badge(x,top,'box',t+i);
     else if(s==='work')bar(x,y+8,prog(T.job.startAt,T.job.doneAt));
@@ -1002,21 +1017,23 @@ function thumb(k){
 }
 function drawFenceThumb(k){const B=BUILDS[k],col=B.col,dk=shade(col,-.4);[9,17].forEach(z=>{line3([0,.5,z],[1,.5,z],dk,5);line3([0,.5,z],[1,.5,z],col,3)});
   [.12,.5,.88].forEach(u=>box(u-.05,.45,u+.05,.55,0,22,col,{top:shade(col,.2)}))}
-if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{for(const k in thumbs)delete thumbs[k];gSig=''});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{for(const k in thumbs)delete thumbs[k];for(const k in chunks)chunks[k].sig='';for(const k in wildSpr)delete wildSpr[k]});
 
 /* --- 화면 크기·카메라 --- */
-function viewBox(){const V=view();const xs=[P(0,V.h)[0],P(V.w,0)[0]],y0=P(0,0)[1]-110,y1=P(V.w,V.h)[1]+50;return{x0:xs[0]-20,x1:xs[1]+20,y0,y1}}
+function viewBox(){const V=viewR();return{x0:P(V.x0,V.y1)[0]-20,x1:P(V.x1,V.y0)[0]+20,y0:P(V.x0,V.y0)[1]-130,y1:P(V.x1,V.y1)[1]+40}}
 function fitCam(){const b=viewBox();cam.z=Math.max(.3,Math.min(1.6,Math.min(CW/(b.x1-b.x0),CH/(b.y1-b.y0))));
   cam.x=CW/2-(b.x0+b.x1)/2*cam.z;cam.y=CH/2-(b.y0+b.y1)/2*cam.z+8}
-function clampCam(){const b=viewBox(),m=80;
-  cam.x=Math.min(CW-m-b.x0*cam.z,Math.max(m-b.x1*cam.z,cam.x));cam.y=Math.min(CH-m-b.y0*cam.z,Math.max(m-b.y1*cam.z,cam.y))}
+function fitAll(){const x0=P(0,ROWS)[0],x1=P(COLS,0)[0],y0=-60,y1=(COLS+ROWS)*H2+110;cam.z=Math.max(ZMIN,Math.min(CW/(x1-x0),CH/(y1-y0)));cam.x=CW/2-(x0+x1)/2*cam.z;cam.y=CH/2-(y0+y1)/2*cam.z}
+function clampCam(){const x0=P(0,ROWS)[0],x1=P(COLS,0)[0],y0=-150,y1=(COLS+ROWS)*H2+150,m=60;
+  cam.x=Math.min(CW-m-x0*cam.z,Math.max(m-x1*cam.z,cam.x));cam.y=Math.min(CH-m-y0*cam.z,Math.max(m-y1*cam.z,cam.y))}
+let ZMIN=.12;
 function resize(){
   const r=stage.getBoundingClientRect();DPR=Math.min(2,window.devicePixelRatio||1);CW=r.width;CH=r.height;
-  cv.width=Math.round(CW*DPR);cv.height=Math.round(CH*DPR);cv.style.width=CW+'px';cv.style.height=CH+'px';fitCam();gSig='';
+  cv.width=Math.round(CW*DPR);cv.height=Math.round(CH*DPR);cv.style.width=CW+'px';cv.style.height=CH+'px';{const x0=P(0,ROWS)[0],x1=P(COLS,0)[0];ZMIN=Math.min(.3,CW/(x1-x0)*.9)}fitCam();
 }
 addEventListener('resize',resize);
-function zoomAt(f,sx,sy){const nz=Math.max(.3,Math.min(2.6,cam.z*f));const wx=(sx-cam.x)/cam.z,wy=(sy-cam.y)/cam.z;cam.z=nz;cam.x=sx-wx*nz;cam.y=sy-wy*nz;clampCam()}
-$('zIn').onclick=()=>zoomAt(1.25,CW/2,CH/2);$('zOut').onclick=()=>zoomAt(.8,CW/2,CH/2);$('zFit').onclick=fitCam;
+function zoomAt(f,sx,sy){const nz=Math.max(ZMIN,Math.min(2.6,cam.z*f));const wx=(sx-cam.x)/cam.z,wy=(sy-cam.y)/cam.z;cam.z=nz;cam.x=sx-wx*nz;cam.y=sy-wy*nz;clampCam()}
+$('zIn').onclick=()=>zoomAt(1.25,CW/2,CH/2);$('zOut').onclick=()=>zoomAt(.8,CW/2,CH/2);let fitToggle=false;$('zFit').onclick=()=>{fitToggle=!fitToggle;if(fitToggle)fitAll();else fitCam();$('zFit').textContent=fitToggle?'왕국':'전체'};
 
 /* --- 터치 --- */
 const ptrs=new Map();let drag=null,pinch=null;
@@ -1026,7 +1043,7 @@ cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);ptrs.set
 cv.addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId))return;ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
   const rc=cv.getBoundingClientRect();
   if(pinch&&ptrs.size>=2){const[a,b]=[...ptrs.values()],d=Math.hypot(a.x-b.x,a.y-b.y),mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
-    const nz=Math.max(.3,Math.min(2.6,pinch.z*d/pinch.d)),wx=(pinch.mx-rc.left-pinch.cx)/pinch.z,wy=(pinch.my-rc.top-pinch.cy)/pinch.z;
+    const nz=Math.max(ZMIN,Math.min(2.6,pinch.z*d/pinch.d)),wx=(pinch.mx-rc.left-pinch.cx)/pinch.z,wy=(pinch.my-rc.top-pinch.cy)/pinch.z;
     cam.z=nz;cam.x=mx-rc.left-wx*nz;cam.y=my-rc.top-wy*nz;clampCam();return}
   if(drag){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>9)drag.moved=true;if(drag.moved){cam.x=drag.cx+dx;cam.y=drag.cy+dy;clampCam()}}});
 const endPtr=e=>{if(!ptrs.has(e.pointerId))return;ptrs.delete(e.pointerId);
@@ -1040,13 +1057,13 @@ function pick(sx,sy){
   for(let n=DRAWN.length-1;n>=0;n--){const d=DRAWN[n];
     if(d.w){const[x,y]=P(d.w.u,d.w.v);if(Math.abs(wx-x)<10&&wy<y+3&&wy>y-30){greet(d.w);return}continue}
     if(!d.h||d.h<34)continue;const c=d.i%COLS,r=(d.i/COLS)|0;
-    const[x,y]=d.big?P(1,1):P(c+.5,r+.5),hw=d.big?W2*1.9:W2*.62;
+    const[x,y]=d.big?P(CX+1,CY+1):P(c+.5,r+.5),hw=d.big?W2*1.9:W2*.62;
     if(wx>x-hw&&wx<x+hw&&wy>y-d.h-8&&wy<y+(d.big?H2*2:H2*.6)){tap(d.i);return}}
-  const u=(wx/W2+wy/H2)/2,v=(wy/H2-wx/W2)/2,c=Math.floor(u),r=Math.floor(v),V=view();
-  if(c<0||r<0||c>=V.w||r>=V.h)return;tap(r*COLS+c);
+  const u=(wx/W2+wy/H2)/2,v=(wy/H2-wx/W2)/2,c=Math.floor(u),r=Math.floor(v);
+  if(c<0||r<0||c>=COLS||r>=ROWS)return;tap(r*COLS+c);
 }
 function greet(w){w.bow=.6;w.talk=1.8;w.say=CHAT[Math.floor(Math.random()*CHAT.length)]}
-function tileScreen(i){const c=i%COLS,r=(i/COLS)|0,T=S.tiles[i];const[x,y]=T?.t==='castle'?P(1,1,110):P(c+.5,r+.5,40);return{x:cam.x+x*cam.z,y:cam.y+y*cam.z}}
+function tileScreen(i){const c=i%COLS,r=(i/COLS)|0,T=S.tiles[i];const[x,y]=T?.t==='castle'?P(CX+1,CY+1,110):P(c+.5,r+.5,40);return{x:cam.x+x*cam.z,y:cam.y+y*cam.z}}
 
 /* --- 상단 정보 --- */
 function render(){
@@ -1162,14 +1179,14 @@ function goalTarget(){
   const g=goalNow();if(!g||talking||!$('sheetBg').hidden||!$('lvup').hidden||!S.started)return null;
   if(goalReady())return $('goal');
   const find=fn=>{for(let i=0;i<S.tiles.length;i++){if(unlocked(i%COLS,(i/COLS)|0)&&fn(S.tiles[i],i))return{i}}return null};
-  const grassNear=()=>find((T,i)=>T.t==='grass'&&((i/COLS)|0)>=2&&i%COLS<=4)||find(T=>T.t==='grass');
+  const grassNear=()=>{let best=null,bd=1e9;S.tiles.forEach((T,i)=>{const c=i%COLS,r=(i/COLS)|0;if(T.t!=='grass'||!unlocked(c,r))return;const d=Math.hypot(c-CX-.5,r-CY-2.5);if(d<bd){bd=d;best=i}});return best==null?null:{i:best}};
   switch(g.k){
     case'corn':return find(T=>T.t==='plot'&&cropState(T)==='ready')||find(T=>T.t==='plot'&&cropState(T)==='empty')||find(T=>T.t==='plot'&&cropState(T)==='grow');
     case'plots':return grassNear();
     case'mojo':return find(T=>T.t==='plot'&&cropState(T)==='grow')||find(T=>T.t==='plot'&&cropState(T)==='ready')||find(T=>T.t==='plot'&&cropState(T)==='empty');
     case'pine':case'cottage':case'road':return placing?grassNear():$('shopBtn');
     case'tax':return find(T=>T.t==='bld'&&bldState(T)==='tax')||find(T=>T.t==='bld'&&bldState(T)==='build')||find(T=>T.t==='bld'&&BUILDS[T.b].cat==='house');
-    case'expand':return{i:0};
+    case'expand':return{i:CI};
   }
   return null;
 }
@@ -1185,7 +1202,7 @@ function claimGoal(){
   const g=goalNow();if(!g||!goalReady())return;
   const rw=`<div class="reward">${g.g?`<span>+${g.g} 골드</span>`:''}<span>+${g.x} XP</span></div>`;
   say([{t:`훌륭해요, 폐하! '${g.t}' 완료예요.`,extra:rw,btn:'받기',fn:()=>{
-    S.gold+=g.g||0;pop(0,g.g?`+${g.g}`:'목표 완료','gd');gainXP(g.x,0);setGoal(S.goal+1);
+    S.gold+=g.g||0;pop(CI,g.g?`+${g.g}`:'목표 완료','gd');gainXP(g.x,CI);setGoal(S.goal+1);
     const n=goalNow();
     if(n)say([{t:n.d,btn:'알겠어요'}]);
     else say([{t:'기본은 모두 익히셨어요! 이제 이 왕국은 온전히 폐하의 것이에요.'},{t:'이제부터는 왕국 목표가 3개씩 생겨요. 레벨을 올려 새 작물과 가게를 열고, 빈 땅을 알뜰하게 채워보세요!',btn:'시작!'},{t:'왼쪽 위 두루마리를 누르면 목표를 볼 수 있어요.',btn:'알겠어요'}]);
@@ -1311,8 +1328,8 @@ function act(a,k,b){
      pop(sel,C.cost?`-${C.cost}`:'심었어요',C.cost?'gd':'');closeSheet();break}
    case'buildHere':if(doBuild(sel,k))closeSheet();break;
    case'place':startPlacing({kind:'new',k});return;
-   case'qclaim':{const q=S.quests[+k];if(!q||!qDone(q))return;S.gold+=q.g;S.mojo+=q.mj;closeSheet();pop(0,`+${q.g}`,'gd');gainXP(q.x,0);
-     if(q.mj)pop(0,`모조 +${q.mj}`,'mj',500);S.quests.splice(+k,1);S.quests.splice(+k,0,newQuest());save();render();setTimeout(openQuests,900);return}
+   case'qclaim':{const q=S.quests[+k];if(!q||!qDone(q))return;S.gold+=q.g;S.mojo+=q.mj;closeSheet();pop(CI,`+${q.g}`,'gd');gainXP(q.x,CI);
+     if(q.mj)pop(CI,`모조 +${q.mj}`,'mj',500);S.quests.splice(+k,1);S.quests.splice(+k,0,newQuest());save();render();setTimeout(openQuests,900);return}
    case'mojo':{const c=+k;if(S.mojo<c){toast('모조가 모자라요');return}S.mojo-=c;S.st.mojo++;finishNow(T);pop(sel,'뿅! 완성','mj');closeSheet();break}
    case'job':{const B=BUILDS[T.b];T.job={startAt:S.gt,doneAt:S.gt+B.jt};pop(sel,'일 시작!');closeSheet();break}
    case'clear':T.crop=null;closeSheet();break;
