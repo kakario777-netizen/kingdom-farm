@@ -193,6 +193,59 @@ button:focus-visible{outline:3px solid var(--mojo);outline-offset:2px}
 .lvcard{background:linear-gradient(#fffaf0,#ffefd2)}
 .unl img{width:52px;height:52px}
 .intro .art img{width:100%;height:100%}
+/* ===== 이미지 UI (Kenney UI Pack · RPG 확장 · 게임 아이콘, CC0 — tools/ui/process_ui.py 로 가공) ===== */
+:root{--ol:#5a3420}
+.outl{text-shadow:0 2px 0 var(--ol),2px 0 0 var(--ol),-2px 0 0 var(--ol),0 -2px 0 var(--ol),1.5px 1.5px 0 var(--ol),-1.5px 1.5px 0 var(--ol),1.5px -1.5px 0 var(--ol),-1.5px -1.5px 0 var(--ol)}
+.btn{background:none;box-shadow:none;border-style:solid;border-width:8px 10px 11px 10px;border-color:transparent;border-image:url(ui/btn_pink.png) 16 20 22 20 fill stretch;
+  border-radius:0;padding:1px 8px 2px;color:#fff;font-size:16px;line-height:1.2;display:inline-flex;align-items:center;justify-content:center;gap:4px;
+  text-shadow:0 2px 0 var(--ol),2px 0 0 var(--ol),-2px 0 0 var(--ol),0 -2px 0 var(--ol),1.5px 1.5px 0 var(--ol),-1.5px 1.5px 0 var(--ol),1.5px -1.5px 0 var(--ol),-1.5px -1.5px 0 var(--ol)}
+.btn:active{transform:translateY(2px);box-shadow:none;border-image-source:url(ui/btn_pink_down.png)}
+.btn.y{border-image-source:url(ui/btn_yellow.png);color:#6b3a14;text-shadow:0 1.5px 0 rgba(255,255,255,.7)}.btn.y:active{border-image-source:url(ui/btn_yellow_down.png)}
+.btn.w{border-image-source:url(ui/btn_white.png);color:var(--ink);text-shadow:none}.btn.w:active{border-image-source:url(ui/btn_white_down.png)}
+.btn.m{border-image-source:url(ui/btn_purple.png)}.btn.m:active{border-image-source:url(ui/btn_purple_down.png)}
+.btn.g{border-image-source:url(ui/btn_mint.png)}.btn.g:active{border-image-source:url(ui/btn_mint_down.png)}
+.btn.big{font-size:22px;padding:4px 22px 6px;border-width:10px 14px 14px 14px}
+.btn img{width:22px;height:22px;margin:-4px 0}
+.btn:disabled{filter:grayscale(.85) brightness(.95);opacity:.7}
+.chip,.goal,.card,.q,.tab,.ruler{background:none;box-shadow:none;border-style:solid;border-color:transparent;border-image:url(ui/panel.png) 18 fill stretch}
+.chip{border-width:7px;padding:0 8px 0 2px;border-radius:0}
+.chip svg{width:24px;height:24px}
+.goal{border-width:9px;padding:0 6px 0 0;border-radius:0}
+.goal .gi{background:none;border-style:solid;border-color:transparent;border-width:5px;border-image:url(ui/inset.png) 14 fill stretch;border-radius:0}
+.card{border-width:10px;padding:0 2px 2px;border-radius:0}
+.card:active:not(:disabled){transform:translateY(2px);box-shadow:none}
+.card .pic{background:none;border-style:solid;border-color:transparent;border-width:6px;border-image:url(ui/inset.png) 14 fill stretch;border-radius:0;padding:0}
+.q{border-width:10px;padding:0 4px;border-radius:0}
+.qi{background:none;border-style:solid;border-color:transparent;border-width:6px;border-image:url(ui/inset.png) 14 fill stretch;border-radius:0;padding:0}
+.tab{border-width:7px;padding:0 10px;border-radius:0;font-size:15px}
+.tab.on{background:none;border-image-source:url(ui/btn_yellow.png);border-image-slice:16 20 22 20 fill;border-width:6px 9px 9px 9px;color:#6b3a14;font-weight:bold}
+.ruler{border-width:10px;border-radius:0;padding:0 2px 4px}
+.ruler.on{border-image-source:url(ui/panel_dark.png)}
+.sheet{background:none;border:0;border-radius:0;border-style:solid;border-color:transparent;border-width:14px 14px 0;border-image:url(ui/panel.png) 22 22 0 fill stretch;
+  padding:4px max(10px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));box-shadow:0 -6px 18px rgba(60,30,10,.25)}
+.sheet header{border-bottom:0;padding-bottom:6px;margin-bottom:8px;background:url(ui/wood.png) center/100% 100%;margin:-6px -6px 10px;padding:6px 10px;border-radius:10px}
+.sheet h2{color:#fff;font-size:21px;text-shadow:0 2px 0 var(--ol),2px 0 0 var(--ol),-2px 0 0 var(--ol),0 -2px 0 var(--ol),1.5px 1.5px 0 var(--ol),-1.5px 1.5px 0 var(--ol)}
+#shClose{width:42px;height:42px;padding:0;border:0;border-image:none;background:url(ui/round_red.png) center/100% 100%;font-size:0}
+#shClose::after{content:"";display:block;width:24px;height:24px;margin:auto;background:url(ui/ic_close.png) center/contain no-repeat}
+.info .pic{background:none;border-style:solid;border-color:transparent;border-width:6px;border-image:url(ui/inset.png) 14 fill stretch;border-radius:0}
+.talk .box{background:none;box-shadow:none;border-style:solid;border-color:transparent;border-width:14px;border-image:url(ui/panel.png) 22 fill stretch;border-radius:0}
+.talk .box b{display:inline-block;align-self:flex-start;background:url(ui/btn_pink.png) center/100% 100%;color:#fff;padding:2px 12px 4px;border-radius:8px;margin:-26px 0 0 -4px;font-size:15px;
+  text-shadow:0 1.5px 0 var(--ol),1.5px 0 0 var(--ol),-1.5px 0 0 var(--ol),0 -1.5px 0 var(--ol)}
+.lvcard{background:none;border-style:solid;border-color:transparent;border-width:18px;border-image:url(ui/panel.png) 22 fill stretch;border-radius:0;box-shadow:none}
+.lvcard h3{-webkit-text-stroke:0;color:#ffd84a;font-size:34px;text-shadow:0 3px 0 var(--ol),3px 0 0 var(--ol),-3px 0 0 var(--ol),0 -3px 0 var(--ol),2px 2px 0 var(--ol),-2px 2px 0 var(--ol),2px -2px 0 var(--ol),-2px -2px 0 var(--ol)}
+.reward span{background:none;border-style:solid;border-color:transparent;border-width:5px;border-image:url(ui/inset.png) 14 fill stretch;border-radius:0;padding:0 6px}
+.lvnum{background:url(ui/star.png) center/contain no-repeat;border:0;border-radius:0;width:38px;height:36px;min-width:0;margin:-6px -2px -6px -6px;font-size:14px;padding-top:4px;box-sizing:border-box;
+  text-shadow:0 1.5px 0 var(--ol),1.5px 0 0 var(--ol),-1.5px 0 0 var(--ol),0 -1.5px 0 var(--ol)}
+.xp,.qbar{border:0;border-radius:0;height:14px;border-style:solid;border-color:transparent;border-width:0 6px;border-image:url(ui/bar_back.png) 0 9 fill stretch;background:none;overflow:visible}
+.xp i,.qbar i{height:100%;border-radius:0;border-style:solid;border-color:transparent;border-width:0 5px;margin:0 -5px;border-image:url(ui/bar_green.png) 0 9 fill stretch;background:none;box-sizing:border-box;min-width:10px}
+.qbar i{border-image-source:url(ui/bar_yellow.png)}
+.zoom button{width:44px;height:44px;border:0;box-shadow:none;background:url(ui/round_white.png) center/100% 100%;font-size:0}
+.zoom button::after{content:"";display:block;width:24px;height:24px;margin:auto;background:center/contain no-repeat}
+#zIn::after{background-image:url(ui/ic_zin.png)}#zOut::after{background-image:url(ui/ic_zout.png)}#zFit::after{background-image:url(ui/ic_home.png)}
+.toast{background:url(ui/wood.png) center/100% 100%;border-radius:12px;padding:10px 18px;text-shadow:0 1.5px 0 var(--ol)}
+.placebar{background:none;box-shadow:none;border-style:solid;border-color:transparent;border-width:10px;border-image:url(ui/panel.png) 18 fill stretch;border-radius:0}
+.namein{border:0;background:url(ui/inset.png) center/100% 100%;padding:10px 16px}
+.intro h1{-webkit-text-stroke:0;color:#ff7aa8;text-shadow:0 5px 0 var(--ol),4px 0 0 var(--ol),-4px 0 0 var(--ol),0 -4px 0 var(--ol),3px 3px 0 var(--ol),-3px 3px 0 var(--ol),3px -3px 0 var(--ol),-3px -3px 0 var(--ol),0 9px 0 rgba(90,52,32,.35)}
 </style>
 
 <div id="app">
@@ -203,16 +256,16 @@ button:focus-visible{outline:3px solid var(--mojo);outline-offset:2px}
     <div class="chip"><span id="icMojo"></span><b id="mojo">0</b></div>
     <div class="chip clock"><span id="clock"></span><em id="spd"></em></div>
     <span class="spacer"></span>
-    <button class="btn y" id="allBtn" hidden>모두 거두기</button>
-    <button class="btn" id="shopBtn">상점</button>
-    <button class="btn w" id="devBtn">테스트</button>
+    <button class="btn g" id="allBtn" hidden><img src="ui/ic_check.png" alt="">모두 거두기</button>
+    <button class="btn y" id="shopBtn"><img src="ui/ic_shop.png" alt="">상점</button>
+    <button class="btn m" id="devBtn"><img src="ui/ic_wrench.png" alt="">테스트</button>
   </header>
   <main class="stage" id="stage">
     <div class="cloud" style="width:120px;height:34px;top:12%;animation-duration:70s;animation-delay:-20s"></div>
     <div class="cloud" style="width:90px;height:26px;top:70%;animation-duration:90s;animation-delay:-60s"></div>
     <div class="cloud" style="width:150px;height:40px;top:40%;animation-duration:110s;animation-delay:-5s;opacity:.6"></div>
     <canvas id="cv" aria-label="왕국 지도"></canvas>
-    <div class="zoom"><button id="zIn" aria-label="확대">+</button><button id="zOut" aria-label="축소">−</button><button id="zFit" class="fit" aria-label="전체 보기">전체</button></div>
+    <div class="zoom"><button id="zIn" aria-label="확대">+</button><button id="zOut" aria-label="축소">−</button><button id="zFit" class="fit" aria-label="전체 보기" title="섬 전체 보기"></button></div>
     <button class="goal" id="goal" hidden><span class="gi" id="goalIc"></span><span><b id="goalT"></b><small id="goalP"></small></span></button>
     <div class="fx" id="fx"></div>
   </main>
@@ -236,7 +289,7 @@ button:focus-visible{outline:3px solid var(--mojo);outline-offset:2px}
    최종 빌드: DEV=false 로 바꾸면 리얼타임(×1) + 테스트 버튼 숨김 */
 const DEV = true;
 const DEV_SPEED = 20;
-const VERSION = 'v0.9';
+const VERSION = 'v0.10';
 
 const COLS=58, ROWS=58, M=60, H=3600, DAY=86400;
 
@@ -1409,7 +1462,7 @@ function resize(){
 }
 addEventListener('resize',resize);
 function zoomAt(f,sx,sy){const nz=Math.max(ZMIN,Math.min(2.6,cam.z*f));const wx=(sx-cam.x)/cam.z,wy=(sy-cam.y)/cam.z;cam.z=nz;cam.x=sx-wx*nz;cam.y=sy-wy*nz;clampCam()}
-$('zIn').onclick=()=>zoomAt(1.25,CW/2,CH/2);$('zOut').onclick=()=>zoomAt(.8,CW/2,CH/2);let fitToggle=false;$('zFit').onclick=()=>{fitToggle=!fitToggle;if(fitToggle)fitAll();else fitCam();$('zFit').textContent=fitToggle?'왕국':'전체'};
+$('zIn').onclick=()=>zoomAt(1.25,CW/2,CH/2);$('zOut').onclick=()=>zoomAt(.8,CW/2,CH/2);let fitToggle=false;$('zFit').onclick=()=>{fitToggle=!fitToggle;if(fitToggle)fitAll();else fitCam();$('zFit').title=fitToggle?'왕국 보기':'섬 전체 보기'};
 
 /* --- 터치 --- */
 const ptrs=new Map();let drag=null,pinch=null;

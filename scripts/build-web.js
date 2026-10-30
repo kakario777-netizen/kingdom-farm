@@ -17,6 +17,7 @@ const html = `<!doctype html>
 ${body}
 </body></html>`;
 fs.writeFileSync('www/index.html', html);
-// 그림 묶음 복사
+// 그림 묶음·UI 이미지 복사
+for (const d of ['ui']) if (fs.existsSync('game/'+d)) { fs.mkdirSync('www/'+d, { recursive: true }); for (const f of fs.readdirSync('game/'+d)) fs.copyFileSync('game/'+d+'/' + f, 'www/'+d+'/' + f); }
 if (fs.existsSync('game/sprites')) { fs.mkdirSync('www/sprites', { recursive: true }); for (const f of fs.readdirSync('game/sprites')) fs.copyFileSync('game/sprites/' + f, 'www/sprites/' + f); }
 console.log('www/index.html', html.length, 'bytes');
