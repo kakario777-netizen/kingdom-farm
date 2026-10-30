@@ -1,6 +1,6 @@
 {
   "name": "malang-kingdom",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "private": true,
   "scripts": { "build:web": "node scripts/build-web.js" },
   "dependencies": {

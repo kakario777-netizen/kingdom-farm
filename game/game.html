@@ -235,9 +235,9 @@ button:focus-visible{outline:3px solid var(--mojo);outline-offset:2px}
    최종 빌드: DEV=false 로 바꾸면 리얼타임(×1) + 테스트 버튼 숨김 */
 const DEV = true;
 const DEV_SPEED = 20;
-const VERSION = 'v0.5';
+const VERSION = 'v0.6';
 
-const COLS=41, ROWS=41, M=60, H=3600, DAY=86400;
+const COLS=58, ROWS=58, M=60, H=3600, DAY=86400;
 
 /* ===== 원작 위룰 기준 데이터 =====
    작물: 원작 표 그대로(해금 레벨·씨앗값·시간·골드·경험치)
@@ -271,13 +271,14 @@ const CROPS={
 const LV_XP=[0,0,100,200,450,800,1300,2025,3075,4575,7350,10500,15400,21200,30000,39800,54250,70000,92750,116500,150000,185000,235000,285000,350000,435000,530000,630000,735000,835500,935500];
 const LV_MOJO={2:3,3:4,20:5,24:10,25:5,30:5};
 const PLOT_COST=250;
-const CX=19, CY=19, CI=CY*COLS+CX;   // 성(2×2)의 왼쪽 위 칸 — 섬 한가운데
+const CX=28, CY=28, CI=CY*COLS+CX;   // 성(2×2)의 왼쪽 위 칸 — 섬 한가운데
 const plotCap=()=>5+Math.floor(S.level/2);
 /* 땅: 원작 성 업그레이드 단계(Lv4 성, Lv10 요새, Lv20 성채)를 따라 넓어짐 */
 const LANDS=[{w:6,h:4,cost:0,lv:1,n:'작은 성'},{w:7,h:5,cost:200,lv:1,n:'작은 성'},{w:8,h:6,cost:1500,lv:4,n:'성'},{w:10,h:7,cost:4000,lv:7,n:'성'},
   {w:12,h:8,cost:10000,lv:10,n:'요새'},{w:14,h:10,cost:20000,lv:12,n:'요새'},{w:16,h:12,cost:35000,lv:15,n:'요새'},{w:19,h:14,cost:55000,lv:17,n:'요새'},
   {w:22,h:16,cost:80000,lv:20,n:'성채'},{w:25,h:19,cost:110000,lv:22,n:'성채'},{w:28,h:22,cost:150000,lv:24,n:'성채'},{w:32,h:25,cost:200000,lv:26,n:'성채'},
-  {w:36,h:29,cost:260000,lv:28,n:'성채'},{w:41,h:33,cost:330000,lv:30,n:'성채'},{w:41,h:37,cost:410000,lv:32,n:'성채'},{w:41,h:41,cost:500000,lv:35,n:'성채'}];
+  {w:36,h:29,cost:260000,lv:28,n:'성채'},{w:41,h:33,cost:330000,lv:30,n:'성채'},{w:45,h:38,cost:420000,lv:32,n:'성채'},
+  {w:50,h:43,cost:560000,lv:34,n:'성채'},{w:54,h:49,cost:720000,lv:36,n:'성채'},{w:58,h:54,cost:900000,lv:38,n:'성채'},{w:58,h:58,cost:1100000,lv:40,n:'성채'}];
 const RECTS=LANDS.map(L=>{const x0=Math.max(0,Math.min(COLS-L.w,CX+1-Math.floor(L.w/2))),y0=Math.max(0,Math.min(ROWS-L.h,CY+1-Math.floor(L.h/2)));return{x0,y0,x1:x0+L.w,y1:y0+L.h}});
 const castleTier=()=>S.land>=8?4:S.land>=4?3:S.land>=2?2:1;
 /* 건물: 집(세금) · 가게(원작 상품·시간, 이웃이 없으니 주인 수익+이웃 보상을 합쳐서 받음) · 장식 · 길 */
@@ -468,11 +469,15 @@ function fresh(){
   const at=(c,r)=>r*COLS+c;
   for(const i of[at(CX,CY),at(CX+1,CY),at(CX,CY+1),at(CX+1,CY+1)])tiles[i]={t:'castle'};
   for(const c of[CX-1,CX,CX+1])tiles[at(c,CY+2)]={t:'plot'};
-  return {v:5,gt:8*H,real:Date.now(),gold:250,xp:0,level:1,mojo:10,land:0,speed:DEV?DEV_SPEED:1,
+  return {v:6,gt:8*H,real:Date.now(),gold:250,xp:0,level:1,mojo:10,land:0,speed:DEV?DEV_SPEED:1,
     tiles,star:null,nextStar:8*H+40*M,daily:'',name:'말랑 왕국',ruler:'king',started:false,
     goal:0,gbase:0,quests:null,st:{corn:0,plots:0,mojo:0,pine:0,cottage:0,tax:0,expand:0,road:0}};
 }
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.v===5)return s}catch(e){}return fresh()}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));
+  if(s&&s.v===5){ // v0.5(41×41) 저장을 58×58 가운데로 옮기기
+    const t=Array.from({length:COLS*ROWS},()=>({t:'grass'})),mv=i=>(((i/41)|0)+9)*COLS+(i%41)+9;
+    s.tiles.forEach((T,i)=>{t[mv(i)]=T});if(s.star)s.star.i=mv(s.star.i);s.tiles=t;s.v=6;return s}
+  if(s&&s.v===6)return s}catch(e){}return fresh()}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 let S=load();
 if(!DEV)S.speed=1;
