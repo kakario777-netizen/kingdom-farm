@@ -261,15 +261,98 @@ body,button,input{-webkit-font-smoothing:antialiased;letter-spacing:-.2px}
 .card small,.card .sub,.goal small,.goal .sub{color:var(--ink-soft)}
 .talk .box p,.talk .box .t{font-size:19px;line-height:1.5;color:var(--ink)}
 .btn.big{font-size:24px}
+/* ===== 2단계: 쿠키런풍 UI (CSS로 직접 그림) ===== */
+:root{--L:#4a2a17;--L2:#2e1a0e;--cream1:#fffdf5;--cream2:#ffeccc}
+/* 버튼: 그라데이션 몸통 + 아래 두꺼운 턱 + 위쪽 광택 */
+.btn{--c1:#ffb3cf;--c2:#ff7aa8;--c3:#e8457f;border:3px solid var(--L)!important;border-image:none!important;border-radius:16px;position:relative;isolation:isolate;
+  background:linear-gradient(var(--c1),var(--c2) 52%,var(--c3))!important;padding:5px 16px 8px;min-height:42px;
+  box-shadow:inset 0 -5px 0 rgba(0,0,0,.16),inset 0 2px 0 rgba(255,255,255,.55),0 4px 0 var(--L),0 7px 8px rgba(40,20,5,.28)!important;transition:transform .06s,box-shadow .06s}
+.btn::before{content:"";position:absolute;left:7px;right:7px;top:3px;height:42%;border-radius:10px 10px 14px 14px;z-index:-1;pointer-events:none;
+  background:linear-gradient(rgba(255,255,255,.75),rgba(255,255,255,.08))}
+.btn:active{transform:translateY(3px);box-shadow:inset 0 -3px 0 rgba(0,0,0,.16),inset 0 2px 0 rgba(255,255,255,.55),0 1px 0 var(--L),0 2px 3px rgba(40,20,5,.25)!important}
+.btn.y{--c1:#fff6a8;--c2:#ffd84a;--c3:#f5a91c;color:#5a3010;text-shadow:0 1.5px 0 rgba(255,255,255,.75)}
+.btn.g{--c1:#a8f5d2;--c2:#45d6a0;--c3:#1fae7c}
+.btn.m{--c1:#d4c0ff;--c2:#9d78ff;--c3:#7650e6}
+.btn.w{--c1:#ffffff;--c2:#fbf3e6;--c3:#e9d9c0;color:var(--ink);text-shadow:none}
+.btn.big{padding:8px 30px 12px;border-radius:20px;min-height:56px}
+.btn img{filter:drop-shadow(0 1.5px 0 rgba(74,42,23,.6))}
+/* 패널 */
+.chip,.goal,.card,.q,.ruler,.placebar,.talk .box,.lvcard{border:3px solid var(--L)!important;border-image:none!important;
+  background:linear-gradient(var(--cream1),var(--cream2))!important;
+  box-shadow:inset 0 0 0 3px rgba(255,255,255,.7),inset 0 -5px 0 rgba(214,170,110,.35),0 4px 0 var(--L),0 7px 10px rgba(40,20,5,.22)!important}
+.goal{border-radius:18px;padding:5px 12px 5px 6px}
+.card{border-radius:18px;padding:6px 6px 8px;transition:transform .08s}
+.q{border-radius:18px;padding:8px 10px}
+.ruler{border-radius:16px}
+.placebar{border-radius:18px;padding:6px 8px 6px 16px}
+.talk .box{border-radius:22px;border-width:4px!important;padding:22px 20px 14px}
+.lvcard{border-radius:26px;border-width:4px!important;padding:26px 30px 22px;position:relative;overflow:visible}
+/* 상단 바: 프로필은 크림 패널, 자원은 진한 캡슐 + 튀어나온 아이콘 */
+.chip{border-radius:999px;padding:2px 12px 2px 4px;min-height:40px}
+.chip.res,.chip.lvc{background:linear-gradient(#6e4a33,#4b2f1f)!important;border-color:var(--L2)!important;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.18),inset 0 -3px 0 rgba(0,0,0,.25),0 3px 0 var(--L2),0 5px 8px rgba(40,20,5,.3)!important;color:#fff}
+.chip.res b{color:#fff!important;text-shadow:0 2px 0 var(--L2),1.5px 0 0 var(--L2),-1.5px 0 0 var(--L2),0 -1.5px 0 var(--L2);padding:0 4px;min-width:40px;text-align:right}
+.chip.res svg{width:32px;height:32px;margin:-8px 0 -8px -10px;filter:drop-shadow(0 2px 0 rgba(30,15,5,.6))}
+.chip.res.clock{padding:2px 6px 2px 14px;color:#ffeccc;font-size:16px}
+.clock em{background:linear-gradient(#b59bff,#7f5cf0);border:2px solid var(--L2);border-radius:999px;padding:0 6px;margin-left:6px}
+.chip.lvc{padding:2px 12px 2px 4px}
+.lvnum{margin:-10px 0 -10px -16px;width:46px;height:44px;font-size:17px;filter:drop-shadow(0 2px 0 rgba(30,15,5,.6))}
+.xp{flex:0 0 92px!important;width:92px;height:14px!important;border:2px solid var(--L2)!important;border-image:none!important;border-radius:999px!important;background:#2c1a10!important;box-shadow:inset 0 2px 0 rgba(0,0,0,.45);overflow:hidden!important}
+.xp i,.qbar i{border:0!important;border-image:none!important;margin:0!important;border-radius:999px!important;min-width:12px;
+  background:linear-gradient(#c9ff9a,#6fd243 55%,#43a82a)!important;box-shadow:inset 0 2px 0 rgba(255,255,255,.55)}
+.qbar{height:14px!important;border:2px solid var(--L)!important;border-image:none!important;border-radius:999px!important;background:#ead5b4!important;box-shadow:inset 0 2px 0 rgba(0,0,0,.15);overflow:hidden!important}
+.qbar i{background:linear-gradient(#fff3a0,#ffcf3a 55%,#f0a21a)!important}
+.me .face{border:3px solid var(--L);width:36px;height:36px;margin:-4px 0 -4px -6px;box-shadow:0 2px 0 var(--L)}
+.me .nm{font-size:15px}
+/* 시트(큰 창): 리본 제목 + 물방울 무늬 양피지 */
+.sheet{border:4px solid var(--L)!important;border-bottom:0!important;border-image:none!important;border-radius:28px 28px 0 0;
+  background:radial-gradient(circle at 12px 12px,rgba(214,170,110,.18) 2.5px,transparent 3px) 0 0/24px 24px,linear-gradient(#fffaf0,#ffefd2)!important;
+  box-shadow:inset 0 0 0 4px rgba(255,255,255,.7),0 -6px 20px rgba(40,20,5,.3)!important;padding-top:6px}
+.sheet header{isolation:isolate;background:none!important;margin:2px 0 12px!important;padding:0!important;display:flex;justify-content:center;position:relative;border:0}
+.ribbon{position:relative;padding:4px 34px 8px;min-width:180px;text-align:center;border:3px solid var(--L);border-radius:14px;
+  background:linear-gradient(#ffb36b,#ff8a3d 55%,#ec6a20);box-shadow:inset 0 3px 0 rgba(255,255,255,.45),inset 0 -5px 0 rgba(0,0,0,.15),0 4px 0 var(--L),0 7px 10px rgba(40,20,5,.3)}
+.ribbon::before,.ribbon::after{content:"";position:absolute;top:14px;width:30px;height:calc(100% - 6px);background:linear-gradient(var(--L),var(--L)) ,#c94c12;background:#4a2a17;z-index:-1}
+.ribbon i{display:none}
+.ribbon::before{left:-22px;clip-path:polygon(0 0,100% 0,100% 100%,0 100%,45% 50%)}
+.ribbon::after{right:-22px;clip-path:polygon(0 0,100% 0,55% 50%,100% 100%,0 100%)}
+.ribbon>h2::before,.ribbon>h2::after{content:none}
+.sheet header .ribbon{box-shadow:inset 0 3px 0 rgba(255,255,255,.45),inset 0 -5px 0 rgba(0,0,0,.15),0 4px 0 var(--L),0 7px 10px rgba(40,20,5,.3),-14px 10px 0 -3px #d8571a,14px 10px 0 -3px #d8571a}
+.ribbon h2{margin:0;font-size:24px!important}
+#shClose{position:absolute;right:-4px;top:12px;width:46px!important;height:46px!important;min-height:0;padding:0!important;border-radius:50%!important;--c1:#ffa0a0;--c2:#ff5a5a;--c3:#d93636;font-size:0!important}
+#shClose::before{border-radius:50% 50% 40% 40%;left:6px;right:6px}
+#shClose::after{width:22px;height:22px}
+/* 탭 */
+.tab{border:3px solid var(--L)!important;border-image:none!important;border-radius:999px;padding:3px 16px 5px;font-size:16px;color:var(--ink);
+  background:linear-gradient(#fff,#f3e6d0)!important;box-shadow:inset 0 -3px 0 rgba(0,0,0,.08),0 3px 0 var(--L)!important}
+.tab.on{background:linear-gradient(#fff6a8,#ffd84a 55%,#f5a91c)!important;color:#5a3010;transform:translateY(-2px);box-shadow:inset 0 2px 0 rgba(255,255,255,.6),inset 0 -3px 0 rgba(0,0,0,.12),0 5px 0 var(--L)!important}
+/* 그림 칸: 풀밭 받침 */
+.card .pic,.qi,.goal .gi,.info .pic{border:2.5px solid rgba(74,42,23,.55)!important;border-image:none!important;border-radius:14px!important;
+  background:radial-gradient(ellipse at 50% 78%,#e9fbd6 0%,#bfe89c 55%,#9fd57a 100%)!important;box-shadow:inset 0 3px 0 rgba(255,255,255,.5),inset 0 -3px 0 rgba(60,110,30,.25)}
+.card:disabled .pic{background:radial-gradient(ellipse at 50% 78%,#f1ebe2,#d9cfc0)!important}
+.card .lockb{background:linear-gradient(#7a5a48,#4b2f1f);border:2px solid var(--L2);border-radius:999px;padding:1px 8px;top:2px;right:2px}
+/* 작은 칸들 */
+.reward span{border:2px solid rgba(74,42,23,.5)!important;border-image:none!important;border-radius:999px!important;background:linear-gradient(#fff,#fbe8c4)!important;padding:2px 12px!important;box-shadow:0 2px 0 rgba(74,42,23,.5)}
+.q .qn,.q .cnt,.q>button:not(.btn){border-radius:12px}
+.talk .box b{background:linear-gradient(#ffb3cf,#ff7aa8 55%,#e8457f)!important;border:3px solid var(--L);border-radius:999px!important;padding:2px 16px 4px!important;margin:-40px 0 4px -6px!important;box-shadow:0 3px 0 var(--L)}
+.zoom button{border:3px solid var(--L)!important;border-radius:50%;background:radial-gradient(circle at 50% 30%,#fff,#f6ead6 70%,#e6d2b2)!important;
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.1),0 3px 0 var(--L),0 5px 8px rgba(40,20,5,.3)!important;filter:none}
+.zoom button::after{filter:brightness(.35) sepia(1) saturate(3) hue-rotate(-20deg)}
+.toast{background:linear-gradient(#6e4a33,#4b2f1f)!important;border:3px solid var(--L2);border-radius:999px!important;box-shadow:0 4px 0 var(--L2),0 8px 14px rgba(0,0,0,.3)}
+.namein{border:3px solid var(--L)!important;background:#fff!important;border-radius:16px;box-shadow:inset 0 3px 0 rgba(0,0,0,.08)}
+/* 레벨업: 뒤로 햇살 */
+.lvcard::before{content:"";position:absolute;left:50%;top:50%;width:720px;height:720px;margin:-360px 0 0 -360px;z-index:-1;pointer-events:none;border-radius:50%;
+  background:repeating-conic-gradient(rgba(255,236,150,.55) 0 10deg,rgba(255,236,150,0) 10deg 20deg);
+  -webkit-mask:radial-gradient(circle,#000 20%,transparent 68%);mask:radial-gradient(circle,#000 20%,transparent 68%)}
+.lvup{isolation:isolate}
 </style>
 
 <div id="app">
   <header class="hud">
     <button class="chip me" id="meBtn"><span class="face" id="meFace"></span><span class="nm"><span id="kName">말랑 왕국</span><small id="kSub">레벨 1</small></span></button>
-    <div class="chip"><span class="lvnum" id="lvNum">1</span><div class="xp"><i id="xpFill"></i></div></div>
-    <div class="chip"><span id="icGold"></span><b id="gold">0</b></div>
-    <div class="chip"><span id="icMojo"></span><b id="mojo">0</b></div>
-    <div class="chip clock"><span id="clock"></span><em id="spd"></em></div>
+    <div class="chip lvc"><span class="lvnum" id="lvNum">1</span><div class="xp"><i id="xpFill"></i></div></div>
+    <div class="chip res"><span id="icGold"></span><b id="gold">0</b></div>
+    <div class="chip res"><span id="icMojo"></span><b id="mojo">0</b></div>
+    <div class="chip res clock"><span id="clock"></span><em id="spd"></em></div>
     <span class="spacer"></span>
     <button class="btn g" id="allBtn" hidden><img src="ui/ic_check.png" alt="">모두 거두기</button>
     <button class="btn y" id="shopBtn"><img src="ui/ic_shop.png" alt="">상점</button>
@@ -288,7 +371,7 @@ body,button,input{-webkit-font-smoothing:antialiased;letter-spacing:-.2px}
 </div>
 <div class="hand" id="hand" hidden></div>
 <div class="sheet-bg" id="sheetBg" hidden><section class="sheet" id="sheet">
-  <header><h2 id="shTitle"></h2><button class="btn w" id="shClose">닫기</button></header>
+  <header><div class="ribbon"><h2 id="shTitle"></h2></div><button class="btn w" id="shClose">닫기</button></header>
   <div id="shBody"></div>
 </section></div>
 <div class="talk" id="talk" hidden><div class="who" id="talkWho"></div><div class="box"><b id="talkName">몽실 대신</b><p id="talkTxt"></p><div id="talkExtra"></div><div class="row"><button class="btn" id="talkBtn">다음</button></div></div></div>
@@ -304,7 +387,7 @@ body,button,input{-webkit-font-smoothing:antialiased;letter-spacing:-.2px}
    최종 빌드: DEV=false 로 바꾸면 리얼타임(×1) + 테스트 버튼 숨김 */
 const DEV = true;
 const DEV_SPEED = 20;
-const VERSION = 'v0.11';
+const VERSION = 'v0.12';
 
 const COLS=58, ROWS=58, M=60, H=3600, DAY=86400;
 
