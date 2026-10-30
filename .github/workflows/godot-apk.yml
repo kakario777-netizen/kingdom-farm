@@ -1,0 +1,44 @@
+name: 고도 APK 빌드
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths: [ 'godot/**', '.github/workflows/godot-apk.yml' ]
+permissions:
+  contents: write
+concurrency: { group: godot-apk, cancel-in-progress: true }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: barichello/godot-ci:4.3
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: 준비
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          mkdir -p ~/.local/share/godot/export_templates/ ~/.config/
+          cp -r /root/.config/godot ~/.config/godot 2>/dev/null || true
+          cp -r /root/.local/share/godot/export_templates/4.3.stable ~/.local/share/godot/export_templates/ 2>/dev/null || true
+      - name: 가져오기(import)
+        run: cd godot && godot --headless --import 2>&1 | grep -iE "error|script|parse" | head -40 || true
+      - name: APK 만들기 (고정 서명 열쇠 → 덮어 설치 가능)
+        env:
+          GODOT_ANDROID_KEYSTORE_DEBUG_PATH: ${{ github.workspace }}/keystore/debug.keystore
+          GODOT_ANDROID_KEYSTORE_DEBUG_USER: androiddebugkey
+          GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD: android
+        run: |
+          mkdir -p build
+          cd godot
+          sed -i "s/^version\/code=1$/version\/code=$(( ${{ github.run_number }} + 100 ))/" export_presets.cfg
+          godot --headless --export-debug "Android" ../build/malang-kingdom.apk 2>&1 | grep -iE "error|fail|export" | head -40 || true
+          ls -la ../build
+          test -f ../build/malang-kingdom.apk
+      - name: 릴리스
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: godot-${{ github.run_number }}
+          name: 말랑 왕국 (고도판) 빌드 ${{ github.run_number }}
+          body: ${{ github.event.head_commit.message }}
+          files: build/malang-kingdom.apk
+          make_latest: true
