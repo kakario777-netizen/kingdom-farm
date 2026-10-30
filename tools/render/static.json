@@ -1,0 +1,4063 @@
+[
+{
+"id": "cottage_o",
+"parts": [
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Buildings/OBJ/House_1.obj",
+"recolor": {
+"RoofTiles": "#ff8a3c"
+}
+}
+],
+"fit": 0.95
+},
+{
+"id": "cottage_b",
+"parts": [
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Buildings/OBJ/House_2.obj",
+"recolor": {
+"RoofTiles": "#9a5f3a",
+"Beige": "#ead3b2"
+}
+}
+],
+"fit": 0.95
+},
+{
+"id": "cottage_s",
+"parts": [
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Buildings/OBJ/House_1.obj",
+"recolor": {
+"RoofTiles": "#f2cf5b",
+"Plaster": "#fff8ea"
+}
+}
+],
+"fit": 0.95
+},
+{
+"id": "tailor",
+"parts": [
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Buildings/OBJ/House_2.obj",
+"recolor": {
+"RoofTiles": "#a678e8",
+"Beige": "#fff0fa"
+}
+}
+],
+"fit": 0.95
+},
+{
+"id": "school",
+"parts": [
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Buildings/OBJ/Bell_Tower.obj",
+"recolor": {
+"RoofTiles": "#3f6fb0"
+}
+}
+],
+"fit": 0.85
+},
+{
+"id": "lumber",
+"parts": [
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Buildings/OBJ/Sawmill.obj",
+"recolor": {}
+}
+],
+"fit": 0.95
+},
+{
+"id": "guild",
+"parts": [
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Buildings/OBJ/Inn.obj",
+"recolor": {
+"RoofTiles_Red": "#d94a44"
+}
+}
+],
+"fit": 0.95
+},
+{
+"id": "bakery",
+"parts": [
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Buildings/OBJ/House_2.obj",
+"recolor": {
+"RoofTiles": "#ff8fb5",
+"Beige": "#fff1e6"
+}
+}
+],
+"fit": 0.95
+},
+{
+"id": "hotdog",
+"parts": [
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Props/OBJ/MarketStand_1.obj",
+"recolor": {
+"RoofTiles_Red": "#ffa630"
+}
+},
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Props/OBJ/Barrel.obj",
+"pos": [
+0.9,
+0,
+0.7
+],
+"scale": 0.8
+},
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Props/OBJ/Crate.obj",
+"pos": [
+-0.9,
+0,
+0.8
+],
+"scale": 0.7
+}
+],
+"fit": 0.9
+},
+{
+"id": "smith",
+"parts": [
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Buildings/OBJ/Blacksmith.obj",
+"recolor": {}
+}
+],
+"fit": 0.95
+},
+{
+"id": "stables",
+"parts": [
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Buildings/OBJ/Stable.obj",
+"recolor": {}
+}
+],
+"fit": 0.95
+},
+{
+"id": "cobbler",
+"parts": [
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Buildings/OBJ/House_1.obj",
+"recolor": {
+"RoofTiles": "#3fbf98"
+}
+}
+],
+"fit": 0.95
+},
+{
+"id": "tavern",
+"parts": [
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Buildings/OBJ/Inn.obj",
+"recolor": {
+"RoofTiles_Red": "#c9773f"
+}
+}
+],
+"fit": 0.95
+},
+{
+"id": "candle",
+"parts": [
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Buildings/OBJ/House_2.obj",
+"recolor": {
+"RoofTiles": "#ff6f9f",
+"Beige": "#ffe6ee"
+}
+}
+],
+"fit": 0.95
+},
+{
+"id": "jewelry",
+"parts": [
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Buildings/OBJ/House_1.obj",
+"recolor": {
+"RoofTiles": "#4fb0f0",
+"Plaster": "#eef6ff"
+}
+}
+],
+"fit": 0.95
+},
+{
+"id": "emporium",
+"parts": [
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-base.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-roof.glb"
+],
+"pos": [
+0,
+0
+],
+"tint": "#e6d8ff"
+}
+],
+"fit": 0.7
+},
+{
+"id": "windmill",
+"parts": [
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Buildings/OBJ/Mill.obj",
+"recolor": {}
+}
+],
+"fit": 0.95
+},
+{
+"id": "wizard",
+"parts": [
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-base.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-roof.glb"
+],
+"pos": [
+0,
+0
+],
+"tint": "#d8c8ff"
+}
+],
+"fit": 0.62
+},
+{
+"id": "watch",
+"parts": [
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-square-base.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid-windows.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-top-roof-high.glb"
+],
+"pos": [
+0,
+0
+]
+}
+],
+"fit": 0.6
+},
+{
+"id": "barn",
+"parts": [
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Buildings/OBJ/Stable.obj",
+"recolor": {
+"RoofTiles": "#8a3a35",
+"Beige": "#e8554e"
+}
+},
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Props/OBJ/Hay.obj",
+"pos": [
+1.6,
+0,
+1.4
+],
+"scale": 1.2
+}
+],
+"fit": 0.95
+},
+{
+"id": "quarry",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/stone_largeA.glb",
+"pos": [
+-0.2,
+0,
+-0.1
+]
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/stone_largeC.glb",
+"pos": [
+0.25,
+0,
+-0.2
+]
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/stone_tallB.glb",
+"pos": [
+0,
+0,
+-0.35
+],
+"scale": 0.9
+},
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Props/OBJ/Crate.obj",
+"pos": [
+0.3,
+0,
+0.35
+],
+"scale": 0.18
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/stone_smallA.glb",
+"pos": [
+-0.3,
+0,
+0.3
+]
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/log_stack.glb",
+"pos": [
+-0.35,
+0,
+0.05
+],
+"scale": 0.6
+}
+],
+"fit": 0.9
+},
+{
+"id": "pine",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/tree_pineRoundA.glb"
+}
+],
+"fit": 0.72
+},
+{
+"id": "fir",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/tree_pineTallA_detailed.glb"
+}
+],
+"fit": 0.72
+},
+{
+"id": "oak",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/tree_oak.glb"
+}
+],
+"fit": 0.72
+},
+{
+"id": "ash",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/tree_default.glb"
+}
+],
+"fit": 0.72
+},
+{
+"id": "maple",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/tree_oak_fall.glb"
+}
+],
+"fit": 0.72
+},
+{
+"id": "firefly",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/tree_fat_darkh.glb"
+}
+],
+"fit": 0.72
+},
+{
+"id": "willow",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/tree_detailed.glb"
+}
+],
+"fit": 0.72
+},
+{
+"id": "tulip",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_dirtSingle.glb",
+"pos": [
+0,
+0,
+0
+],
+"scale": 0.7
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redA.glb",
+"pos": [
+-0.17,
+0,
+-0.15
+],
+"scale": 0.8,
+"rotY": 0
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_yellowB.glb",
+"pos": [
+0.15,
+0,
+-0.17
+],
+"scale": 0.8,
+"rotY": 47
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_purpleC.glb",
+"pos": [
+0,
+0,
+0.02
+],
+"scale": 0.8,
+"rotY": 94
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redA.glb",
+"pos": [
+-0.16,
+0,
+0.17
+],
+"scale": 0.8,
+"rotY": 141
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_yellowB.glb",
+"pos": [
+0.17,
+0,
+0.15
+],
+"scale": 0.8,
+"rotY": 188
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_purpleC.glb",
+"pos": [
+0.02,
+0,
+-0.2
+],
+"scale": 0.8,
+"rotY": 235
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redA.glb",
+"pos": [
+-0.2,
+0,
+0
+],
+"scale": 0.8,
+"rotY": 282
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_yellowB.glb",
+"pos": [
+0.2,
+0,
+0
+],
+"scale": 0.8,
+"rotY": 329
+}
+],
+"fit": 0.82
+},
+{
+"id": "rose",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_dirtSingle.glb",
+"pos": [
+0,
+0,
+0
+],
+"scale": 0.7
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redA.glb",
+"pos": [
+-0.17,
+0,
+-0.15
+],
+"scale": 0.8,
+"rotY": 0
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redB.glb",
+"pos": [
+0.15,
+0,
+-0.17
+],
+"scale": 0.8,
+"rotY": 47
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redC.glb",
+"pos": [
+0,
+0,
+0.02
+],
+"scale": 0.8,
+"rotY": 94
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redA.glb",
+"pos": [
+-0.16,
+0,
+0.17
+],
+"scale": 0.8,
+"rotY": 141
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redB.glb",
+"pos": [
+0.17,
+0,
+0.15
+],
+"scale": 0.8,
+"rotY": 188
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redC.glb",
+"pos": [
+0.02,
+0,
+-0.2
+],
+"scale": 0.8,
+"rotY": 235
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redA.glb",
+"pos": [
+-0.2,
+0,
+0
+],
+"scale": 0.8,
+"rotY": 282
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redB.glb",
+"pos": [
+0.2,
+0,
+0
+],
+"scale": 0.8,
+"rotY": 329
+}
+],
+"fit": 0.82
+},
+{
+"id": "lily",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_dirtSingle.glb",
+"pos": [
+0,
+0,
+0
+],
+"scale": 0.7
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_yellowA.glb",
+"pos": [
+-0.17,
+0,
+-0.15
+],
+"scale": 0.8,
+"rotY": 0
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_yellowB.glb",
+"pos": [
+0.15,
+0,
+-0.17
+],
+"scale": 0.8,
+"rotY": 47
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_yellowC.glb",
+"pos": [
+0,
+0,
+0.02
+],
+"scale": 0.8,
+"rotY": 94
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_yellowA.glb",
+"pos": [
+-0.16,
+0,
+0.17
+],
+"scale": 0.8,
+"rotY": 141
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_yellowB.glb",
+"pos": [
+0.17,
+0,
+0.15
+],
+"scale": 0.8,
+"rotY": 188
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_yellowC.glb",
+"pos": [
+0.02,
+0,
+-0.2
+],
+"scale": 0.8,
+"rotY": 235
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_yellowA.glb",
+"pos": [
+-0.2,
+0,
+0
+],
+"scale": 0.8,
+"rotY": 282
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_yellowB.glb",
+"pos": [
+0.2,
+0,
+0
+],
+"scale": 0.8,
+"rotY": 329
+}
+],
+"fit": 0.82
+},
+{
+"id": "orchid",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_dirtSingle.glb",
+"pos": [
+0,
+0,
+0
+],
+"scale": 0.7
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_purpleA.glb",
+"pos": [
+-0.17,
+0,
+-0.15
+],
+"scale": 0.8,
+"rotY": 0
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_purpleB.glb",
+"pos": [
+0.15,
+0,
+-0.17
+],
+"scale": 0.8,
+"rotY": 47
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_purpleC.glb",
+"pos": [
+0,
+0,
+0.02
+],
+"scale": 0.8,
+"rotY": 94
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_purpleA.glb",
+"pos": [
+-0.16,
+0,
+0.17
+],
+"scale": 0.8,
+"rotY": 141
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_purpleB.glb",
+"pos": [
+0.17,
+0,
+0.15
+],
+"scale": 0.8,
+"rotY": 188
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_purpleC.glb",
+"pos": [
+0.02,
+0,
+-0.2
+],
+"scale": 0.8,
+"rotY": 235
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_purpleA.glb",
+"pos": [
+-0.2,
+0,
+0
+],
+"scale": 0.8,
+"rotY": 282
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_purpleB.glb",
+"pos": [
+0.2,
+0,
+0
+],
+"scale": 0.8,
+"rotY": 329
+}
+],
+"fit": 0.82
+},
+{
+"id": "lamp",
+"parts": [
+{
+"src": "../../assets-src/fantasy-town/Models/GLB format/lantern.glb"
+}
+],
+"height": 1.0
+},
+{
+"id": "banner",
+"parts": [
+{
+"src": "../../assets-src/castle-kit/Models/GLB format/flag-banner-long.glb"
+}
+],
+"height": 1.1
+},
+{
+"id": "mailbox",
+"parts": [
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Props/OBJ/Well.obj"
+}
+],
+"fit": 0.65
+},
+{
+"id": "picnic",
+"parts": [
+{
+"src": "../../assets-src/medieval-village/Medieval Village Pack - Dec 2020/Props/OBJ/Gazebo.obj"
+}
+],
+"fit": 0.8
+},
+{
+"id": "fountain",
+"parts": [
+{
+"src": "../../assets-src/fantasy-town/Models/GLB format/fountain-round-detail.glb"
+}
+],
+"fit": 0.85
+},
+{
+"id": "st_knight",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/statue_head.glb"
+}
+],
+"fit": 0.55
+},
+{
+"id": "st_teacher",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/statue_column.glb"
+}
+],
+"fit": 0.55
+},
+{
+"id": "st_wizard",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/statue_obelisk.glb"
+}
+],
+"fit": 0.55
+},
+{
+"id": "st_dragon",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/statue_ring.glb"
+}
+],
+"fit": 0.55
+},
+{
+"id": "wpine",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/tree_pineRoundB.glb"
+}
+],
+"fit": 0.6
+},
+{
+"id": "woak",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/tree_default_dark.glb"
+}
+],
+"fit": 0.6
+},
+{
+"id": "wrock",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/stone_largeB.glb"
+}
+],
+"fit": 0.5
+},
+{
+"id": "wbush",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/plant_bushLarge.glb"
+}
+],
+"fit": 0.6
+},
+{
+"id": "wpine2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/tree_pineSmallC.glb"
+}
+],
+"fit": 0.6
+},
+{
+"id": "woak2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/tree_small.glb"
+}
+],
+"fit": 0.6
+},
+{
+"id": "wlog",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/log_stackLarge.glb"
+}
+],
+"fit": 0.6
+},
+{
+"id": "wmush",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/mushroom_redGroup.glb"
+}
+],
+"fit": 0.6
+},
+{
+"id": "crop_sprout",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.3
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.3
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.3
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.3
+}
+],
+"noCenter": true
+},
+{
+"id": "plot",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_dirtDoubleRow.glb",
+"scale": 0.5
+}
+],
+"fit": 0.92,
+"noShadow": true
+},
+{
+"id": "crop_corn_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_cornStageB.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_cornStageB.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_cornStageB.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_cornStageB.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_corn_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_cornStageD.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_cornStageD.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_cornStageD.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_cornStageD.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_wheat_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageA.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageA.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageA.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageA.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_wheat_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageB.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageB.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageB.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageB.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_oats_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageA.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageA.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageA.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageA.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_oats_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageB.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"corn": "#f3e2b0",
+"colorYellow": "#f3e2b0"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageB.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"corn": "#f3e2b0",
+"colorYellow": "#f3e2b0"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageB.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"corn": "#f3e2b0",
+"colorYellow": "#f3e2b0"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageB.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"corn": "#f3e2b0",
+"colorYellow": "#f3e2b0"
+}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_rice_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageA.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageA.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageA.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageA.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_rice_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageB.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"corn": "#eef2c0",
+"colorYellow": "#eef2c0"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageB.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"corn": "#eef2c0",
+"colorYellow": "#eef2c0"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageB.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"corn": "#eef2c0",
+"colorYellow": "#eef2c0"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_wheatStageB.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"corn": "#eef2c0",
+"colorYellow": "#eef2c0"
+}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_carrot_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_carrot_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_carrot.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_carrot.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_carrot.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_carrot.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_onion_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_onion_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_turnip.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"stone": "#c98ce8",
+"colorWhite": "#c98ce8"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_turnip.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"stone": "#c98ce8",
+"colorWhite": "#c98ce8"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_turnip.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"stone": "#c98ce8",
+"colorWhite": "#c98ce8"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_turnip.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"stone": "#c98ce8",
+"colorWhite": "#c98ce8"
+}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_radish_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_radish_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_turnip.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"stone": "#ff7fa8",
+"colorWhite": "#ff7fa8"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_turnip.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"stone": "#ff7fa8",
+"colorWhite": "#ff7fa8"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_turnip.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"stone": "#ff7fa8",
+"colorWhite": "#ff7fa8"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_turnip.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"stone": "#ff7fa8",
+"colorWhite": "#ff7fa8"
+}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_potato_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_potato_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_turnip.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"stone": "#c99a5b",
+"colorWhite": "#c99a5b"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_turnip.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"stone": "#c99a5b",
+"colorWhite": "#c99a5b"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_turnip.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"stone": "#c99a5b",
+"colorWhite": "#c99a5b"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_turnip.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"stone": "#c99a5b",
+"colorWhite": "#c99a5b"
+}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_pumpkin_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_pumpkin_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_pumpkin.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_pumpkin.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_pumpkin.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_pumpkin.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_squash_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_squash_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_pumpkin.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"colorTan": "#b8dc5a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_pumpkin.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"colorTan": "#b8dc5a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_pumpkin.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"colorTan": "#b8dc5a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_pumpkin.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"colorTan": "#b8dc5a"
+}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_melon_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_melon_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_melon.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_melon.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_melon.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_melon.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_pineapple_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_pineapple_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_pumpkin.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"colorTan": "#ffcf3c"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_pumpkin.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"colorTan": "#ffcf3c"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_pumpkin.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"colorTan": "#ffcf3c"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crop_pumpkin.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"colorTan": "#ffcf3c"
+}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_berry_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_berry_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redC.glb",
+"pos": [
+-0.16,
+0,
+-0.16
+],
+"scale": 0.3,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redC.glb",
+"pos": [
+0.28,
+0,
+-0.16
+],
+"scale": 0.3,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redC.glb",
+"pos": [
+-0.16,
+0,
+0.28
+],
+"scale": 0.3,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redC.glb",
+"pos": [
+0.28,
+0,
+0.28
+],
+"scale": 0.3,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_tomato_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_tomato_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redA.glb",
+"pos": [
+-0.16,
+0,
+-0.16
+],
+"scale": 0.3,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redA.glb",
+"pos": [
+0.28,
+0,
+-0.16
+],
+"scale": 0.3,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redA.glb",
+"pos": [
+-0.16,
+0,
+0.28
+],
+"scale": 0.3,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redA.glb",
+"pos": [
+0.28,
+0,
+0.28
+],
+"scale": 0.3,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_peppers_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_peppers_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redB.glb",
+"pos": [
+-0.16,
+0,
+-0.16
+],
+"scale": 0.3,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redB.glb",
+"pos": [
+0.28,
+0,
+-0.16
+],
+"scale": 0.3,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redB.glb",
+"pos": [
+-0.16,
+0,
+0.28
+],
+"scale": 0.3,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_redB.glb",
+"pos": [
+0.28,
+0,
+0.28
+],
+"scale": 0.3,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_eggplant_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_eggplant_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_purpleA.glb",
+"pos": [
+-0.16,
+0,
+-0.16
+],
+"scale": 0.3,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_purpleA.glb",
+"pos": [
+0.28,
+0,
+-0.16
+],
+"scale": 0.3,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_purpleA.glb",
+"pos": [
+-0.16,
+0,
+0.28
+],
+"scale": 0.3,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_purpleA.glb",
+"pos": [
+0.28,
+0,
+0.28
+],
+"scale": 0.3,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_cotton_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_cotton_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_yellowA.glb",
+"pos": [
+-0.16,
+0,
+-0.16
+],
+"scale": 0.3,
+"recolor": {
+"colorYellow": "#ffffff"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_yellowA.glb",
+"pos": [
+0.28,
+0,
+-0.16
+],
+"scale": 0.3,
+"recolor": {
+"colorYellow": "#ffffff"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_yellowA.glb",
+"pos": [
+-0.16,
+0,
+0.28
+],
+"scale": 0.3,
+"recolor": {
+"colorYellow": "#ffffff"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/flower_yellowA.glb",
+"pos": [
+0.28,
+0,
+0.28
+],
+"scale": 0.3,
+"recolor": {
+"colorYellow": "#ffffff"
+}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_lettuce_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_lettuce_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"leafsGreen": "#a6e67e",
+"grass": "#a6e67e"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"leafsGreen": "#a6e67e",
+"grass": "#a6e67e"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"leafsGreen": "#a6e67e",
+"grass": "#a6e67e"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"leafsGreen": "#a6e67e",
+"grass": "#a6e67e"
+}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_broccoli_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_broccoli_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"leafsGreen": "#3fa34d",
+"grass": "#3fa34d"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"leafsGreen": "#3fa34d",
+"grass": "#3fa34d"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"leafsGreen": "#3fa34d",
+"grass": "#3fa34d"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"leafsGreen": "#3fa34d",
+"grass": "#3fa34d"
+}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_cauliflower_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_cauliflower_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"leafsGreen": "#f0e6ff",
+"grass": "#f0e6ff"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"leafsGreen": "#f0e6ff",
+"grass": "#f0e6ff"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"leafsGreen": "#f0e6ff",
+"grass": "#f0e6ff"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"leafsGreen": "#f0e6ff",
+"grass": "#f0e6ff"
+}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_artichoke_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageA.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_artichoke_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"leafsGreen": "#7cc78a",
+"grass": "#7cc78a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"leafsGreen": "#7cc78a",
+"grass": "#7cc78a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"leafsGreen": "#7cc78a",
+"grass": "#7cc78a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_leafsStageB.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"leafsGreen": "#7cc78a",
+"grass": "#7cc78a"
+}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_beans_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageA.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#7fd45a",
+"leafsGreen": "#7fd45a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageA.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#7fd45a",
+"leafsGreen": "#7fd45a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageA.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#7fd45a",
+"leafsGreen": "#7fd45a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageA.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#7fd45a",
+"leafsGreen": "#7fd45a"
+}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_beans_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageB.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#6cc04a",
+"leafsGreen": "#6cc04a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageB.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#6cc04a",
+"leafsGreen": "#6cc04a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageB.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#6cc04a",
+"leafsGreen": "#6cc04a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageB.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#6cc04a",
+"leafsGreen": "#6cc04a"
+}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_peas_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageA.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#7fd45a",
+"leafsGreen": "#7fd45a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageA.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#7fd45a",
+"leafsGreen": "#7fd45a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageA.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#7fd45a",
+"leafsGreen": "#7fd45a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageA.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#7fd45a",
+"leafsGreen": "#7fd45a"
+}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_peas_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageB.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#6cc04a",
+"leafsGreen": "#6cc04a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageB.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#6cc04a",
+"leafsGreen": "#6cc04a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageB.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#6cc04a",
+"leafsGreen": "#6cc04a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageB.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#6cc04a",
+"leafsGreen": "#6cc04a"
+}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_asparagus_1",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageA.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#7fd45a",
+"leafsGreen": "#7fd45a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageA.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#7fd45a",
+"leafsGreen": "#7fd45a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageA.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#7fd45a",
+"leafsGreen": "#7fd45a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageA.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#7fd45a",
+"leafsGreen": "#7fd45a"
+}
+}
+],
+"noCenter": true
+},
+{
+"id": "crop_asparagus_2",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageB.glb",
+"pos": [
+-0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#6cc04a",
+"leafsGreen": "#6cc04a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageB.glb",
+"pos": [
+0.22,
+0,
+-0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#6cc04a",
+"leafsGreen": "#6cc04a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageB.glb",
+"pos": [
+-0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#6cc04a",
+"leafsGreen": "#6cc04a"
+}
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/crops_bambooStageB.glb",
+"pos": [
+0.22,
+0,
+0.22
+],
+"scale": 0.42,
+"recolor": {
+"grass": "#6cc04a",
+"leafsGreen": "#6cc04a"
+}
+}
+],
+"noCenter": true
+},
+{
+"id": "castle1",
+"parts": [
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-square-base.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-top-roof.glb"
+],
+"pos": [
+-1.1,
+-1.1
+],
+"scale": 1
+},
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-square-base.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-top-roof.glb"
+],
+"pos": [
+-1.1,
+1.1
+],
+"scale": 1
+},
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-square-base.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-top-roof.glb"
+],
+"pos": [
+1.1,
+-1.1
+],
+"scale": 1
+},
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-square-base.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-top-roof.glb"
+],
+"pos": [
+1.1,
+1.1
+],
+"scale": 1
+},
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-square-base-color.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid-windows.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-top-roof-high.glb"
+],
+"pos": [
+0,
+-0.1
+],
+"scale": 1.35
+},
+{
+"src": "../../assets-src/castle-kit/Models/GLB format/wall.glb",
+"pos": [
+0,
+0,
+-1.1
+],
+"rotY": 0
+},
+{
+"src": "../../assets-src/castle-kit/Models/GLB format/gate.glb",
+"pos": [
+0,
+0,
+1.1
+],
+"rotY": 0
+},
+{
+"src": "../../assets-src/castle-kit/Models/GLB format/wall.glb",
+"pos": [
+-1.1,
+0,
+0
+],
+"rotY": 90
+},
+{
+"src": "../../assets-src/castle-kit/Models/GLB format/wall.glb",
+"pos": [
+1.1,
+0,
+0
+],
+"rotY": 90
+}
+],
+"fit": 1.9,
+"W": 1500,
+"H": 1700,
+"Ha": 1350
+},
+{
+"id": "castle2",
+"parts": [
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-square-base.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-top-roof.glb"
+],
+"pos": [
+-1.1,
+-1.1
+],
+"scale": 1
+},
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-square-base.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-top-roof.glb"
+],
+"pos": [
+-1.1,
+1.1
+],
+"scale": 1
+},
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-square-base.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-top-roof.glb"
+],
+"pos": [
+1.1,
+-1.1
+],
+"scale": 1
+},
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-square-base.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-top-roof.glb"
+],
+"pos": [
+1.1,
+1.1
+],
+"scale": 1
+},
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-square-base-color.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid-windows.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-top-roof-high-windows.glb"
+],
+"pos": [
+0,
+-0.1
+],
+"scale": 1.35
+},
+{
+"src": "../../assets-src/castle-kit/Models/GLB format/wall.glb",
+"pos": [
+0,
+0,
+-1.1
+],
+"rotY": 0
+},
+{
+"src": "../../assets-src/castle-kit/Models/GLB format/gate.glb",
+"pos": [
+0,
+0,
+1.1
+],
+"rotY": 0
+},
+{
+"src": "../../assets-src/castle-kit/Models/GLB format/wall.glb",
+"pos": [
+-1.1,
+0,
+0
+],
+"rotY": 90
+},
+{
+"src": "../../assets-src/castle-kit/Models/GLB format/wall.glb",
+"pos": [
+1.1,
+0,
+0
+],
+"rotY": 90
+}
+],
+"fit": 1.9,
+"W": 1500,
+"H": 1700,
+"Ha": 1350
+},
+{
+"id": "castle3",
+"parts": [
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-base.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-roof.glb"
+],
+"pos": [
+-1.1,
+-1.1
+],
+"scale": 1.35
+},
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-base.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-roof.glb"
+],
+"pos": [
+-1.1,
+1.1
+],
+"scale": 1.35
+},
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-base.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-roof.glb"
+],
+"pos": [
+1.1,
+-1.1
+],
+"scale": 1.35
+},
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-base.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-roof.glb"
+],
+"pos": [
+1.1,
+1.1
+],
+"scale": 1.35
+},
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-square-base-color.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid-windows.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-top-roof-high-windows.glb"
+],
+"pos": [
+0,
+-0.1
+],
+"scale": 1.35
+},
+{
+"src": "../../assets-src/castle-kit/Models/GLB format/wall.glb",
+"pos": [
+0,
+0,
+-1.1
+],
+"rotY": 0
+},
+{
+"src": "../../assets-src/castle-kit/Models/GLB format/gate.glb",
+"pos": [
+0,
+0,
+1.1
+],
+"rotY": 0
+},
+{
+"src": "../../assets-src/castle-kit/Models/GLB format/wall.glb",
+"pos": [
+-1.1,
+0,
+0
+],
+"rotY": 90
+},
+{
+"src": "../../assets-src/castle-kit/Models/GLB format/wall.glb",
+"pos": [
+1.1,
+0,
+0
+],
+"rotY": 90
+}
+],
+"fit": 1.9,
+"W": 1500,
+"H": 1700,
+"Ha": 1350
+},
+{
+"id": "castle4",
+"parts": [
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-base.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-roof.glb"
+],
+"pos": [
+-1.1,
+-1.1
+],
+"scale": 1.35
+},
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-base.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-roof.glb"
+],
+"pos": [
+-1.1,
+1.1
+],
+"scale": 1.35
+},
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-base.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-roof.glb"
+],
+"pos": [
+1.1,
+-1.1
+],
+"scale": 1.35
+},
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-base.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-hexagon-roof.glb"
+],
+"pos": [
+1.1,
+1.1
+],
+"scale": 1.35
+},
+{
+"stack": [
+"../../assets-src/castle-kit/Models/GLB format/tower-square-base-color.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid-windows.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-mid.glb",
+"../../assets-src/castle-kit/Models/GLB format/tower-square-top-roof-high-windows.glb"
+],
+"pos": [
+0,
+-0.1
+],
+"scale": 1.35
+},
+{
+"src": "../../assets-src/castle-kit/Models/GLB format/wall.glb",
+"pos": [
+0,
+0,
+-1.1
+],
+"rotY": 0
+},
+{
+"src": "../../assets-src/castle-kit/Models/GLB format/gate.glb",
+"pos": [
+0,
+0,
+1.1
+],
+"rotY": 0
+},
+{
+"src": "../../assets-src/castle-kit/Models/GLB format/wall.glb",
+"pos": [
+-1.1,
+0,
+0
+],
+"rotY": 90
+},
+{
+"src": "../../assets-src/castle-kit/Models/GLB format/wall.glb",
+"pos": [
+1.1,
+0,
+0
+],
+"rotY": 90
+},
+{
+"src": "../../assets-src/castle-kit/Models/GLB format/flag-banner-long.glb",
+"pos": [
+-0.55,
+0,
+1.25
+]
+},
+{
+"src": "../../assets-src/castle-kit/Models/GLB format/flag-banner-long.glb",
+"pos": [
+0.55,
+0,
+1.25
+]
+}
+],
+"fit": 1.9,
+"W": 1500,
+"H": 1700,
+"Ha": 1350
+}
+]

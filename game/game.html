@@ -229,13 +229,14 @@ button:focus-visible{outline:3px solid var(--mojo);outline-offset:2px}
 <div class="intro" id="intro" hidden></div>
 <div class="toast" id="toast" hidden></div>
 
+<script src="sprites/atlas.js"></script>
 <script>
 /* ===== 시간 설정 =====
    개발 중: DEV=true, 기본 20배속 (게임 1시간 = 실제 3분)
    최종 빌드: DEV=false 로 바꾸면 리얼타임(×1) + 테스트 버튼 숨김 */
 const DEV = true;
 const DEV_SPEED = 20;
-const VERSION = 'v0.8';
+const VERSION = 'v0.9';
 
 const COLS=58, ROWS=58, M=60, H=3600, DAY=86400;
 
@@ -308,25 +309,25 @@ const BUILDS={
   griffin:{n:'그리핀 둥지',cat:'shop',lv:24,cost:75000,t:10*H,x:340,item:'아기 그리핀 5마리',jt:48*H,g:1450,jx:485},
   dragon:{n:'드래곤 굴',cat:'shop',lv:25,cost:100000,t:12*H,x:400,item:'드래곤 비늘 100개',jt:48*H,g:1600,jx:500},
   pine:{n:'소나무',cat:'deco',lv:1,cost:10,t:0,x:3,d:'뾰족뾰족 사철 푸른 나무'},
-  mailbox:{n:'우체통',cat:'deco',lv:2,cost:20,t:0,x:4,d:'왕국 소식이 도착하는 곳'},
+  mailbox:{n:'우물',cat:'deco',lv:2,cost:20,t:0,x:4,d:'시원한 물이 퐁퐁'},
   oak:{n:'참나무',cat:'deco',lv:2,cost:25,t:0,x:5,d:'동글동글 큰 그늘'},
   tulip:{n:'튤립 화단',cat:'deco',lv:2,cost:15,t:0,x:4,d:'알록달록 봄 꽃밭'},
   ash:{n:'물푸레나무',cat:'deco',lv:3,cost:30,t:0,x:6,d:'푸르스름한 둥근 나무'},
   rose:{n:'장미 화단',cat:'deco',lv:3,cost:30,t:0,x:6,d:'빨간 장미가 소복이'},
   lamp:{n:'가로등',cat:'deco',lv:3,cost:50,t:0,x:8,d:'밤이면 노랗게 반짝',glow:1},
   fir:{n:'전나무',cat:'deco',lv:4,cost:40,t:0,x:7,d:'키다리 상록수'},
-  picnic:{n:'피크닉 테이블',cat:'deco',lv:4,cost:60,t:0,x:10,d:'주민들의 점심 자리'},
+  picnic:{n:'정자',cat:'deco',lv:4,cost:60,t:0,x:10,d:'주민들의 쉼터'},
   fountain:{n:'분수',cat:'deco',lv:4,cost:300,t:0,x:30,d:'왕국 광장의 자랑'},
-  lily:{n:'백합 화단',cat:'deco',lv:5,cost:45,t:0,x:8,d:'하얀 별 모양 꽃'},
+  lily:{n:'노랑꽃 화단',cat:'deco',lv:5,cost:45,t:0,x:8,d:'햇살 같은 노란 꽃'},
   banner:{n:'왕국 깃발',cat:'deco',lv:5,cost:80,t:0,x:12,d:'펄럭이는 분홍 깃발'},
   maple:{n:'단풍나무',cat:'deco',lv:6,cost:60,t:0,x:10,d:'일 년 내내 가을 색'},
   orchid:{n:'난초 화단',cat:'deco',lv:8,cost:70,t:0,x:12,d:'우아한 보라 꽃'},
-  st_knight:{n:'기사 동상',cat:'deco',lv:8,cost:400,t:0,x:40,d:'왕국을 지키는 용감한 기사'},
+  st_knight:{n:'거인 석상',cat:'deco',lv:8,cost:400,t:0,x:40,d:'먼 옛날 거인의 얼굴'},
   firefly:{n:'반딧불 나무',cat:'deco',lv:9,cost:150,t:0,x:20,d:'밤이 되면 반딧불이 모여요',glow:1},
-  st_teacher:{n:'선생님 동상',cat:'deco',lv:11,cost:600,t:0,x:55,d:'지혜로운 왕국의 스승'},
+  st_teacher:{n:'고대 기둥',cat:'deco',lv:11,cost:600,t:0,x:55,d:'옛 신전의 대리석 기둥'},
   willow:{n:'수양버들',cat:'deco',lv:12,cost:120,t:0,x:16,d:'하늘하늘 늘어진 가지'},
-  st_wizard:{n:'마법사 동상',cat:'deco',lv:14,cost:900,t:0,x:75,d:'신비로운 대마법사'},
-  st_dragon:{n:'드래곤 동상',cat:'deco',lv:18,cost:2000,t:0,x:140,d:'왕국의 수호룡'},
+  st_wizard:{n:'오벨리스크',cat:'deco',lv:14,cost:900,t:0,x:75,d:'하늘을 찌르는 돌탑'},
+  st_dragon:{n:'돌 고리',cat:'deco',lv:18,cost:2000,t:0,x:140,d:'소원을 비는 고리'},
   road_dirt:{n:'흙길',cat:'road',lv:1,cost:5,t:0,x:1,col:['#e6c58f','#c9a26a'],d:'이어 붙이면 저절로 연결돼요'},
   road_stone:{n:'돌길',cat:'road',lv:6,cost:20,t:0,x:2,col:['#d3ccc0','#b1a897'],d:'단단한 돌로 깐 길'},
   road_gold:{n:'황금길',cat:'road',lv:15,cost:200,t:0,x:10,col:['#ffd96b','#f2b42a'],d:'반짝반짝 황금 벽돌 길'},
@@ -992,7 +993,10 @@ const OL='#4a2c1c';
 const CHARS={
   farmer:{n:'농부 감자',skin:'#ffd6b0',hair:'#8a5a2e',cloth:'#4f8fe0',eyes:'big',mouth:'grin',say:['올해 옥수수는 대풍이에요!','밭일은 새벽이 제맛이죠','감자도 좀 심어주세요~']},
   baker:{n:'빵순이',skin:'#ffe0c8',hair:'#c98a4b',cloth:'#ff8fb5',eyes:'happy',mouth:'smile',say:['갓 구운 빵 냄새 맡으셨어요?','버터는 듬뿍이 정답!','컵케이크 드실래요?']},
-  knight:{n:'꼬마 기사 단단',skin:'#ffd9b8',hair:'#5a3a28',cloth:'#c9d2e0',eyes:'brave',mouth:'o',cape:'#e8554e',say:['왕국은 제가 지킵니다!','투구가 조금 무거워요…','충성!']},
+  bookworm:{n:'책벌레 안경이',skin:'#ffd6b0',hair:'#3a2418',cloth:'#4fb85a',eyes:'big',mouth:'o',say:['이 책 벌써 세 번째 읽어요','도서관도 지어주세요!','지식은 힘이에요']},
+  carpenter:{n:'목수 아저씨',skin:'#ffd6b0',hair:'#c9773f',cloth:'#ffc93c',eyes:'squint',mouth:'grin',say:['뚝딱뚝딱! 집 지을 땅 있나요?','망치질이 제일 신나요','나무 냄새 좋다~']},
+  laundry:{n:'빨래하는 순이',skin:'#ffe0c8',hair:'#c98a4b',cloth:'#9aa3b5',eyes:'happy',mouth:'smile',say:['햇볕에 빨래 말리기 딱 좋아요','보송보송~','폐하 망토도 빨아드릴게요']},
+  knight:{n:'꼬마 경비 단단',skin:'#ffd9b8',hair:'#5a3a28',cloth:'#c9d2e0',eyes:'brave',mouth:'o',cape:'#e8554e',say:['왕국은 제가 지킵니다!','투구가 조금 무거워요…','충성!']},
   maid:{n:'메이드 나나',skin:'#ffe6d4',hair:'#3a2a3a',cloth:'#3a3550',eyes:'big',mouth:'cat',say:['성 청소 다 끝났어요~','차 한 잔 하실래요?','먼지 한 톨 없게!']},
   wizard:{n:'견습마법사 별이',skin:'#ffe0c8',hair:'#b9a3ff',cloth:'#6b4fd8',eyes:'sleepy',mouth:'o',cape:'#4a3699',say:['주문을… 또 까먹었다…','하암, 졸려요','별가루 필요하신 분?']},
   merchant:{n:'상인 금복',skin:'#ffd2b0',hair:'#3a2418',cloth:'#3fae7a',eyes:'squint',mouth:'grin',say:['싸요 싸! 오늘만 이 가격!','골드는 사랑입니다','장사가 잘 돼요, 헤헤']},
@@ -1149,7 +1153,7 @@ function charImg(k,mode='full'){const id=k+mode;if(CIMG[id])return CIMG[id];cons
 
 /* --- 주민 --- */
 const walkers=[];
-function walkerPool(){const pool=['farmer','girl','grandpa','maid','catkid'],has=k=>cnt(T=>T.t==='bld'&&T.b===k)>0;
+function walkerPool(){const pool=['farmer','girl','grandpa','maid','catkid','bookworm','carpenter','laundry'],has=k=>cnt(T=>T.t==='bld'&&T.b===k)>0;
   if(has('bakery'))pool.unshift('baker');if(has('guild')||has('watch'))pool.unshift('knight');if(has('wizard')||has('emporium'))pool.unshift('wizard');
   if(cnt(T=>T.t==='bld'&&BUILDS[T.b].cat==='shop')>0)pool.splice(2,0,'merchant');return pool}
 function syncWalkers(){
@@ -1162,6 +1166,9 @@ function syncWalkers(){
   walkers.forEach((w,n)=>{if(!pool.includes(w.type))w.type=pool[n%pool.length]});
 }
 function drawWalker(w,t){
+  if(hasSpr(`ch_${w.type}_dr_idle0`)){const[x,y]=P(w.u,w.v);let anim,f;
+    if(w.talk>1.2){anim='emote-yes';f=Math.floor((2.4-w.talk)*7)%4}else if(w.moving){anim='walk';f=Math.floor(t*11+w.blink*5)%8}else{anim='idle';f=Math.floor(t*1.6+w.blink)%2}
+    drawSpr(`ch_${w.type}_${w.up?'ur':'dr'}_${anim}${f}`,x,y,w.dir<0);return}
   const[x,y0]=P(w.u,w.v);
   g.beginPath();g.ellipse(x,y0,8,3.6,0,0,7);g.fillStyle='rgba(30,50,15,.28)';g.fill();
   const blink=(t+w.blink*7)%4<.13;
@@ -1185,7 +1192,7 @@ function stepWalkers(dt){
   for(const w of walkers){
     if(w.talk>0)w.talk-=dt;if(w.bow>0)w.bow-=dt;if(w.emote>0)w.emote-=dt;
     const du=w.tu-w.u,dv=w.tv-w.v,d=Math.hypot(du,dv);
-    if(d>.02){const sp=(w.speed||.55)*dt;w.u+=du/d*Math.min(sp,d);w.v+=dv/d*Math.min(sp,d);w.dir=(du-dv)<0?-1:1;w.moving=true}
+    if(d>.02){const sp=(w.speed||.55)*dt;w.u+=du/d*Math.min(sp,d);w.v+=dv/d*Math.min(sp,d);w.dir=(du-dv)<0?-1:1;w.up=(du+dv)<0;w.moving=true}
     else{w.moving=false;w.wait-=dt;if(w.wait<=0){
       let c,r;if(roads.length&&Math.random()<.55){const i=roads[Math.floor(Math.random()*roads.length)];c=i%COLS;r=(i/COLS)|0}
       else{c=Math.max(L.x0,Math.min(L.x1-1,Math.floor(w.u)+Math.round(rnd(-2,2))));r=Math.max(L.y0,Math.min(L.y1-1,Math.floor(w.v)+Math.round(rnd(-2,2))))}
@@ -1208,7 +1215,9 @@ function objShadow(c,r,k){if(HOUSES[k]){const[px,py]=P(c+.5,r+.5);g.beginPath();
 function blit(s,x,y){g.drawImage(s.c,x-s.w/2,y-(s.h-s.ay),s.w,s.h)}
 setInterval(()=>{const now=performance.now();for(const k in SPRS)if(now-SPRS[k].used>12000)delete SPRS[k]},5000);
 const CACHED_DECO=['pine','fir','oak','ash','maple','firefly','willow','tulip','rose','lily','orchid','lamp','mailbox','picnic','st_knight','st_teacher','st_wizard','st_dragon'];
-function drawObj(c,r,k,i,t){const[x,y]=P(c+.5,r+.5);objShadow(c,r,k);
+function drawObj(c,r,k,i,t){const[x,y]=P(c+.5,r+.5);
+  if(hasSpr(k)){drawSpr(k,x,y);if(k==='firefly'){[[-10,-46],[9,-52],[12,-36],[-4,-32]].forEach(([dx,dy],n)=>{g.beginPath();g.arc(x+dx,y+dy,1.8,0,7);g.fillStyle=`rgba(255,246,120,${.5+.5*Math.sin(t*3+n)})`;g.fill()})}return}
+  objShadow(c,r,k);
   if(HOUSES[k]){blit(sprite(k,()=>drawHouse(0,0,k,0)),x,y);houseSmoke(c,r,k,t);return}
   if(SPECIAL.includes(k)){if(!LIVE_ONLY.includes(k))blit(sprite(k,()=>drawSpecial(0,0,k,0,'body')),x,y);drawSpecial(c,r,k,t,'live');return}
   if(CACHED_DECO.includes(k)){const key=['tulip','rose','lily','orchid'].includes(k)?k+(i%4):k;blit(sprite(key,()=>drawDeco(0,0,k,i%4,0)),x,y);return}
@@ -1224,6 +1233,16 @@ function badge(x,y,kind,t){y+=Math.sin(t*4)*2.5;
 }
 function bar(x,y,p){g.fillStyle='rgba(90,58,40,.75)';rrect(x-22,y-4,44,8,4);g.fill();g.fillStyle='#fff3a6';rrect(x-21,y-3,Math.max(6,42*p),6,3);g.fill()}
 function openSign(x,y){g.fillStyle='#8a5a3a';g.fillRect(x-.8,y-2,1.6,9);g.fillStyle='#fff36b';rrect(x-11,y-9,22,9,3);g.fill();g.strokeStyle='#5a3a28';g.lineWidth=1.1;g.stroke();txt('OPEN',x,y-4.3,6.5,'#5a3a28')}
+
+/* --- 이미지 스프라이트: 오픈소스(CC0) 3D 모델을 게임 시점으로 렌더해 가공한 그림 묶음 --- */
+const ATL={s:(window.ATLAS&&window.ATLAS.s)||{},img:[]};let ATL_READY=false;
+(window.ATLAS?Promise.all(window.ATLAS.sheets.map((f,n)=>new Promise(res=>{const im=new Image();im.onload=()=>{ATL.img[n]=im;res()};im.onerror=()=>res();im.src='sprites/'+f}))):Promise.resolve())
+  .then(()=>{ATL_READY=ATL.img.length>0;for(const k in thumbs)delete thumbs[k];document.querySelectorAll('img.th').forEach(()=>{})});
+const hasSpr=k=>ATL_READY&&!!ATL.s[k];
+function drawSpr(k,x,y,flip=false){const a=ATL.s[k];if(!a)return false;const[sh,sx,sy,w,h,ax,ay,res]=a,im=ATL.img[sh];if(!im)return false;
+  if(flip){g.save();g.translate(x,y);g.scale(-1,1);g.drawImage(im,sx,sy,w,h,-ax/res,-ay/res,w/res,h/res);g.restore()}else g.drawImage(im,sx,sy,w,h,x-ax/res,y-ay/res,w/res,h/res);return true}
+const sprH=k=>{const a=ATL.s[k];return a?a[6]/a[7]-8:0};
+const cropKey=(T)=>{const st2=cropState(T),p=st2==='grow'?prog(T.plantedAt,T.readyAt):1,stage=st2==='grow'?(p<.34?0:p<.72?1:2):2;return stage===0?'crop_sprout':`crop_${T.crop}_${stage}`};
 
 /* --- 바닥: 8×8칸 구역별 캐시(화면에 보이는 구역만 그림) --- */
 const CHK=8,chunks={};
@@ -1290,7 +1309,7 @@ function drawGroundChunks(view){
 setInterval(()=>{const now=performance.now();for(const k in chunks){if(now-chunks[k].used>8000){chunks[k].cv.width=chunks[k].cv.height=1;chunks[k].sig='';chunks[k].sc=0}}},4000);
 
 /* --- 야생(아직 안 연 땅의 숲·바위) --- */
-function wildAt(i){const h=hash(i*13+7);if(h<.11)return'wpine';if(h<.17)return'woak';if(h<.205)return'wrock';if(h<.25)return'wbush';return null}
+function wildAt(i){const h=hash(i*13+7),h2=hash(i*7+3);if(h<.11)return h2<.5?'wpine':'wpine2';if(h<.17)return h2<.6?'woak':'woak2';if(h<.205)return'wrock';if(h<.24)return'wbush';if(h<.25)return h2<.5?'wlog':'wmush';return null}
 const wildSpr={};
 function wildSprite(k,sc){const key=k+'|'+Math.round(sc*4);if(wildSpr[key])return wildSpr[key];
   const c=document.createElement('canvas'),s=Math.min(3,Math.max(.2,Math.round(sc*4)/4));c.width=Math.ceil(120*s);c.height=Math.ceil(130*s);const prev=g;g=c.getContext('2d');
@@ -1311,16 +1330,17 @@ function draw(t){
   g=ctx;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height);
   const sc=cam.z*DPR;g.setTransform(sc,0,0,sc,cam.x*DPR,cam.y*DPR);
   const view=screenView();drawGroundChunks(view);
+  {const NR=RECTS[S.land+1];if(NR){const R0=RECTS[S.land];g.save();g.setLineDash([8,6]);path([[R0.x0,R0.y0],[R0.x1,R0.y0],[R0.x1,R0.y1],[R0.x0,R0.y1]]);g.strokeStyle='rgba(255,255,255,.75)';g.lineWidth=2.4;g.stroke();g.restore()}}
   const TR=tileRange(view),list=[];
   for(let r=TR.r0;r<=TR.r1;r++)for(let c=TR.c0;c<=TR.c1;c++){const i=r*COLS+c,T=S.tiles[i];
-    if(T.t==='castle'){if(i===CI)list.push({k:CX+CY+2,i,f:()=>{const tr=castleTier();shadow(CX+1.15,CY+1.15,1.15,.22);blit(sprite('castle'+tr,()=>drawCastle(tr,0),true),...P(CX+1,CY+1))},h:150,big:1});continue}
-    if(!unlocked(c,r)){const w=wildAt(i);if(w){list.push({k:c+r+1,f:()=>{const sp=wildSprite(w,sc),[x,y]=P(c+.5,r+.5);g.globalAlpha=isNext(c,r)?.9:.8;g.drawImage(sp.c,x-60,y-110,sp.c.width/sp.s,sp.c.height/sp.s);g.globalAlpha=1}})}continue}
-    if(T.t==='plot'){if(T.crop)list.push({k:c+r+1,i,f:()=>drawCrops(c,r,T,t),h:30});continue}
+    if(T.t==='castle'){if(i===CI)list.push({k:CX+CY+2,i,f:()=>{const tr=castleTier();if(drawSpr('castle'+tr,...P(CX+1,CY+1)))return;shadow(CX+1.15,CY+1.15,1.15,.22);blit(sprite('castle'+tr,()=>drawCastle(tr,0),true),...P(CX+1,CY+1))},h:150,big:1});continue}
+    if(!unlocked(c,r)){const w=wildAt(i);if(w){list.push({k:c+r+1,f:()=>{if(hasSpr(w)){const[x,y]=P(c+.5,r+.5);g.globalAlpha=isNext(c,r)?.92:.82;drawSpr(w,x,y);g.globalAlpha=1;return}if(w==='wpine2'||w==='woak2'||w==='wlog'||w==='wmush')return;const sp=wildSprite(w,sc),[x,y]=P(c+.5,r+.5);g.globalAlpha=isNext(c,r)?.9:.8;g.drawImage(sp.c,x-60,y-110,sp.c.width/sp.s,sp.c.height/sp.s);g.globalAlpha=1}})}continue}
+    if(T.t==='plot'){if(T.crop)list.push({k:c+r+1,i,f:()=>{const ck=cropKey(T);if(cropState(T)!=='dead'&&hasSpr(ck)){const[x,y]=P(c+.5,r+.5,4);drawSpr(ck,x,y);if(cropState(T)==='ready'){for(let n=0;n<3;n++){const ph=(t*.8+n/3)%1;const[sx,sy]=P(c+.2+n*.3,r+.5,10+ph*30);g.save();g.globalAlpha=1-ph;starShape(sx,sy,3,'#fff6a8');g.restore()}}}else drawCrops(c,r,T,t)},h:30});continue}
     if(T.t!=='bld')continue;const B=BUILDS[T.b];if(!B||B.cat==='road')continue;
     const s=bldState(T);
     if(s==='build')list.push({k:c+r+1,i,f:()=>drawScaffold(c,r,prog(T.startAt,T.doneAt),t),h:50});
     else if(B.cat==='fence')list.push({k:c+r+1,i,f:()=>drawFence(c,r,T.b,i,t),h:24});
-    else list.push({k:c+r+1,i,f:()=>drawObj(c,r,T.b,i,t),h:bh(T.b)});
+    else list.push({k:c+r+1,i,f:()=>drawObj(c,r,T.b,i,t),h:hasSpr(T.b)?sprH(T.b):bh(T.b)});
   }
   walkers.forEach(w=>list.push({k:w.u+w.v,w,f:()=>drawWalker(w,t)}));
   list.sort((a,b)=>a.k-b.k);list.forEach(d=>d.f());DRAWN=list;
@@ -1336,9 +1356,6 @@ function draw(t){
   // 배치 안내
   if(placing){for(let r=TR.r0;r<=TR.r1;r++)for(let c=TR.c0;c<=TR.c1;c++){if(!unlocked(c,r)||S.tiles[r*COLS+c].t!=='grass')continue;
     path([[c+.08,r+.08],[c+.92,r+.08],[c+.92,r+.92],[c+.08,r+.92]]);g.fillStyle=`rgba(255,255,255,${.22+.1*Math.sin(t*4)})`;g.fill();g.setLineDash([5,4]);g.strokeStyle='rgba(255,255,255,.95)';g.lineWidth=1.6;g.stroke();g.setLineDash([])}}
-  // 다음 땅 경계선
-  const NR=RECTS[S.land+1];if(NR){const R0=RECTS[S.land];g.save();g.setLineDash([8,6]);
-    path([[R0.x0,R0.y0],[R0.x1,R0.y0],[R0.x1,R0.y1],[R0.x0,R0.y1]]);g.strokeStyle='rgba(255,255,255,.75)';g.lineWidth=2.4;g.stroke();g.restore()}
   // 뱃지·진행바
   for(const d of list){if(d.w||d.i==null||d.big)continue;const i=d.i,T=S.tiles[i],c=i%COLS,r=(i/COLS)|0;const[x,y]=P(c+.5,r+.5);
     if(T.t==='plot'){const s=cropState(T);if(s==='ready')badge(x,y-42,'coin',t+i);else if(s==='grow')bar(x,y+6,prog(T.plantedAt,T.readyAt));continue}
@@ -1358,6 +1375,8 @@ function draw(t){
 const thumbs={};
 function thumb(k){
   if(thumbs[k])return thumbs[k];
+  {const sk=CROPS[k]?`crop_${k}_2`:k;if(hasSpr(sk)&&k!=='plot'){const a=ATL.s[sk],[sh,sx,sy,w,h]=a,c=document.createElement('canvas');c.width=c.height=180;const t2=c.getContext('2d');
+    const z=Math.min(170/w,170/h);t2.drawImage(ATL.img[sh],sx,sy,w,h,(180-w*z)/2,(180-h*z)/2,w*z,h*z);return thumbs[k]=c.toDataURL()}}
   const c=document.createElement('canvas');c.width=c.height=180;const t2=c.getContext('2d'),prev=g;g=t2;
   const isCastle=k.startsWith('castle'),sc=isCastle?.74:(CROPS[k]||k==='plot'?1.6:1.72);
   t2.setTransform(sc,0,0,sc,90,isCastle?120:(CROPS[k]||k==='plot'?118:150));

@@ -17,4 +17,6 @@ const html = `<!doctype html>
 ${body}
 </body></html>`;
 fs.writeFileSync('www/index.html', html);
+// 그림 묶음 복사
+if (fs.existsSync('game/sprites')) { fs.mkdirSync('www/sprites', { recursive: true }); for (const f of fs.readdirSync('game/sprites')) fs.copyFileSync('game/sprites/' + f, 'www/sprites/' + f); }
 console.log('www/index.html', html.length, 'bytes');
