@@ -311,12 +311,8 @@ body,button,input{-webkit-font-smoothing:antialiased;letter-spacing:-.2px}
 .sheet header{isolation:isolate;background:none!important;margin:2px 0 12px!important;padding:0!important;display:flex;justify-content:center;position:relative;border:0}
 .ribbon{position:relative;padding:4px 34px 8px;min-width:180px;text-align:center;border:3px solid var(--L);border-radius:14px;
   background:linear-gradient(#ffb36b,#ff8a3d 55%,#ec6a20);box-shadow:inset 0 3px 0 rgba(255,255,255,.45),inset 0 -5px 0 rgba(0,0,0,.15),0 4px 0 var(--L),0 7px 10px rgba(40,20,5,.3)}
-.ribbon::before,.ribbon::after{content:"";position:absolute;top:14px;width:30px;height:calc(100% - 6px);background:linear-gradient(var(--L),var(--L)) ,#c94c12;background:#4a2a17;z-index:-1}
-.ribbon i{display:none}
-.ribbon::before{left:-22px;clip-path:polygon(0 0,100% 0,100% 100%,0 100%,45% 50%)}
-.ribbon::after{right:-22px;clip-path:polygon(0 0,100% 0,55% 50%,100% 100%,0 100%)}
 .ribbon>h2::before,.ribbon>h2::after{content:none}
-.sheet header .ribbon{box-shadow:inset 0 3px 0 rgba(255,255,255,.45),inset 0 -5px 0 rgba(0,0,0,.15),0 4px 0 var(--L),0 7px 10px rgba(40,20,5,.3),-14px 10px 0 -3px #d8571a,14px 10px 0 -3px #d8571a}
+.sheet header .ribbon{box-shadow:inset 0 3px 0 rgba(255,255,255,.45),inset 0 -5px 0 rgba(0,0,0,.15),0 4px 0 var(--L),0 7px 10px rgba(40,20,5,.3)}
 .ribbon h2{margin:0;font-size:24px!important}
 #shClose{position:absolute;right:-4px;top:12px;width:46px!important;height:46px!important;min-height:0;padding:0!important;border-radius:50%!important;--c1:#ffa0a0;--c2:#ff5a5a;--c3:#d93636;font-size:0!important}
 #shClose::before{border-radius:50% 50% 40% 40%;left:6px;right:6px}
@@ -344,6 +340,68 @@ body,button,input{-webkit-font-smoothing:antialiased;letter-spacing:-.2px}
   background:repeating-conic-gradient(rgba(255,236,150,.55) 0 10deg,rgba(255,236,150,0) 10deg 20deg);
   -webkit-mask:radial-gradient(circle,#000 20%,transparent 68%);mask:radial-gradient(circle,#000 20%,transparent 68%)}
 .lvup{isolation:isolate}
+/* ===== 2.5단계: 튀어나온 곳 정리 · 폰 화면 맞춤 ===== */
+.ribbon::before{content:"";position:absolute;left:-30px;right:-30px;top:8px;bottom:-10px;z-index:-1;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2040%2044%22%3E%3Cpath%20d%3D%22M38%206H3l11%2017L3%2040h35z%22%20fill%3D%22%23e0621e%22%20stroke%3D%22%234a2a17%22%20stroke-width%3D%223%22%20stroke-linejoin%3D%22round%22/%3E%3Cpath%20d%3D%22M38%206v34%22%20stroke%3D%22%23b2440f%22%20stroke-width%3D%225%22/%3E%3C/svg%3E") left center/40px 100% no-repeat,url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2040%2044%22%3E%3Cpath%20d%3D%22M2%206h35L26%2023l11%2017H2z%22%20fill%3D%22%23e0621e%22%20stroke%3D%22%234a2a17%22%20stroke-width%3D%223%22%20stroke-linejoin%3D%22round%22/%3E%3Cpath%20d%3D%22M2%206v34%22%20stroke%3D%22%23b2440f%22%20stroke-width%3D%225%22/%3E%3C/svg%3E") right center/40px 100% no-repeat}
+.sheet header{align-items:center;margin:4px 46px 14px!important}
+#shClose{top:50%!important;right:-42px!important;margin-top:-23px}
+/* 아이콘은 캡슐 안쪽 동그란 자리에 */
+.chip.res svg{width:30px!important;height:30px!important;margin:0!important;flex:none}
+.chip.res #icGold,.chip.res #icMojo{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.28);box-shadow:inset 0 2px 0 rgba(0,0,0,.25)}
+.chip.res{padding:3px 12px 3px 4px!important}
+.lvnum{margin:0 2px 0 -2px!important;width:36px!important;height:34px!important;font-size:15px!important;padding-top:3px!important}
+.chip.lvc{padding:3px 12px 3px 4px!important}
+.me .face{margin:0 2px 0 0!important;width:32px!important;height:32px!important}
+.me{padding:3px 14px 3px 4px!important}
+/* 화면 크기별 배율 */
+:root{--ui:1}
+.hud,.sheet,.talk,.lvcard,.goal,.zoom,.placebar,.toast,.intro>*{zoom:var(--ui)}
+html.tall .sheet{max-height:72%}
+html.tall .talk .box{max-width:760px}
+.hud,.stage{padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
+/* 보상 아이콘 */
+.rw{display:inline-flex;align-items:center;gap:4px;padding:2px 12px 2px 4px!important}
+.rw i{display:grid;place-items:center;width:22px;height:22px}
+.rw i svg,.rw i img{width:22px;height:22px}
+/* ===== 3단계: 움직임 ===== */
+@keyframes sheetIn{0%{transform:translateY(60%);opacity:0}60%{transform:translateY(-3%);opacity:1}80%{transform:translateY(1%)}100%{transform:none}}
+@keyframes popIn{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.07);opacity:1}80%{transform:scale(.97)}100%{transform:none}}
+@keyframes cardIn{0%{transform:translateY(14px) scale(.9);opacity:0}70%{transform:translateY(-2px) scale(1.02);opacity:1}100%{transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes bump{0%{transform:none}35%{transform:scale(1.18)}65%{transform:scale(.95)}100%{transform:none}}
+@keyframes breathe{0%,100%{transform:none}50%{transform:scale(1.06)}}
+@keyframes shine{0%,72%{left:-60%}100%{left:130%}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.sheet-bg:not([hidden]) .sheet{animation:sheetIn .38s cubic-bezier(.2,.9,.3,1.2)}
+.sheet-bg:not([hidden]){animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0}}
+.lvup:not([hidden]) .lvcard{animation:popIn .45s cubic-bezier(.2,.9,.3,1.3)}
+.lvcard::before{animation:spin 14s linear infinite}
+.talk:not([hidden]) .box{animation:popIn .32s cubic-bezier(.2,.9,.3,1.25)}
+.talk .who{animation:bob 2.4s ease-in-out infinite}
+.cards>.card,#shBody .q{animation:cardIn .34s cubic-bezier(.2,.9,.3,1.2) backwards}
+.cards>.card:nth-child(2),#shBody .q:nth-child(2){animation-delay:.04s}.cards>.card:nth-child(3),#shBody .q:nth-child(3){animation-delay:.08s}
+.cards>.card:nth-child(4),#shBody .q:nth-child(4){animation-delay:.12s}.cards>.card:nth-child(5){animation-delay:.16s}.cards>.card:nth-child(6){animation-delay:.2s}
+.cards>.card:nth-child(n+7){animation-delay:.24s}
+.chip.bump{animation:bump .4s ease-out}
+.btn:active{transform:translateY(3px) scale(.96)!important}
+.card:active:not(:disabled){transform:translateY(3px) scale(.97)!important}
+#allBtn:not([hidden]){animation:breathe 1.4s ease-in-out infinite}
+.goal:not([hidden]){animation:popIn .4s cubic-bezier(.2,.9,.3,1.25)}
+/* 버튼 위로 빛줄기 지나감 */
+.btn.y::after,#allBtn::after{content:"";position:absolute;top:0;bottom:0;width:40%;left:-60%;z-index:-1;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.65),transparent);animation:shine 3.2s ease-in-out infinite}
+.btn{overflow:hidden}
+.lvcard .reward .rw{animation:popIn .4s .3s cubic-bezier(.2,.9,.3,1.3) backwards}
+/* 한 줄 상단 바 (S24 울트라 가로 832px에 맞춤) */
+.hud{flex-wrap:nowrap!important;gap:5px!important}
+.chip.res b{min-width:0!important}
+.xp{flex:0 0 70px!important;width:70px!important}
+.chip.res.clock{font-size:14px!important;padding:3px 6px 3px 12px!important}
+.me .nm{font-size:14px!important}
+#devBtn{padding:4px 9px 7px!important}
+.hud .btn{white-space:nowrap}
+.toast{top:calc(64px * var(--ui))!important}
 </style>
 
 <div id="app">
@@ -356,7 +414,7 @@ body,button,input{-webkit-font-smoothing:antialiased;letter-spacing:-.2px}
     <span class="spacer"></span>
     <button class="btn g" id="allBtn" hidden><img src="ui/ic_check.png" alt="">모두 거두기</button>
     <button class="btn y" id="shopBtn"><img src="ui/ic_shop.png" alt="">상점</button>
-    <button class="btn m" id="devBtn"><img src="ui/ic_wrench.png" alt="">테스트</button>
+    <button class="btn m" id="devBtn" aria-label="테스트" title="테스트"><img src="ui/ic_wrench.png" alt=""></button>
   </header>
   <main class="stage" id="stage">
     <div class="cloud" style="width:120px;height:34px;top:12%;animation-duration:70s;animation-delay:-20s"></div>
@@ -387,7 +445,7 @@ body,button,input{-webkit-font-smoothing:antialiased;letter-spacing:-.2px}
    최종 빌드: DEV=false 로 바꾸면 리얼타임(×1) + 테스트 버튼 숨김 */
 const DEV = true;
 const DEV_SPEED = 20;
-const VERSION = 'v0.12';
+const VERSION = 'v0.13';
 
 const COLS=58, ROWS=58, M=60, H=3600, DAY=86400;
 
@@ -1597,8 +1655,8 @@ function render(){
   $('lvNum').textContent=S.level;
   const a=lvXp(S.level),b=lvXp(S.level+1);
   $('xpFill').style.width=Math.round(clamp((S.xp-a)/(b-a))*100)+'%';
-  $('gold').textContent=Math.floor(S.gold).toLocaleString();
-  $('mojo').textContent=S.mojo;
+  bumpTxt('gold',Math.floor(S.gold).toLocaleString());
+  bumpTxt('mojo',String(S.mojo));
   if($('meFace').dataset.k!==S.ruler){$('meFace').dataset.k=S.ruler;$('meFace').innerHTML=spr(S.ruler,'face')}
   $('kName').textContent=S.name;$('kSub').textContent=`${RULERS.find(x=>x.k===S.ruler).n} · ${LANDS[S.land].n}`;
   const day=Math.floor(S.gt/DAY)+1,h=Math.floor(S.gt%DAY/H),m=Math.floor(S.gt%H/M);
@@ -1641,7 +1699,7 @@ function showLevelUp(){
   const un=[...Object.entries(CROPS).map(([k,o])=>({k,o})),...Object.entries(BUILDS).map(([k,o])=>({k,o}))].filter(e=>e.o.lv===q.lv);
   const ln=LANDS.find(l=>l.lv===q.lv&&l.cost);
   $('lvT').textContent=`레벨 ${q.lv}!`;
-  $('lvB').innerHTML=`<div class="reward" style="justify-content:center"><span>모조 +${q.mj}</span>${q.lv%2===0?'<span>밭 한도 +1</span>':''}</div>`+
+  $('lvB').innerHTML=`<div class="reward" style="justify-content:center">${rwM(q.mj)}${q.lv%2===0?'<span>밭 한도 +1</span>':''}</div>`+
     (un.length||ln?`<p class="sec">새로 열렸어요</p><div class="unl">${un.map(e=>`<div>${spr(e.k)}${e.o.n}</div>`).join('')}${ln?`<div>${spr('land')}${ln.n} 넓히기</div>`:''}</div>`:'');
   $('lvup').hidden=false;confetti();
 }
@@ -1678,6 +1736,13 @@ function finishNow(T){
 
 /* ===== 이벤트(모조 얻는 곳) ===== */
 const today=()=>{const d=new Date();return`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`};
+function bumpTxt(id,v){const e=$(id);if(e.textContent===v)return;const first=!e.textContent||e.textContent==='0';e.textContent=v;if(first)return;const c=e.parentNode;c.classList.remove('bump');void c.offsetWidth;c.classList.add('bump')}
+// 화면 크기에 맞춰 UI 배율(갤럭시 S24 울트라 가로 832×384, 폴드5 펼침 약 830×690, 폴드5 겉화면 약 880×344 기준)
+function uiFit(){const w=innerWidth,h=innerHeight;const k=Math.max(.82,Math.min(1.3,Math.min(h/400,w/860)));document.documentElement.style.setProperty('--ui',k.toFixed(3));document.documentElement.classList.toggle('tall',h/w>.7)}
+addEventListener('resize',uiFit);uiFit();
+function rwG(n){return`<span class="rw"><i>${spr('coin')}</i>${(+n).toLocaleString()}</span>`}
+function rwX(n){return`<span class="rw"><i><img src="ui/star.png" alt=""></i>${n}</span>`}
+function rwM(n){return`<span class="rw"><i>${spr('mojo')}</i>${n}</span>`}
 function checkDaily(){if(S.daily!==today()){S.daily=today();S.mojo+=2;setTimeout(()=>toast('오늘의 출석 선물! 모조 +2',3000),600);save()}}
 function starTick(){
   if(S.star&&S.gt>S.star.exp){S.star=null;S.nextStar=S.gt+rnd(H,3*H)}
@@ -1727,7 +1792,7 @@ function updateHand(){
 }
 function claimGoal(){
   const g=goalNow();if(!g||!goalReady())return;
-  const rw=`<div class="reward">${g.g?`<span>+${g.g} 골드</span>`:''}<span>+${g.x} XP</span></div>`;
+  const rw=`<div class="reward">${g.g?rwG(g.g):''}${rwX(g.x)}</div>`;
   say([{t:`훌륭해요, 폐하! '${g.t}' 완료예요.`,extra:rw,btn:'받기',fn:()=>{
     S.gold+=g.g||0;pop(CI,g.g?`+${g.g}`:'목표 완료','gd');gainXP(g.x,CI);setGoal(S.goal+1);
     const n=goalNow();
@@ -1765,7 +1830,7 @@ function openQuests(){
   ensureQuests();
   openSheet('왕국 목표',`<div class="qs">${S.quests.map((q,k)=>{const p=qProg(q),d=qDone(q);
     return`<div class="q"><span class="qi">${spr(q.ic)}</span><div class="qt"><b>${q.t}</b><span class="qbar"><i style="width:${Math.round(p/q.n*100)}%"></i></span>
-    <div class="reward"><span>+${q.g.toLocaleString()}G</span><span>+${q.x}XP</span>${q.mj?`<span>모조 +${q.mj}</span>`:''}</div></div>
+    <div class="reward">${rwG(q.g)}${rwX(q.x)}${q.mj?rwM(q.mj):''}</div></div>
     <button class="btn ${d?'y':'w'}" data-act="qclaim" data-k="${k}" ${d?'':'disabled'}>${d?'받기':`${p}/${q.n}`}</button></div>`}).join('')}</div>
     <p class="sec">목표를 이루면 새 목표가 생겨요 · 빈 풀밭 ${emptyCount()}칸</p>`)}
 
@@ -1945,7 +2010,7 @@ function pickName(){
     const who=RULERS.find(x=>x.k===S.ruler).n;
     say([{t:`어서 오세요, ${who} 폐하! 저는 이 나라의 대신 몽실이에요.`},
          {t:`${S.name}은 아직 작고 조용하지만, 폐하와 함께라면 금방 북적북적해질 거예요.`},
-         {t:'건국 기념으로 모조 10개를 드릴게요. 모조를 쓰면 기다리지 않고 바로 완성할 수 있어요.',extra:'<div class="reward"><span>모조 10</span></div>'},
+         {t:'건국 기념으로 모조 10개를 드릴게요. 모조를 쓰면 기다리지 않고 바로 완성할 수 있어요.',extra:'<div class="reward">'+rwM(10)+'</div>'},
          {t:GOALS[0].d,btn:'해볼게요!'}]);
   };
 }
