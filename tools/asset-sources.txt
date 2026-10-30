@@ -4,3 +4,6 @@ castle-kit|https://opengameart.org/sites/default/files/kenney_castle-kit.zip
 nature-kit|https://opengameart.org/sites/default/files/Nature%20Kit%20%282.1%29.zip
 fantasy-town|https://opengameart.org/sites/default/files/kenney_fantasy-town-kit_2.0.zip
 mini-characters|https://opengameart.org/sites/default/files/kenney_mini-characters.zip
+ui-pack|https://opengameart.org/sites/default/files/kenney_ui-pack.zip
+ui-rpg|https://opengameart.org/sites/default/files/UIpack_RPG.zip
+game-icons|https://opengameart.org/sites/default/files/Game%20icons%20expansion.zip
