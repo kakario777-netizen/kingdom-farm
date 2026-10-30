@@ -1,0 +1,6 @@
+{
+  "appId": "com.malang.kingdom",
+  "appName": "말랑 왕국",
+  "webDir": "www",
+  "android": { "backgroundColor": "#bfe8ff" }
+}

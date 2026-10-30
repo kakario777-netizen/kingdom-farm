@@ -1,0 +1,64 @@
+name: APK 빌드
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: 글꼴 받기 (앱 안에 넣기)
+        run: |
+          mkdir -p www/fonts
+          curl -fsSL -o www/fonts/Jua-Regular.ttf https://github.com/google/fonts/raw/main/ofl/jua/Jua-Regular.ttf || echo "글꼴 못 받음 - 기본 글꼴 사용"
+
+      - name: 웹 게임 묶기
+        run: |
+          npm install
+          node scripts/build-web.js
+
+      - name: 안드로이드 프로젝트 만들기
+        run: |
+          npx cap add android
+          npx cap sync android
+          # 가로 화면 고정
+          sed -i 's/<activity/<activity android:screenOrientation="sensorLandscape"/' android/app/src/main/AndroidManifest.xml
+          # 상단 상태바 숨기기(전체 화면)
+          perl -0pi -e 's/(<style name="AppTheme.NoActionBar"[^>]*>)/$1\n        <item name="android:windowFullscreen">true<\/item>/' android/app/src/main/res/values/styles.xml
+
+      - name: APK 빌드
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+          cp app/build/outputs/apk/debug/app-debug.apk ../malang-kingdom.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: malang-kingdom-apk
+          path: malang-kingdom.apk
+
+      - name: 릴리스에 올리기
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: 말랑 왕국 빌드 ${{ github.run_number }}
+          body: ${{ github.event.head_commit.message }}
+          files: malang-kingdom.apk
+          make_latest: true
