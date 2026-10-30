@@ -29,7 +29,7 @@ func fresh() -> Dictionary:
 		tiles[(D.CY + 2) * D.COLS + c] = {"t": "plot"}
 	return {"v": 1, "gt": 8.0 * D.H, "real": Time.get_unix_time_from_system(), "gold": 250.0, "xp": 0, "level": 1, "mojo": 10, "land": 0,
 		"speed": D.DEV_SPEED if DEV else 1, "tiles": tiles, "daily": "", "name": "말랑 왕국", "ruler": "king", "started": false,
-		"goal": 0, "gbase": 0, "st": {}}
+		"goal": 0, "gbase": 0, "st": {}, "quests": [], "star": {}, "nextStar": 8.0 * D.H + 40.0 * D.M}
 
 func save_game() -> void:
 	S.real = Time.get_unix_time_from_system()
@@ -55,6 +55,7 @@ func reset() -> void:
 func _process(delta: float) -> void:
 	if S.is_empty() or not S.started: return
 	S.gt = float(S.gt) + delta * float(S.speed)
+	star_tick()
 	_save_t += delta
 	if _save_t > 5.0:
 		_save_t = 0.0; save_game()
@@ -241,3 +242,82 @@ func set_goal(n: int) -> void:
 	var g := goal_now()
 	if g: S.gbase = stv(g.k)
 	save_game(); changed.emit()
+
+# ---------- 왕국 목표(튜토리얼 뒤 3개씩) ----------
+func q_prog(q: Dictionary) -> int: return int(clamp(stv(q.k) - int(q.base), 0, int(q.n)))
+func q_done(q: Dictionary) -> bool: return q_prog(q) >= int(q.n)
+func has_cat(c: String) -> bool: return cnt(func(T): return T.t == "bld" and D.BUILDS[T.b].cat == c and bld_state(T) != "build") > 0
+
+func new_quest() -> Dictionary:
+	var lv: int = S.level
+	var used: Array = []
+	for q in S.get("quests", []): used.append(q.type)
+	var crops: Array = []
+	for k in D.CROP_ORDER:
+		if int(D.CROPS[k].lv) <= lv and float(D.CROPS[k].t) <= 6.0 * D.H: crops.append(k)
+	var unbuilt: Array = []
+	for k in D.BUILD_ORDER:
+		var B: Dictionary = D.BUILDS[k]
+		if B.cat in ["house", "shop"] and int(B.lv) <= lv and cnt(func(T): return T.t == "bld" and T.b == k) == 0: unbuilt.append(k)
+	unbuilt.sort_custom(func(a, b): return float(D.BUILDS[a].cost) < float(D.BUILDS[b].cost))
+	var opts: Array = []
+	opts.append({"type": "harvest", "k": "harvest", "n": 8 + lv * 2, "t": "작물 %d번 거두기" % (8 + lv * 2), "ic": "crop_wheat_2"})
+	opts.append({"type": "deco", "k": "deco", "n": 3 + lv / 2, "t": "장식 %d개 놓기" % (3 + lv / 2), "ic": "tulip"})
+	opts.append({"type": "road", "k": "road", "n": 4 + lv, "t": "길 %d칸 깔기" % (4 + lv), "ic": "plot"})
+	if crops.size():
+		var c: String = crops[randi() % crops.size()]; var n := 3 + lv / 3
+		opts.append({"type": "crop", "k": "c_" + c, "n": n, "t": "%s %d번 거두기" % [D.CROPS[c].n, n], "ic": "crop_%s_2" % c})
+	if has_cat("house"): opts.append({"type": "tax", "k": "tax", "n": 4 + lv, "t": "세금 %d번 걷기" % (4 + lv), "ic": "cottage_o"})
+	if has_cat("shop"): opts.append({"type": "job", "k": "job", "n": 1 + lv / 8, "t": "가게 상품 %d번 완성하기" % (1 + lv / 8), "ic": "bakery"})
+	if unbuilt.size():
+		var b: String = unbuilt[0]
+		opts.append({"type": "build", "k": "b_" + b, "n": 1, "t": "%s 짓기" % D.BUILDS[b].n, "ic": b, "bonus": int(round(float(D.BUILDS[b].cost) * 0.15))})
+	var pool := opts.filter(func(o): return not (o.type in used))
+	if pool.is_empty(): pool = opts
+	var q: Dictionary = pool[randi() % pool.size()]
+	q.base = stv(q.k); q.g = 50 + lv * 35 + int(q.get("bonus", 0)); q.x = 15 + lv * 10
+	q.mj = 2 if q.type == "build" else (1 if randf() < 0.25 else 0)
+	return q
+
+func ensure_quests() -> void:
+	if not S.has("quests") or S.quests == null: S.quests = []
+	while S.quests.size() < 3: S.quests.append(new_quest())
+
+func quests_done() -> int:
+	ensure_quests()
+	return S.quests.filter(func(q): return q_done(q)).size()
+
+func claim_quest(k: int) -> void:
+	var q: Dictionary = S.quests[k]
+	if not q_done(q): return
+	S.gold += float(q.g); S.mojo += int(q.mj)
+	pop.emit(D.CI, "+%d" % q.g, "gd"); gain_xp(int(q.x), D.CI)
+	if q.mj: pop.emit(D.CI, "모조 +%d" % q.mj, "mj")
+	S.quests.remove_at(k); S.quests.insert(k, new_quest())
+	done_action()
+
+# ---------- 반짝별 ----------
+func star_tick() -> void:
+	var st: Dictionary = S.get("star", {})
+	if st.size() and S.gt > float(st.exp):
+		S.star = {}; S.nextStar = S.gt + randf_range(D.H, 3 * D.H)
+	if S.get("star", {}).is_empty() and S.gt >= float(S.get("nextStar", 0)):
+		var R: Dictionary = D.RECTS[S.land]; var ok: Array = []
+		for r in range(R.y0, R.y1):
+			for c in range(R.x0, R.x1):
+				if S.tiles[r * D.COLS + c].t != "castle": ok.append(r * D.COLS + c)
+		S.star = {"i": ok[randi() % ok.size()], "exp": S.gt + 40.0 * D.M}
+
+func catch_star(i: int) -> bool:
+	var st: Dictionary = S.get("star", {})
+	if st.is_empty() or int(st.i) != i: return false
+	S.star = {}; S.mojo += 1; S.nextStar = S.gt + randf_range(D.H, 3 * D.H)
+	pop.emit(i, "모조 +1", "mj"); toast.emit("반짝별을 잡았어요! 모조 +1"); done_action(); return true
+
+# ---------- 밤낮 ----------
+func night_amt() -> float:
+	var hf: float = fmod(S.gt, D.DAY) / D.H
+	if hf >= 20 or hf < 5: return 1.0
+	if hf >= 18: return (hf - 18) / 2.0
+	if hf < 7: return (7 - hf) / 2.0
+	return 0.0

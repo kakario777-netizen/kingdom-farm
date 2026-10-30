@@ -55,4 +55,17 @@ func _shots(dir: String) -> void:
 	ui._next_talk(); ui.lv_queue.append([16, 3]); ui._show_lv()
 	await get_tree().create_timer(0.8).timeout
 	await shot(dir + "/g6_lvup.png")
+	ui.lv_box.visible = false
+	world.cam.zoom = Vector2(1.6, 1.6); world.cam.position = D.P(28, 26.5)
+	G.S.star = {"i": 31 * D.COLS + 25, "exp": G.S.gt + 9999}
+	await get_tree().create_timer(3.0).timeout
+	for wk in world.walkers.slice(0, 2): world.greet(wk)
+	await get_tree().create_timer(0.5).timeout
+	await shot(dir + "/g7_people.png")
+	G.S.gt = floor(G.S.gt / D.DAY) * D.DAY + 22 * D.H
+	await get_tree().create_timer(0.6).timeout
+	await shot(dir + "/g8_night.png")
+	G.S.gt = floor(G.S.gt / D.DAY) * D.DAY + 11 * D.H; G.set_goal(D.GOALS.size()); ui.open_quests()
+	await get_tree().create_timer(0.8).timeout
+	await shot(dir + "/g9_quests.png")
 	get_tree().quit()

@@ -278,7 +278,9 @@ func _update_goal() -> void:
 	var g := G.goal_now()
 	goal_btn.visible = true
 	if g.is_empty():
-		goal_t.text = "왕국을 키워봐요"; goal_p.text = "튜토리얼 완료!"; goal_ic.texture = D.thumb("castle1")
+		var dn := G.quests_done()
+		goal_t.text = "왕국 목표"; goal_p.text = ("%d개 완료! 보상 받기" % dn) if dn else "눌러서 목표 보기"; goal_ic.texture = D.thumb("castle1")
+		goal_p.add_theme_color_override("font_color", Color("#c2560c") if dn else INK_SOFT)
 	else:
 		goal_t.text = g.t; goal_ic.texture = D.thumb("plot" if g.ic == "plot" else ("coin" if g.ic == "coin" else ("crop_corn_2" if g.ic == "corn" else g.ic)))
 		goal_p.text = "완료! 눌러서 보상 받기" if G.goal_ready() else "%d / %d" % [G.goal_prog(), int(g.n)]
@@ -290,7 +292,7 @@ func _update_goal() -> void:
 func _on_goal() -> void:
 	if talking: return
 	var g := G.goal_now()
-	if g.is_empty(): say([{"t": "튜토리얼은 모두 끝났어요. 마음껏 왕국을 키워보세요!", "btn": "알겠어요"}]); return
+	if g.is_empty(): open_quests(); return
 	if G.goal_ready(): claim_goal()
 	else: say([{"t": g.d, "btn": "알겠어요"}])
 
@@ -304,7 +306,7 @@ func claim_goal() -> void:
 		G.S.gold += float(g.get("g", 0)); G.pop.emit(D.CI, ("+%d" % g.g) if g.get("g") else "목표 완료", "gd"); G.gain_xp(int(g.x), D.CI); G.set_goal(G.S.goal + 1)
 		var n := G.goal_now()
 		if not n.is_empty(): say([{"t": n.d, "btn": "알겠어요"}])
-		else: say([{"t": "기본은 모두 익히셨어요! 이제 이 왕국은 온전히 폐하의 것이에요."}, {"t": "레벨을 올려 새 작물과 가게를 열고, 빈 땅을 알뜰하게 채워보세요!", "btn": "시작!"}])
+		else: say([{"t": "기본은 모두 익히셨어요! 이제 이 왕국은 온전히 폐하의 것이에요."}, {"t": "이제부터는 왕국 목표가 3개씩 생겨요. 레벨을 올려 새 작물과 가게를 열고, 빈 땅을 알뜰하게 채워보세요!", "btn": "시작!"}, {"t": "왼쪽 위 목표 카드를 누르면 목표를 볼 수 있어요.", "btn": "알겠어요"}])
 		G.done_action()}])
 
 # =============== 확대 버튼 ===============
@@ -571,6 +573,7 @@ func place_at(i: int) -> void:
 func on_tap(i: int) -> void:
 	if talking or is_sheet_open() or lv_box.visible or intro: return
 	var c := i % D.COLS; var r := i / D.COLS; G.sel = i
+	if G.catch_star(i): return
 	if not G.unlocked(c, r):
 		stop_placing(); open_expand(); return
 	var T: Dictionary = G.S.tiles[i]
@@ -704,6 +707,30 @@ func open_shop(here: bool) -> void:
 				if G.do_build(G.sel, kk): close_sheet()
 			else: start_placing({"kind": "new", "k": kk})))
 
+func open_quests() -> void:
+	G.ensure_quests()
+	var b := open_sheet("왕국 목표")
+	for k in G.S.quests.size():
+		var q: Dictionary = G.S.quests[k]; var kk: int = k
+		var p := panel(Color("#fffaf0"), 18, 3, 3); b.add_child(p)
+		var h := row(12); p.add_child(h)
+		h.add_child(pic(D.thumb(q.ic), 50))
+		var vb := VBoxContainer.new(); vb.size_flags_horizontal = Control.SIZE_EXPAND_FILL; vb.add_theme_constant_override("separation", 4); h.add_child(vb)
+		vb.add_child(lab(q.t, 17))
+		var pb := ProgressBar.new(); pb.show_percentage = false; pb.custom_minimum_size = Vector2(0, 14); pb.value = 100.0 * G.q_prog(q) / float(q.n)
+		var bg := sbox(Color("#ead5b4"), L, 2, 8); bg.content_margin_top = 0; bg.content_margin_bottom = 0
+		var fl := sbox(Color("#ffcf3a"), Color("#ffcf3a"), 0, 8); fl.content_margin_top = 0; fl.content_margin_bottom = 0
+		pb.add_theme_stylebox_override("background", bg); pb.add_theme_stylebox_override("fill", fl); vb.add_child(pb)
+		var rw := row(6); vb.add_child(rw)
+		rw.add_child(reward_chip("coin", int(q.g))); rw.add_child(reward_chip("star", int(q.x)))
+		if int(q.mj): rw.add_child(reward_chip("mojo", int(q.mj)))
+		var done := G.q_done(q)
+		var cb := jbtn("받기" if done else "%d/%d" % [G.q_prog(q), int(q.n)], "yellow" if done else "white", 17)
+		cb.disabled = not done; cb.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		cb.pressed.connect(func(): G.claim_quest(kk); open_quests())
+		h.add_child(cb)
+	b.add_child(lab("목표를 이루면 새 목표가 생겨요 · 빈 풀밭 %d칸" % G.cnt(func(T): return T.t == "grass"), 13, INK_SOFT))
+
 func open_me() -> void:
 	if intro: return
 	var b := open_sheet(G.S.name)
@@ -722,10 +749,11 @@ func open_dev() -> void:
 	var mb := jbtn("모조 +5", "purple", 15); mb.pressed.connect(func(): G.S.mojo += 5; G.done_action()); r2.add_child(mb)
 	var lb := jbtn("레벨 +1", "pink", 15); lb.pressed.connect(func(): close_sheet(); G.gain_xp(D.lv_xp(G.S.level + 1) - int(G.S.xp)); G.done_action()); r2.add_child(lb)
 	var r3 := row(); b.add_child(r3)
+	var stb := jbtn("반짝별 부르기", "white", 15); stb.pressed.connect(func(): G.S.star = {}; G.S.nextStar = G.S.gt; G.star_tick(); close_sheet(); toast("반짝별이 떨어졌어요! 찾아서 눌러보세요")); r3.add_child(stb)
 	var sk := jbtn("1시간 건너뛰기", "white", 15); sk.pressed.connect(func(): G.S.gt += D.H; G.done_action()); r3.add_child(sk)
 	var sg := jbtn("튜토리얼 건너뛰기", "white", 15); sg.pressed.connect(func(): G.set_goal(D.GOALS.size()); close_sheet()); r3.add_child(sg)
 	var rs := jbtn("왕국 초기화", "red", 15); rs.pressed.connect(func(): close_sheet(); G.reset(); show_intro()); r3.add_child(rs)
-	b.add_child(lab("말랑 왕국 고도판 v1.0", 12, INK_SOFT))
+	b.add_child(lab("말랑 왕국 고도판 v1.1", 12, INK_SOFT))
 
 # =============== 손가락 안내 ===============
 func _build_hand() -> void:

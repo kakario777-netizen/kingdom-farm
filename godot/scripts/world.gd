@@ -21,6 +21,9 @@ var _moved := false
 var _pinch_d := 0.0
 var _pinch_z := 1.0
 var t := 0.0
+var walkers: Array = []   # {node, spr, u, v, tu, tv, wait, type, dir, up, moving, talk, say, emote, emk, speed, blink}
+var night: CanvasModulate
+var glow: Node2D
 
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
@@ -29,13 +32,16 @@ func _ready() -> void:
 	marks = Node2D.new(); add_child(marks); marks.draw.connect(_draw_marks)
 	objs = Node2D.new(); objs.y_sort_enabled = true; add_child(objs)
 	over = Node2D.new(); add_child(over); over.draw.connect(_draw_over)
+	glow = Node2D.new(); var gm := CanvasItemMaterial.new(); gm.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD; glow.material = gm
+	add_child(glow); glow.draw.connect(_draw_glow)
 	pops = Node2D.new(); add_child(pops)
+	night = CanvasModulate.new(); add_child(night)
 	cam = Camera2D.new(); add_child(cam); cam.make_current()
-	G.tiles_changed.connect(refresh)
+	G.tiles_changed.connect(func(): refresh(); sync_walkers(); _collect_roads())
 	G.land_changed.connect(func(): ground.queue_redraw(); refresh(); fit_cam())
 	G.pop.connect(_pop)
 	_build_wild()
-	refresh()
+	refresh(); sync_walkers(); _collect_roads()
 	get_viewport().size_changed.connect(_on_resize)
 	_on_resize()
 
@@ -306,6 +312,8 @@ func _draw_fence(n: Node2D, k: String, m: int) -> void:
 
 # ---------------- 표시 ----------------
 func _draw_over() -> void:
+	_draw_sky_star()
+	_draw_bubbles()
 	var cur: Dictionary = D.RECTS[G.S.land]
 	for r in range(cur.y0, cur.y1):
 		for c in range(cur.x0, cur.x1):
@@ -329,6 +337,57 @@ func _draw_over() -> void:
 					"done": _badge(top, "box")
 					"work": _bar(D.P(c + 0.5, r + 0.5, 22), G.prog(T.job.startAt, T.job.doneAt))
 					"open": _sign(D.P(c + 0.85, r + 0.85, 4))
+
+func _draw_bubbles() -> void:
+	for wk in walkers:
+		var p := D.P(wk.u, wk.v)
+		if wk.emote > 0:
+			var a: float = min(1.0, wk.emote * 2.0); var yy: float = p.y - 50 - (1.2 - wk.emote) * 10
+			if wk.emk == "heart":
+				over.draw_circle(Vector2(p.x + 7.5, yy - 3), 3.6, Color(1, 0.31, 0.43, a)); over.draw_circle(Vector2(p.x + 12.5, yy - 3), 3.6, Color(1, 0.31, 0.43, a))
+				over.draw_colored_polygon(PackedVector2Array([Vector2(p.x + 4.2, yy - 1.5), Vector2(p.x + 15.8, yy - 1.5), Vector2(p.x + 10, yy + 5)]), Color(1, 0.31, 0.43, a))
+			else:
+				over.draw_string(D.font, Vector2(p.x + 5, yy + 4), "♪", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color(0.29, 0.16, 0.09, a))
+		if wk.talk > 0:
+			var nm: String = D.CHARS[wk.type].n
+			var tw: float = max(D.font.get_string_size(wk.say, HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x, D.font.get_string_size(nm, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x) + 16
+			var r := Rect2(p.x - tw / 2, p.y - 78, tw, 32)
+			var sb := StyleBoxFlat.new(); sb.bg_color = Color.WHITE; sb.border_color = Color("#4a2a17"); sb.set_border_width_all(2); sb.set_corner_radius_all(10); sb.anti_aliasing = true
+			over.draw_style_box(sb, r)
+			over.draw_colored_polygon(PackedVector2Array([Vector2(p.x - 5, r.end.y - 1), Vector2(p.x + 5, r.end.y - 1), Vector2(p.x, r.end.y + 6)]), Color.WHITE)
+			over.draw_string(D.font, Vector2(r.position.x, r.position.y + 12), nm, HORIZONTAL_ALIGNMENT_CENTER, tw, 10, Color("#ff5f93"))
+			over.draw_string(D.font, Vector2(r.position.x, r.position.y + 26), wk.say, HORIZONTAL_ALIGNMENT_CENTER, tw, 12, Color("#5a3a28"))
+
+func _draw_sky_star() -> void:
+	var st: Dictionary = G.S.get("star", {})
+	if st.is_empty(): return
+	var i: int = st.i; var p := D.P(i % D.COLS + 0.5, i / D.COLS + 0.5, 30) + Vector2(0, sin(t * 3.0) * 4.0)
+	over.draw_circle(p, 22, Color(1, 0.95, 0.5, 0.25 + 0.1 * sin(t * 5.0)))
+	over.draw_set_transform(p, sin(t * 2.0) * 0.2)
+	var pts := PackedVector2Array(); var pts2 := PackedVector2Array()
+	for k in 10:
+		var a := -PI / 2 + k * PI / 5
+		pts.append(Vector2(cos(a), sin(a)) * (17.0 if k % 2 == 0 else 8.0)); pts2.append(Vector2(cos(a), sin(a)) * (14.0 if k % 2 == 0 else 6.5))
+	over.draw_colored_polygon(pts, Color("#4a2a17")); over.draw_colored_polygon(pts2, Color("#fff36b"))
+	over.draw_set_transform(Vector2.ZERO)
+
+func _draw_glow() -> void:
+	var na := G.night_amt()
+	var cur: Dictionary = D.RECTS[G.S.land]
+	for r in range(cur.y0, cur.y1):
+		for c in range(cur.x0, cur.x1):
+			var T: Dictionary = G.S.tiles[r * D.COLS + c]
+			if T.t != "bld": continue
+			var B: Dictionary = D.BUILDS[T.b]
+			if T.b == "lamp": _glow_at(D.P(c + 0.5, r + 0.5, 50), 70, 0.5 * na)
+			elif T.b == "firefly": _glow_at(D.P(c + 0.5, r + 0.5, 40), 50, 0.4 * na)
+			elif B.cat in ["house", "shop"] and G.bld_state(T) != "build": _glow_at(D.P(c + 0.5, r + 0.5, 14), 34, 0.32 * na)
+	_glow_at(D.P(D.CX + 1, D.CY + 1.62, 30), 60, 0.35 * na)
+
+func _glow_at(p: Vector2, rad: float, a: float) -> void:
+	for k in 6:
+		var f := 1.0 - k / 6.0
+		glow.draw_circle(p, rad * f, Color(1, 0.78, 0.4, a / 6.0))
 
 func _star(p: Vector2, s: float, col: Color) -> void:
 	var pts := PackedVector2Array()
@@ -470,7 +529,15 @@ func _unhandled_input(e: InputEvent) -> void:
 		elif e.button_index == MOUSE_BUTTON_WHEEL_DOWN: zoom_at(0.89, e.position)
 
 func pick(w: Vector2) -> void:
+	var st: Dictionary = G.S.get("star", {})
+	if st.size():
+		var sp := D.P(int(st.i) % D.COLS + 0.5, int(st.i) / D.COLS + 0.5, 30)
+		if w.distance_to(sp) < 26: tapped.emit(int(st.i)); return
 	if G.placing.is_empty():
+		for wk in walkers:
+			var p := D.P(wk.u, wk.v)
+			if abs(w.x - p.x) < 12 and w.y < p.y + 3 and w.y > p.y - 44:
+				greet(wk); return
 		var list: Array = []
 		for i in cells:
 			var e: Dictionary = cells[i]
@@ -490,6 +557,11 @@ func pick(w: Vector2) -> void:
 
 func _process(delta: float) -> void:
 	t += delta
+	step_walkers(delta)
+	var na := G.night_amt()
+	night.color = Color(1, 1, 1).lerp(Color(0.52, 0.54, 0.86), na)
+	glow.visible = na > 0.01
+	if glow.visible: glow.queue_redraw()
 	over.queue_redraw()
 	if not G.placing.is_empty(): marks.queue_redraw()
 	elif marks.get_meta("on", false): marks.queue_redraw()
@@ -508,3 +580,76 @@ func refresh_states() -> void:
 			var sg := _sig(i, G.S.tiles[i])
 			if (e == null and sg != "x") or (e != null and e.sig != sg):
 				refresh(); return
+
+# ---------------- 주민 ----------------
+func _walker_pool() -> Array:
+	var pool := ["farmer", "girl", "grandpa", "maid", "catkid", "bookworm", "carpenter", "laundry"]
+	var has := func(k: String) -> bool: return G.cnt(func(T): return T.t == "bld" and T.b == k) > 0
+	if has.call("bakery"): pool.push_front("baker")
+	if has.call("guild") or has.call("watch"): pool.push_front("knight")
+	if has.call("wizard") or has.call("emporium"): pool.push_front("wizard")
+	if G.has_cat("shop"): pool.insert(2, "merchant")
+	return pool
+
+func sync_walkers() -> void:
+	var houses := G.cnt(func(T): return T.t == "bld" and D.BUILDS[T.b].cat == "house" and G.bld_state(T) != "build")
+	var shops := G.cnt(func(T): return T.t == "bld" and D.BUILDS[T.b].cat == "shop" and G.bld_state(T) != "build")
+	var want: int = min(10 + G.S.land * 2, houses * 2 + shops)
+	var pool := _walker_pool()
+	var R: Dictionary = D.RECTS[G.S.land]
+	while walkers.size() < want:
+		var u := 0.0; var v := 0.0
+		for tries in 30:
+			u = randf_range(R.x0 + 0.2, R.x1 - 0.2); v = randf_range(R.y0 + 0.2, R.y1 - 0.2)
+			if G.S.tiles[int(v) * D.COLS + int(u)].t != "castle": break
+		var n := Node2D.new(); var sp := Sprite2D.new(); n.add_child(sp); objs.add_child(n)
+		walkers.append({"node": n, "spr": sp, "u": u, "v": v, "tu": u, "tv": v, "wait": randf_range(0, 2), "type": pool[walkers.size() % pool.size()],
+			"dir": 1, "up": false, "moving": false, "talk": 0.0, "say": "", "emote": 0.0, "emk": "heart", "speed": randf_range(0.45, 0.65), "blink": randf_range(1, 4)})
+	while walkers.size() > want:
+		var wk: Dictionary = walkers.pop_back(); wk.node.queue_free()
+	for k in walkers.size():
+		if not (walkers[k].type in pool): walkers[k].type = pool[k % pool.size()]
+
+func step_walkers(dt: float) -> void:
+	if walkers.is_empty(): return
+	var R: Dictionary = D.RECTS[G.S.land]
+	for wk in walkers:
+		if wk.talk > 0: wk.talk -= dt
+		if wk.emote > 0: wk.emote -= dt
+		var du: float = wk.tu - wk.u; var dv: float = wk.tv - wk.v; var d := sqrt(du * du + dv * dv)
+		if d > 0.02 and wk.talk <= 1.2:
+			var sp: float = wk.speed * dt
+			wk.u += du / d * min(sp, d); wk.v += dv / d * min(sp, d)
+			wk.dir = -1 if (du - dv) < 0 else 1; wk.up = (du + dv) < 0; wk.moving = true
+		else:
+			wk.moving = false; wk.wait -= dt
+			if wk.wait <= 0:
+				var c: int; var r: int
+				if _roads.size() and randf() < 0.55:
+					var i: int = _roads[randi() % _roads.size()]; c = i % D.COLS; r = i / D.COLS
+				else:
+					c = clamp(int(wk.u) + randi_range(-2, 2), R.x0, R.x1 - 1); r = clamp(int(wk.v) + randi_range(-2, 2), R.y0, R.y1 - 1)
+				if G.S.tiles[r * D.COLS + c].t == "castle": wk.wait = 0.5
+				else:
+					wk.tu = c + randf_range(0.25, 0.75); wk.tv = r + randf_range(0.25, 0.75); wk.wait = randf_range(1.5, 4.5)
+		var anim := "idle"; var f := int(t * 1.6 + wk.blink) % 2
+		if wk.talk > 1.2: anim = "emote-yes"; f = int((2.4 - wk.talk) * 7) % 4
+		elif wk.moving: anim = "walk"; f = int(t * 11 + wk.blink * 5) % 8
+		var k := "ch_%s_%s_%s%d" % [wk.type, "ur" if wk.up else "dr", anim, f]
+		if wk.spr.get_meta("k", "") != k: D.set_sprite(wk.spr, k)
+		wk.node.position = D.P(wk.u, wk.v)
+		wk.node.scale.x = -1 if wk.dir < 0 else 1
+
+var _roads: Array = []
+func _collect_roads() -> void:
+	_roads.clear()
+	var R: Dictionary = D.RECTS[G.S.land]
+	for r in range(R.y0, R.y1):
+		for c in range(R.x0, R.x1):
+			var T: Dictionary = G.S.tiles[r * D.COLS + c]
+			if T.t == "bld" and D.BUILDS.has(T.b) and D.BUILDS[T.b].cat == "road": _roads.append(r * D.COLS + c)
+
+func greet(wk: Dictionary) -> void:
+	var L: Array = D.CHARS[wk.type].say
+	wk.say = L[randi() % L.size()]; wk.talk = 2.4; wk.emote = 1.2; wk.emk = "heart" if randf() < 0.5 else "note"
+	wk.wait = max(wk.wait, 2.5); wk.tu = wk.u; wk.tv = wk.v
