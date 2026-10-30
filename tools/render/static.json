@@ -4059,5 +4059,159 @@
 "W": 1500,
 "H": 1700,
 "Ha": 1350
+},
+{
+"id": "pond",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/ground_riverOpen.glb"
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/lily_large.glb",
+"pos": [
+-0.15,
+0.02,
+0.1
+],
+"scale": 0.9
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/lily_small.glb",
+"pos": [
+0.2,
+0.02,
+-0.1
+]
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/lily_small.glb",
+"pos": [
+0.05,
+0.02,
+0.25
+],
+"rotY": 60
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/stone_smallA.glb",
+"pos": [
+0.42,
+0,
+0.3
+]
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/stone_smallC.glb",
+"pos": [
+-0.4,
+0,
+-0.35
+]
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/plant_bushSmall.glb",
+"pos": [
+0.4,
+0,
+-0.4
+]
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/log.glb",
+"pos": [
+-0.42,
+0,
+0.38
+],
+"scale": 0.8,
+"rotY": 30
+}
+],
+"fit": 0.95
+},
+{
+"id": "griffin",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/stone_tallA.glb",
+"pos": [
+0,
+0,
+0
+],
+"scale": 1.2
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/stone_tallB.glb",
+"pos": [
+0.3,
+0,
+0.25
+],
+"scale": 0.9
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/campfire_logs.glb",
+"pos": [
+-0.25,
+0,
+0.3
+],
+"scale": 1.0
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/plant_bush.glb",
+"pos": [
+-0.35,
+0,
+-0.2
+]
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/stone_smallB.glb",
+"pos": [
+0.35,
+0,
+-0.3
+]
+}
+],
+"fit": 0.8
+},
+{
+"id": "dragon",
+"parts": [
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/cliff_cave_stone.glb",
+"scale": 1.0
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/campfire_stones.glb",
+"pos": [
+0.15,
+0,
+0.55
+],
+"scale": 0.8
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/stone_largeA.glb",
+"pos": [
+-0.5,
+0,
+0.4
+],
+"scale": 0.6
+},
+{
+"src": "../../assets-src/nature-kit/Models/GLTF format/mushroom_redGroup.glb",
+"pos": [
+0.5,
+0,
+0.45
+]
+}
+],
+"fit": 0.9
 }
 ]

@@ -30,7 +30,7 @@ var atlas: Dictionary = {}
 var sheets: Array[Texture2D] = []
 var font: FontFile
 # 3D 그림이 아직 없는 건물 → 비슷한 그림으로 대신
-const ALIAS := {"pond": "fountain", "griffin": "st_knight", "dragon": "st_dragon"}
+const ALIAS := {}
 
 func _init() -> void:
 	var f := FileAccess.open("res://data/game_data.json", FileAccess.READ)

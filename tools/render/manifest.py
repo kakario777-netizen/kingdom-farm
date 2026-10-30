@@ -95,6 +95,10 @@ def castle(tier):
     if tier>=4:parts+= [{'src':CK+'flag-banner-long.glb','pos':[-.55,0,1.25]},{'src':CK+'flag-banner-long.glb','pos':[.55,0,1.25]}]
     add(f'castle{tier}',parts,fit=1.9,W=1500,H=1700,Ha=1350)
 for t in (1,2,3,4):castle(t)
+# 연못·그리핀 둥지·드래곤 굴 (네이처 키트 조각 조립)
+add('pond',[{'src':NK+'ground_riverOpen.glb'},{'src':NK+'lily_large.glb','pos':[-0.15, 0.02, 0.1],'scale':0.9},{'src':NK+'lily_small.glb','pos':[0.2, 0.02, -0.1]},{'src':NK+'lily_small.glb','pos':[0.05, 0.02, 0.25],'rotY':60},{'src':NK+'stone_smallA.glb','pos':[0.42, 0, 0.3]},{'src':NK+'stone_smallC.glb','pos':[-0.4, 0, -0.35]},{'src':NK+'plant_bushSmall.glb','pos':[0.4, 0, -0.4]},{'src':NK+'log.glb','pos':[-0.42, 0, 0.38],'scale':0.8,'rotY':30}],fit=0.95)
+add('griffin',[{'src':NK+'stone_tallA.glb','pos':[0, 0, 0],'scale':1.2},{'src':NK+'stone_tallB.glb','pos':[0.3, 0, 0.25],'scale':0.9},{'src':NK+'campfire_logs.glb','pos':[-0.25, 0, 0.3],'scale':1.0},{'src':NK+'plant_bush.glb','pos':[-0.35, 0, -0.2]},{'src':NK+'stone_smallB.glb','pos':[0.35, 0, -0.3]}],fit=0.8)
+add('dragon',[{'src':NK+'cliff_cave_stone.glb','scale':1.0},{'src':NK+'campfire_stones.glb','pos':[0.15, 0, 0.55],'scale':0.8},{'src':NK+'stone_largeA.glb','pos':[-0.5, 0, 0.4],'scale':0.6},{'src':NK+'mushroom_redGroup.glb','pos':[0.5, 0, 0.45]}],fit=0.9)
 json.dump(L,open('tools/render/static.json','w'),ensure_ascii=False,indent=0)
 # 캐릭터: 오른쪽아래(dr)·오른쪽위(ur) 방향, 걷기 8·쉬기 2·인사 4
 C={}
@@ -103,5 +107,6 @@ for key,model in {'farmer':'male-f','baker':'female-b','knight':'male-c','maid':
         for anim,n in {'walk':8,'idle':2,'emote-yes':4}.items():
             for f in range(n):
                 C.setdefault('list',[]).append(dict(id=f'ch_{key}_{d}_{anim}{f}',parts=[{'src':MC+f'character-{model}.glb'}],noCenter=True,anim={'clip':anim,'t':f/n},rotY=rot,height=.62,res=2.5,W=400,H=420,Ha=360,outline=3))
+
 json.dump(C['list'],open('tools/render/chars.json','w'))
 print(len(L),'static',len(C['list']),'char frames')

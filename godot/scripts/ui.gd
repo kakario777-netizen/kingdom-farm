@@ -60,6 +60,7 @@ func _ready() -> void:
 	root.theme = th
 	_build_hud(); _build_goal(); _build_zoom(); _build_sheet(); _build_talk(); _build_lv(); _build_toast(); _build_place(); _build_hand()
 	G.changed.connect(update_hud)
+	G.castle_up.connect(confetti)
 	G.toast.connect(toast)
 	G.level_up.connect(func(lv, mj):
 		lv_queue.append([lv, mj])
@@ -223,6 +224,7 @@ func _build_hud() -> void:
 	mojo_l = lab("0", 19, Color.WHITE, 6, L2); mojo_l.custom_minimum_size.x = 26; mojo_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT; mh.add_child(mojo_l); hud.add_child(mc)
 	var cc := capsule(); clock_l = lab("", 14, Color("#ffeccc")); cc.add_child(clock_l); hud.add_child(cc)
 	var sp := Control.new(); sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL; sp.mouse_filter = Control.MOUSE_FILTER_IGNORE; hud.add_child(sp)
+	var all := jbtn("모두 거두기", "mint", 16); all.name = "AllBtn"; all.visible = false; all.pressed.connect(func(): G.collect_all()); hud.add_child(all)
 	var shop := jbtn("상점", "yellow", 17); shop.name = "ShopBtn"; shop.pressed.connect(func(): open_shop(false)); hud.add_child(shop)
 	if G.DEV:
 		var dev := jbtn("⚙", "purple", 18); dev.pressed.connect(open_dev); hud.add_child(dev)
@@ -490,6 +492,19 @@ func _build_lv() -> void:
 	var rt := rays.create_tween().set_loops(); rt.tween_property(rays, "rotation", TAU, 14.0).from(0.0)
 	root.add_child(lv_box)
 
+func confetti() -> void:
+	var cs := [Color("#ff6f9f"), Color("#ffc93c"), Color("#4fcfa8"), Color("#8b6cff"), Color("#6cc7ff")]
+	for k in 46:
+		var r := ColorRect.new(); r.color = cs[k % 5]; r.size = Vector2(9, 13); r.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		r.position = Vector2(randf() * root.size.x, -20); r.rotation = randf() * TAU; r.pivot_offset = r.size / 2
+		root.add_child(r)
+		var d := randf_range(1.4, 2.4)
+		var tw := r.create_tween().set_parallel()
+		tw.tween_property(r, "position:y", root.size.y + 30, d).set_delay(randf() * 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		tw.tween_property(r, "position:x", r.position.x + randf_range(-60, 60), d).set_delay(randf() * 0.5)
+		tw.tween_property(r, "rotation", r.rotation + randf_range(-8, 8), d)
+		tw.chain().tween_callback(r.queue_free)
+
 func _show_lv() -> void:
 	if lv_queue.is_empty(): return
 	var q: Array = lv_queue.pop_front(); var lv: int = q[0]; var mj: int = q[1]
@@ -518,6 +533,7 @@ func _show_lv() -> void:
 	vb.add_child(ok)
 	lv_box.add_child(p)
 	lv_box.visible = true
+	confetti()
 	await get_tree().process_frame
 	p.pivot_offset = p.size / 2; p.scale = Vector2(0.5, 0.5)
 	p.create_tween().tween_property(p, "scale", Vector2.ONE, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
@@ -753,7 +769,7 @@ func open_dev() -> void:
 	var sk := jbtn("1시간 건너뛰기", "white", 15); sk.pressed.connect(func(): G.S.gt += D.H; G.done_action()); r3.add_child(sk)
 	var sg := jbtn("튜토리얼 건너뛰기", "white", 15); sg.pressed.connect(func(): G.set_goal(D.GOALS.size()); close_sheet()); r3.add_child(sg)
 	var rs := jbtn("왕국 초기화", "red", 15); rs.pressed.connect(func(): close_sheet(); G.reset(); show_intro()); r3.add_child(rs)
-	b.add_child(lab("말랑 왕국 고도판 v1.1", 12, INK_SOFT))
+	b.add_child(lab("말랑 왕국 고도판 v1.2", 12, INK_SOFT))
 
 # =============== 손가락 안내 ===============
 func _build_hand() -> void:
@@ -824,6 +840,14 @@ func _process(delta: float) -> void:
 	_hud_t += delta
 	if _hud_t > 0.5:
 		_hud_t = 0.0; _update_clock(); _update_goal()
+		var ab: Button = hud.get_node("AllBtn")
+		var show: bool = G.S.started and G.ready_count() > 0 and not intro
+		if show != ab.visible:
+			ab.visible = show
+	var ab2: Button = hud.get_node("AllBtn")
+	if ab2.visible:
+		ab2.pivot_offset = ab2.size / 2
+		var k := 1.0 + 0.05 * sin(Time.get_ticks_msec() / 220.0); ab2.scale = Vector2(k, k)
 	if live_l and is_instance_valid(live_l):
 		_live_t += delta
 		if _live_t > 0.25: _live_t = 0.0; live_l.text = live_fn.call()

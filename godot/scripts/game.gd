@@ -6,6 +6,7 @@ signal land_changed
 signal toast(msg: String)
 signal pop(i: int, text: String, kind: String)
 signal level_up(lv: int, mj: int)
+signal castle_up
 
 const DEV := true
 const SAVE_PATH := "user://save.json"
@@ -214,6 +215,7 @@ func expand() -> bool:
 	var up: bool = n.n != D.LANDS[S.land].n
 	S.land += 1; inc("expand"); gain_xp(int(round(float(n.cost) / 20.0)))
 	toast.emit(("%s(으)로 업그레이드했어요!" % n.n) if up else "왕국이 넓어졌어요!")
+	if up: castle_up.emit()
 	land_changed.emit(); done_action(); return true
 
 func done_action() -> void:
@@ -295,6 +297,23 @@ func claim_quest(k: int) -> void:
 	if q.mj: pop.emit(D.CI, "모조 +%d" % q.mj, "mj")
 	S.quests.remove_at(k); S.quests.insert(k, new_quest())
 	done_action()
+
+# ---------- 모두 거두기 ----------
+func ready_count() -> int:
+	return cnt(func(T): return (T.t == "plot" and crop_state(T) == "ready") or (T.t == "bld" and bld_state(T) in ["tax", "done"]))
+
+func collect_all() -> void:
+	var n := 0
+	var R: Dictionary = D.RECTS[S.land]
+	for r in range(R.y0, R.y1):
+		for c in range(R.x0, R.x1):
+			var i: int = r * D.COLS + c; var T: Dictionary = S.tiles[i]
+			if T.t == "plot" and crop_state(T) == "ready": harvest(i); n += 1
+			elif T.t == "bld":
+				var st := bld_state(T)
+				if st == "tax": collect_tax(i); n += 1
+				elif st == "done": collect_job(i); n += 1
+	if n: toast.emit("%d곳을 한 번에 거뒀어요" % n)
 
 # ---------- 반짝별 ----------
 func star_tick() -> void:

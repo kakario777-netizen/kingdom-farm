@@ -19,7 +19,7 @@ for k,im in items:
     atlas[k]=[len(sheets)-1,x,y,w,h,round(m['ax'],1),round(m['ay'],1),m['res']]
     x+=w+PAD;rowh=max(rowh,h)
 for f in os.listdir(DST):
-    if f.startswith('sheet'):os.remove(f'{DST}/{f}')
+    if f.startswith('sheet') and f.endswith('.png'):os.remove(f'{DST}/{f}')
 names=[]
 for n,s in enumerate(sheets):
     f=f'sheet{n}.png';s.save(f'{DST}/{f}',optimize=True);names.append(f)

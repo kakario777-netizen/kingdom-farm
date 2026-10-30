@@ -274,11 +274,39 @@ func refresh() -> void:
 					var k: String = T.b; var m := _fence_mask(i)
 					f.draw.connect(func(): _draw_fence(f, k, m)); h = 24.0
 				else:
-					var s := D.make_sprite(T.b)
-					if s.texture == null: s = D.make_sprite("fountain")
-					n.add_child(s); h = D.spr_h(T.b)
-					if G.bld_state(T) == "build": s.modulate = Color(1, 1, 1, 0.45)
+					if G.bld_state(T) == "build" and float(D.BUILDS[T.b].t) > 0:
+						var sc := Node2D.new(); n.add_child(sc); var ii := i
+						sc.draw.connect(func(): _draw_scaffold(sc, ii)); sc.set_meta("anim", true); h = 50.0
+					else:
+						var s := D.make_sprite(T.b)
+						if s.texture == null: s = D.make_sprite("fountain")
+						n.add_child(s); h = D.spr_h(T.b)
 			cells[i] = {"node": n, "sig": sg, "h": h, "big": big}
+
+func _draw_scaffold(n: Node2D, i: int) -> void:
+	var T: Dictionary = G.S.tiles[i]
+	if T.t != "bld": return
+	var p := G.prog(T.startAt, T.doneAt)
+	var o := D.P(0.5, 0.5)
+	var Q := func(u: float, v: float, z: float = 0.0) -> Vector2: return D.P(u, v, z) - o
+	n.draw_set_transform(Vector2(4, 4), 0, Vector2(1, 0.5)); n.draw_circle(Vector2.ZERO, 26, Color(0, 0, 0, 0.16)); n.draw_set_transform(Vector2.ZERO)
+	var hgt := 6.0 + p * 24.0
+	# 쌓여 올라가는 벽돌 상자
+	var a := 0.22; var b := 0.78
+	n.draw_colored_polygon(PackedVector2Array([Q.call(a, b), Q.call(b, b), Q.call(b, b, hgt), Q.call(a, b, hgt)]), Color("#e9b56a"))
+	n.draw_colored_polygon(PackedVector2Array([Q.call(b, a), Q.call(b, b), Q.call(b, b, hgt), Q.call(b, a, hgt)]), Color("#d49a52"))
+	n.draw_colored_polygon(PackedVector2Array([Q.call(a, a, hgt), Q.call(b, a, hgt), Q.call(b, b, hgt), Q.call(a, b, hgt)]), Color("#f8d79c"))
+	var wood := Color("#a96b44")
+	for pt in [[0.2, 0.2], [0.8, 0.2], [0.2, 0.8], [0.8, 0.8]]:
+		n.draw_line(Q.call(pt[0], pt[1]), Q.call(pt[0], pt[1], 44), wood, 2.6, true)
+	for z in [22.0, 40.0]:
+		n.draw_line(Q.call(0.2, 0.8, z), Q.call(0.8, 0.8, z), wood, 2.2, true)
+		n.draw_line(Q.call(0.8, 0.2, z), Q.call(0.8, 0.8, z), wood, 2.2, true)
+	# 망치질
+	var hp: Vector2 = Q.call(0.5, 0.5, 50 + sin(t * 6.0) * 2.0)
+	n.draw_set_transform(hp, sin(t * 6.0) * 0.5)
+	n.draw_rect(Rect2(-6, -3, 12, 5), Color("#7d7d8f")); n.draw_rect(Rect2(-1.2, 0, 2.4, 12), wood)
+	n.draw_set_transform(Vector2.ZERO)
 
 func _fence_mask(i: int) -> int:
 	var c := i % D.COLS; var r := i / D.COLS; var m := 0
@@ -558,6 +586,9 @@ func pick(w: Vector2) -> void:
 func _process(delta: float) -> void:
 	t += delta
 	step_walkers(delta)
+	for e in cells.values():
+		for ch in e.node.get_children():
+			if ch.has_meta("anim"): ch.queue_redraw()
 	var na := G.night_amt()
 	night.color = Color(1, 1, 1).lerp(Color(0.52, 0.54, 0.86), na)
 	glow.visible = na > 0.01

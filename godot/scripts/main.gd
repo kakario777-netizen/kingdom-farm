@@ -37,6 +37,8 @@ func _shots(dir: String) -> void:
 	for c in range(24, 34): G.S.tiles[A.call(c, 27)] = {"t": "bld", "b": "road_stone", "startAt": 0, "doneAt": 0}
 	for c in [27, 28, 29]: G.S.tiles[A.call(c, 30)] = {"t": "plot", "crop": "pumpkin", "plantedAt": 0, "readyAt": G.S.gt - 10}
 	G.S.tiles[A.call(24, 25)].taxAt = 0
+	for e in [[25, 29, "pond"], [32, 29, "griffin"], [32, 31, "dragon"]]: G.S.tiles[A.call(e[0], e[1])] = {"t": "bld", "b": e[2], "startAt": 0, "doneAt": 0}
+	G.S.tiles[A.call(26, 31)] = {"t": "bld", "b": "school", "startAt": G.S.gt - 1000, "doneAt": G.S.gt + 3000}
 	G.land_changed.emit(); G.tiles_changed.emit(); G.changed.emit(); ui.update_hud()
 	await get_tree().create_timer(1.0).timeout
 	await shot(dir + "/g1_kingdom.png")
