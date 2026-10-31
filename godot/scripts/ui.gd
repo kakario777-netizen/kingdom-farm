@@ -370,7 +370,10 @@ func big_btn(text: String, color: String, ic: String) -> Button:
 	for st in ["normal", "hover", "pressed", "disabled"]:
 		var sb: StyleBoxFlat = b.get_theme_stylebox(st).duplicate(); sb.content_margin_left = 56; sb.content_margin_right = 18; sb.set_corner_radius_all(20)
 		b.add_theme_stylebox_override(st, sb)
-	var icn := icon(ic, 40); icn.position = Vector2(12, 7); b.add_child(icn)
+	var icn := TextureRect.new(); icn.texture = load("res://ui/icon_%s.png" % ("harvest" if ic == "sickle" else "shop"))
+	icn.expand_mode = TextureRect.EXPAND_IGNORE_SIZE; icn.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icn.size = Vector2(56, 56); icn.position = Vector2(4, -6); icn.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	icn.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS; b.add_child(icn)
 	return b
 
 # =============== 큰 창(시트) ===============
@@ -390,15 +393,13 @@ func _build_sheet() -> void:
 	# 리본 제목 + 닫기
 	var head := Control.new(); head.custom_minimum_size = Vector2(0, 48); vb.add_child(head)
 	var rib := NinePatchRect.new(); rib.texture = load("res://ui/ribbon.png")
-	rib.patch_margin_left = 120; rib.patch_margin_right = 120; rib.patch_margin_top = 0; rib.patch_margin_bottom = 0
-	rib.anchor_left = 0.5; rib.anchor_right = 0.5; rib.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	rib.offset_top = -6; rib.offset_bottom = 58; rib.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rib.patch_margin_left = 128; rib.patch_margin_right = 128; rib.patch_margin_top = 0; rib.patch_margin_bottom = 0
+	rib.scale = Vector2(1, 1) / 3.0; rib.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rib.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	head.add_child(rib)
-	sheet_title = lab("", 23, Color("#fff3c4"), 8, L); sheet_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	sheet_title.set_anchors_preset(Control.PRESET_FULL_RECT); sheet_title.offset_top = 6; sheet_title.offset_bottom = -20
+	sheet_title = lab("", 23, Color.WHITE, 9, Color("#8a2350")); sheet_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	sheet_title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	rib.add_child(sheet_title)
-	sheet_title.resized.connect(func(): pass)
+	head.add_child(sheet_title)
 	sheet_rib = rib
 	var close := round_btn("✕", "red"); close.anchor_left = 1; close.anchor_right = 1; close.offset_left = -48; close.offset_right = -2; close.offset_top = 1
 	close.pressed.connect(close_sheet); head.add_child(close)
@@ -413,9 +414,6 @@ func _build_sheet() -> void:
 
 func open_sheet(title: String) -> VBoxContainer:
 	sheet_title.text = title
-	var tsz: float = D.font.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, 23).x
-	var rw: float = max(300.0, tsz + 190.0)
-	sheet_rib.offset_left = -rw / 2; sheet_rib.offset_right = rw / 2
 	if not sheet_bg.visible: SND.play("open", -3.0)
 	for c in sheet_body.get_children(): c.queue_free()
 	live_l = null
@@ -424,6 +422,11 @@ func open_sheet(title: String) -> VBoxContainer:
 	var w: float = min(780.0, vs.x - 20)
 	var h: float = min(vs.y * 0.8, 520.0)
 	sheet.offset_left = -w / 2; sheet.offset_right = w / 2; sheet.offset_top = -h; sheet.offset_bottom = 0
+	var tsz: float = D.font.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, 23).x
+	var rw: float = max(230.0, tsz + 120.0)
+	sheet_rib.size = Vector2(rw * 3.0, 192)
+	sheet_rib.position = Vector2((w - 28) / 2 - rw / 2, -12)
+	sheet_title.size = Vector2(rw, 40); sheet_title.position = Vector2((w - 28) / 2 - rw / 2, -7)
 	sheet.position.y = vs.y
 	var tw := sheet.create_tween(); tw.tween_property(sheet, "position:y", vs.y - h, 0.32).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	sheet_scroll.scroll_vertical = 0
@@ -606,8 +609,8 @@ func toast(msg: String) -> void:
 
 func _build_place() -> void:
 	place_bar = panel(Color("#fffaf0"), 20, 3, 6)
-	place_bar.anchor_left = 0.5; place_bar.anchor_right = 0.5; place_bar.anchor_top = 1; place_bar.anchor_bottom = 1
-	place_bar.grow_horizontal = Control.GROW_DIRECTION_BOTH; place_bar.grow_vertical = Control.GROW_DIRECTION_BEGIN; place_bar.offset_bottom = -12
+	place_bar.anchor_left = 0.5; place_bar.anchor_right = 0.5; place_bar.anchor_top = 0; place_bar.anchor_bottom = 0
+	place_bar.grow_horizontal = Control.GROW_DIRECTION_BOTH; place_bar.offset_top = 58
 	var r := row(12); place_bar.add_child(r)
 	place_l = lab("", 16); place_l.size_flags_vertical = Control.SIZE_SHRINK_CENTER; r.add_child(place_l)
 	place_cancel = jbtn("그만", "white", 16); place_cancel.pressed.connect(stop_placing); r.add_child(place_cancel)
@@ -874,7 +877,7 @@ func open_dev() -> void:
 	var sk := jbtn("1시간 건너뛰기", "white", 15); sk.pressed.connect(func(): G.S.gt += D.H; G.done_action()); r3.add_child(sk)
 	var sg := jbtn("튜토리얼 건너뛰기", "white", 15); sg.pressed.connect(func(): G.set_goal(D.GOALS.size()); close_sheet()); r3.add_child(sg)
 	var rs := jbtn("왕국 초기화", "red", 15); rs.pressed.connect(func(): close_sheet(); G.reset(); show_intro()); r3.add_child(rs)
-	b.add_child(lab("말랑 왕국 고도판 v1.2", 12, INK_SOFT))
+	b.add_child(lab("말랑 왕국 고도판 v1.3", 12, INK_SOFT))
 
 # =============== 손가락 안내 ===============
 func _build_hand() -> void:

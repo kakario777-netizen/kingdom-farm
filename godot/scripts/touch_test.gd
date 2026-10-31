@@ -42,7 +42,9 @@ func run(main) -> void:
 	var want := {0: "옥수수", 1: "밭", 2: "밀", 3: "소나무", 4: "주황 오두막", 7: "흙길"}
 	var tab := {3: "장식", 4: "집", 7: "길·울타리"}
 	var stuck := 0
+	var lastg := -1
 	for k in 300:
+		if G.S.goal != lastg: lastg = G.S.goal; printerr("  목표 ", lastg, " (", k, ")")
 		if G.S.goal >= D.GOALS.size(): break
 		await m.get_tree().create_timer(0.15).timeout
 		if ui.lv_box.visible:

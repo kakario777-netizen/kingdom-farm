@@ -15,11 +15,15 @@
 
 ## 그림 출처 (모두 CC0)
 - Quaternius Lowpoly Medieval Village Pack, Kenney Castle Kit · Nature Kit · Fantasy Town Kit · Mini Characters
+- 소리: Kenney Interface Sounds · Jingles (CC0), "huh" by TinyWorlds (CC0, OpenGameArt), 배경음 "Relaxed Village" by Joseph Collard (jocolloman, CC-BY 4.0, OpenGameArt)
+- 창 제목 리본: Openclipart 204638 "Ribbons & banners" (퍼블릭 도메인) 분홍으로 다시 칠함
+- 상점·모두 수확 아이콘: Quaternius Medieval Village 시장 좌판·짚더미(CC0) 3D 렌더 + 낫
 - 글꼴: Jua (Google Fonts, SIL OFL 1.1)
 - UI: Kenney UI Pack, UI Pack RPG Expansion, Game Icons Expansion (OpenGameArt) → `tools/ui/process_ui.py` 로 색·외곽선·눌림 상태 가공
 - 3D 모델을 게임 시점으로 렌더하고 색·조립·테두리를 가공해 씀 → `tools/render/README.md`
 
 ## 업데이트 기록
+- v1.3 (고도판) 미개척지를 빽빽하고 불규칙한 숲으로(뭉친 곳·듬성한 곳·나무 12종·덤불·바위, 크기·방향 제각각), 사지 않은 땅 숲은 어둡게·내 땅 앞을 가리는 나무는 투명하게, 내 땅+여유 너머엔 안개, 흰 점선 대신 작은 말뚝 경계, 보이는 그림 모양대로만 눌리는 터치(투명한 곳 무시), 우하단 큰 모두 수확·상점 버튼(3D 아이콘), 보라 보석 모조, 분홍 리본, 평소엔 내 마을+20%까지만 축소(설정에서 섬 전체 보기), 상점→땅 탭에서 새 땅에 팻말 박힌 미리보기 후 구매, 배경음·효과음, 주민 반응 소리 3종(1초에 한 번), 주민 꾹 눌러 옮기기, 놓기 안내 막대를 위로
 - v1.2 (고도판 마무리) 연못·그리핀 둥지·드래곤 굴 전용 3D 그림, 모두 거두기 버튼, 공사장 비계(올라가는 벽·망치질), 레벨업·성 업그레이드 색종이 — 웹판 기능 전부 이전 완료
 - v1.1 (고도판 2단계) 마을 주민 걷기(12종·걷기/쉬기/인사, 누르면 말풍선·하트), 튜토리얼 뒤 왕국 목표 3개씩(보상 코인·별·모조), 반짝별(누르면 모조 +1), 밤낮(밤엔 어두워지고 집·가로등 불빛), 테스트 메뉴에 반짝별 부르기
 - v1.0 (고도판) 게임을 고도(Godot 4.3) 엔진으로 이전 — 폰 그래픽칩으로 직접 그려 렉 해소, 고해상도 그림에 밉맵·ASTC 압축, 폰 기본 터치. 1단계: 섬 지도·3D 그림·끌기/두 손가락 확대·상단 바·밭/작물/모조·상점(집·가게·장식·길·울타리)·세금·가게 일감·땅 넓히기·튜토리얼 8단계·레벨업·저장. 코드는 `godot/`, 빌드는 `.github/workflows/godot-apk.yml`(릴리스 godot-N). 웹판(`game/`)은 손으로 실행할 때만 빌드
