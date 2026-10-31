@@ -23,6 +23,13 @@ var _pinch_z := 1.0
 var t := 0.0
 var walkers: Array = []   # {node, spr, u, v, tu, tv, wait, type, dir, up, moving, talk, say, emote, emk, speed, blink}
 var night: CanvasModulate
+var fog: Node2D
+var stakes: Array = []
+var preview := false        # 땅 구매 미리보기 중
+var _press_wk = null        # 꾹 누르고 있는 주민
+var _press_t := 0.0
+var _drag_wk = null         # 옮기는 중인 주민
+var _press_pos := Vector2.ZERO
 var glow: Node2D
 
 func _ready() -> void:
@@ -31,6 +38,7 @@ func _ready() -> void:
 	ground = Node2D.new(); add_child(ground); ground.draw.connect(_draw_ground)
 	marks = Node2D.new(); add_child(marks); marks.draw.connect(_draw_marks)
 	objs = Node2D.new(); objs.y_sort_enabled = true; add_child(objs)
+	fog = Node2D.new(); add_child(fog); fog.draw.connect(_draw_fog)
 	over = Node2D.new(); add_child(over); over.draw.connect(_draw_over)
 	glow = Node2D.new(); var gm := CanvasItemMaterial.new(); gm.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD; glow.material = gm
 	add_child(glow); glow.draw.connect(_draw_glow)
@@ -38,10 +46,10 @@ func _ready() -> void:
 	night = CanvasModulate.new(); add_child(night)
 	cam = Camera2D.new(); add_child(cam); cam.make_current()
 	G.tiles_changed.connect(func(): refresh(); sync_walkers(); _collect_roads())
-	G.land_changed.connect(func(): ground.queue_redraw(); refresh(); fit_cam())
+	G.land_changed.connect(func(): ground.queue_redraw(); refresh(); _build_stakes(); fog.queue_redraw(); fit_cam())
 	G.pop.connect(_pop)
 	_build_wild()
-	refresh(); sync_walkers(); _collect_roads()
+	refresh(); sync_walkers(); _collect_roads(); _build_stakes()
 	get_viewport().size_changed.connect(_on_resize)
 	_on_resize()
 
@@ -111,6 +119,68 @@ func _build_island() -> void:
 	ground_poly.uv = uv
 	add_child(ground_poly)
 
+# ---------------- 말뚝(세틀러 같은 작은 경계 말뚝) ----------------
+func _build_stakes() -> void:
+	for n in stakes: n.queue_free()
+	stakes.clear()
+	_stake_ring(D.RECTS[G.S.land], Color("#ff6f9f"), false)
+	if preview and G.S.land + 1 < D.RECTS.size():
+		_stake_ring(D.RECTS[G.S.land + 1], Color("#ffd23c"), true)
+
+func _stake_ring(R: Dictionary, flag: Color, sign: bool) -> void:
+	var pts: Array = []
+	for x in range(R.x0, R.x1 + 1): pts.append(Vector2(x, R.y0)); pts.append(Vector2(x, R.y1))
+	for y in range(R.y0 + 1, R.y1): pts.append(Vector2(R.x0, y)); pts.append(Vector2(R.x1, y))
+	for q in pts:
+		var n := Node2D.new(); n.position = D.P(q.x, q.y) + Vector2(0, 0.01); objs.add_child(n); stakes.append(n)
+		if sign: n.scale = Vector2(1.6, 1.6)
+		var fc := flag
+		n.draw.connect(func():
+			n.draw_set_transform(Vector2(1, 1), 0, Vector2(1, 0.45)); n.draw_circle(Vector2.ZERO, 4.5, Color(0, 0, 0, 0.18)); n.draw_set_transform(Vector2.ZERO)
+			n.draw_line(Vector2(0, 1), Vector2(0, -15), Color("#4a2a17"), 3.6, true)
+			n.draw_line(Vector2(0, 0), Vector2(0, -14), Color("#c48a55"), 1.8, true)
+			n.draw_colored_polygon(PackedVector2Array([Vector2(0.5, -15), Vector2(8, -12.2), Vector2(0.5, -9.5)]), Color("#4a2a17"))
+			n.draw_colored_polygon(PackedVector2Array([Vector2(1.2, -14.2), Vector2(6.6, -12.2), Vector2(1.2, -10.3)]), fc))
+	if sign:
+		var n := Node2D.new(); n.position = D.P(R.x1, R.y0) + Vector2(0, 0.02); n.z_index = 5; objs.add_child(n); stakes.append(n)
+		var nl: Dictionary = D.LANDS[G.S.land + 1]
+		var txt := "%s G" % D.comma(nl.cost)
+		n.draw.connect(func():
+			var w: float = D.font.get_string_size(txt, HORIZONTAL_ALIGNMENT_LEFT, -1, 13).x + 16
+			n.draw_line(Vector2(0, 2), Vector2(0, -34), Color("#4a2a17"), 5, true); n.draw_line(Vector2(0, 2), Vector2(0, -34), Color("#a96b44"), 3, true)
+			var r := Rect2(-w / 2, -54, w, 22)
+			var sb := StyleBoxFlat.new(); sb.bg_color = Color("#f2d29b"); sb.border_color = Color("#4a2a17"); sb.set_border_width_all(2); sb.set_corner_radius_all(5)
+			n.draw_style_box(sb, r)
+			n.draw_string(D.font, Vector2(r.position.x, r.position.y + 16), txt, HORIZONTAL_ALIGNMENT_CENTER, w, 13, Color("#4a2a17")))
+
+# ---------------- 안개(내 땅+여유 너머만) ----------------
+func _fog_rect() -> Dictionary:
+	var R: Dictionary = D.RECTS[G.S.land]
+	if preview and G.S.land + 1 < D.RECTS.size(): R = D.RECTS[G.S.land + 1]
+	var mx: int = max(2, int(ceil((R.x1 - R.x0) * 0.25))); var my: int = max(2, int(ceil((R.y1 - R.y0) * 0.25)))
+	return {"x0": R.x0 - mx, "y0": R.y0 - my, "x1": R.x1 + mx, "y1": R.y1 + my}
+
+func _grow(R: Dictionary, k: float) -> Dictionary:
+	return {"x0": R.x0 - k, "y0": R.y0 - k, "x1": R.x1 + k, "y1": R.y1 + k}
+
+func _draw_fog() -> void:
+	var M := _fog_rect()
+	var col := Color(0.9, 0.94, 0.97)
+	var steps := 7
+	for k in steps:
+		var inner := _grow(M, k * 1.3); var outer := _grow(M, (k + 1) * 1.3)
+		col.a = 0.11 * (k + 1)
+		_rect_minus(fog, outer, inner, col)
+	col.a = 0.8
+	_rect_minus(fog, {"x0": -40, "y0": -40, "x1": D.COLS + 40, "y1": D.ROWS + 40}, _grow(M, steps * 1.3), col)
+
+func set_preview(on: bool) -> void:
+	preview = on
+	_build_stakes(); _update_wild_alpha(); ground.queue_redraw(); fog.queue_redraw()
+	if on:
+		_fit_rect(D.RECTS[min(G.S.land + 1, D.RECTS.size() - 1)], 0.1)
+	else: fit_cam()
+
 func _quad(n: Node2D, u0: float, v0: float, u1: float, v1: float, col: Color) -> void:
 	if u1 <= u0 or v1 <= v0: return
 	n.draw_colored_polygon(PackedVector2Array([D.P(u0, v0), D.P(u1, v0), D.P(u1, v1), D.P(u0, v1)]), col)
@@ -136,10 +206,8 @@ func _draw_ground() -> void:
 			var T: Dictionary = G.S.tiles[r * D.COLS + c]
 			if T.t == "bld" and D.BUILDS.has(T.b) and D.BUILDS[T.b].cat == "road":
 				_draw_road(c, r, T.b)
-	# 지금 땅 경계(점선)
-	if nxt != cur:
-		var pts := [D.P(cur.x0, cur.y0), D.P(cur.x1, cur.y0), D.P(cur.x1, cur.y1), D.P(cur.x0, cur.y1), D.P(cur.x0, cur.y0)]
-		for k in 4: ground.draw_dashed_line(pts[k], pts[k + 1], Color(1, 1, 1, 0.8), 2.4, 8.0, true)
+	if preview and nxt != cur:
+		_rect_minus(ground, nxt, cur, Color(1.0, 0.9, 0.45, 0.32))
 
 func _road_mask(c: int, r: int) -> int:
 	var m := 0
@@ -188,34 +256,57 @@ func _cell(i: int) -> Node2D:
 	objs.add_child(n)
 	return n
 
+const WILD_TREES := ["wpine", "wpine2", "woak", "woak2", "wpine", "woak", "pine", "fir", "oak", "ash", "maple", "willow"]
+const WILD_SMALL := ["wbush", "wbush", "wrock", "wlog", "wmush"]
+
 func _build_wild() -> void:
-	# 아직 안 열린 땅의 숲·바위(정해진 무늬)
-	for i in D.COLS * D.ROWS:
-		var w := _wild_at(i)
-		if w == "": continue
-		var n := _cell(i)
-		var s := D.make_sprite(w); n.add_child(s)
-		wilds[i] = n
+	# 안 열린 땅: 무늬 없이 제멋대로 자란 숲(뭉쳐 자라는 곳·듬성한 곳·덤불·바위가 섞임)
+	var noise := FastNoiseLite.new(); noise.seed = 4242; noise.frequency = 0.11
+	var noise2 := FastNoiseLite.new(); noise2.seed = 99; noise2.frequency = 0.35
+	var rng := RandomNumberGenerator.new(); rng.seed = 20261031
+	for r in D.ROWS:
+		for c in D.COLS:
+			var i := r * D.COLS + c
+			if c >= D.CX - 3 and c <= D.CX + 4 and r >= D.CY - 3 and r <= D.CY + 4: continue   # 처음 땅 주변은 비움
+			var dens: float = clamp(0.62 + noise.get_noise_2d(c, r) * 0.85 + noise2.get_noise_2d(c, r) * 0.25, 0.0, 1.0)
+			var n := 0
+			if rng.randf() < dens: n += 1
+			if rng.randf() < dens * dens: n += 1
+			if rng.randf() < dens * dens * 0.6: n += 1
+			var list: Array = []
+			for k in n:
+				var kind: String = WILD_TREES[rng.randi() % WILD_TREES.size()]
+				list.append(_wild_sprite(kind, c + rng.randf_range(0.08, 0.92), r + rng.randf_range(0.08, 0.92), rng.randf_range(0.78, 1.18), rng.randf() < 0.5))
+			if rng.randf() < 0.18 + (1.0 - dens) * 0.25:
+				var kind2: String = WILD_SMALL[rng.randi() % WILD_SMALL.size()]
+				list.append(_wild_sprite(kind2, c + rng.randf_range(0.1, 0.9), r + rng.randf_range(0.1, 0.9), rng.randf_range(0.8, 1.15), rng.randf() < 0.5))
+			if list.size(): wilds[i] = list
 	_update_wild_alpha()
 
-func _wild_at(i: int) -> String:
-	var h := _hash(i * 13 + 7); var h2 := _hash(i * 7 + 3)
-	if h < 0.11: return "wpine" if h2 < 0.5 else "wpine2"
-	if h < 0.17: return "woak" if h2 < 0.6 else "woak2"
-	if h < 0.205: return "wrock"
-	if h < 0.24: return "wbush"
-	if h < 0.25: return "wlog" if h2 < 0.5 else "wmush"
-	return ""
+func _wild_sprite(k: String, u: float, v: float, sc: float, flip: bool) -> Sprite2D:
+	var s := D.make_sprite(k)
+	s.position = D.P(u, v)
+	s.scale = s.scale * sc * Vector2(-1 if flip else 1, 1)
+	objs.add_child(s)
+	return s
 
 func _hash(i: int) -> float:
 	return float(((i * 2654435761) & 0xFFFFFFFF) % 1000) / 1000.0
 
 func _update_wild_alpha() -> void:
+	var cur: Dictionary = D.RECTS[G.S.land]
+	var nxt: Dictionary = D.RECTS[min(G.S.land + 1, D.RECTS.size() - 1)]
 	for i in wilds:
-		var n: Node2D = wilds[i]
 		var c: int = i % D.COLS; var r: int = i / D.COLS
-		n.visible = not G.unlocked(c, r)
-		n.modulate.a = 0.92 if G.is_next(c, r) else 0.82
+		var open := G.unlocked(c, r)
+		# 바로 앞(아래쪽)에서 내 땅을 가리는 나무는 아주 투명하게
+		var front: bool = (c >= cur.x1 or r >= cur.y1) and c >= cur.x0 - 1 and r >= cur.y0 - 1 and c < cur.x1 + 3 and r < cur.y1 + 3
+		var col := Color(0.42, 0.5, 0.44, 1.0)          # 사지 않은 땅의 숲은 조금 어둡게
+		if preview and G.in_r(nxt, c, r): col = Color(1.0, 0.97, 0.85, 0.42)
+		if front: col.a = 0.22
+		for s in wilds[i]:
+			s.visible = not open
+			s.modulate = col
 
 func _sig(i: int, T: Dictionary) -> String:
 	match T.t:
@@ -473,21 +564,37 @@ func _pop(i: int, text: String, kind: String) -> void:
 
 # ---------------- 카메라 ----------------
 func view_rect() -> Dictionary:
-	return D.RECTS[min(G.S.land + 1, D.RECTS.size() - 1)]
+	return D.RECTS[G.S.land]
 
-func fit_cam() -> void:
-	if not cam: return
-	var R := view_rect()
-	var pts := [D.P(R.x0, R.y0), D.P(R.x1, R.y0), D.P(R.x1, R.y1), D.P(R.x0, R.y1)]
+func full_view() -> bool: return bool(G.S.get("opts", {}).get("fullview", false))
+
+func _box(R: Dictionary, k: float) -> Rect2:
+	var w: float = R.x1 - R.x0; var h: float = R.y1 - R.y0
+	var Q := {"x0": R.x0 - w * k, "y0": R.y0 - h * k, "x1": R.x1 + w * k, "y1": R.y1 + h * k}
+	var pts := [D.P(Q.x0, Q.y0), D.P(Q.x1, Q.y0), D.P(Q.x1, Q.y1), D.P(Q.x0, Q.y1)]
 	var mn := Vector2(1e9, 1e9); var mx := Vector2(-1e9, -1e9)
 	for p in pts: mn = mn.min(p); mx = mx.max(p)
-	mn.y -= 120; mx.y += 20
+	mn.y -= 90
+	return Rect2(mn, mx - mn)
+
+func _zmin() -> float:
+	if full_view() or preview: return ZMIN
+	var b := _box(view_rect(), 0.1)          # 내 마을 + 20%
+	var vs := get_viewport_rect().size
+	return max(ZMIN, min(vs.x / b.size.x, (vs.y - 56) / b.size.y))
+
+func _fit_rect(R: Dictionary, k: float) -> void:
+	if not cam: return
+	var b := _box(R, k)
 	var vs := get_viewport_rect().size
 	var top := 56.0
-	var z: float = clamp(min(vs.x / (mx.x - mn.x), (vs.y - top) / (mx.y - mn.y)), 0.3, 1.6)
+	var z: float = clamp(min(vs.x / b.size.x, (vs.y - top) / b.size.y), ZMIN, 1.6)
 	cam.zoom = Vector2(z, z)
-	cam.position = (mn + mx) / 2 - Vector2(0, top / 2 / z)
+	cam.position = b.get_center() - Vector2(0, top / 2 / z)
 	_clamp_cam()
+
+func fit_cam() -> void:
+	_fit_rect(view_rect(), 0.04)
 
 func fit_all() -> void:
 	var vs := get_viewport_rect().size
@@ -497,14 +604,21 @@ func fit_all() -> void:
 	cam.zoom = Vector2(z, z); cam.position = Vector2((x0 + x1) / 2, (y0 + y1) / 2)
 
 func _clamp_cam() -> void:
-	var x0 := D.P(0, D.ROWS).x; var x1 := D.P(D.COLS, 0).x
-	var y1 := (D.COLS + D.ROWS) * D.H2 + 60
-	cam.position.x = clamp(cam.position.x, x0, x1)
-	cam.position.y = clamp(cam.position.y, -40.0, y1)
+	if full_view() or preview:
+		var x0 := D.P(0, D.ROWS).x; var x1 := D.P(D.COLS, 0).x
+		var y1 := (D.COLS + D.ROWS) * D.H2 + 60
+		cam.position.x = clamp(cam.position.x, x0, x1)
+		cam.position.y = clamp(cam.position.y, -40.0, y1)
+		return
+	var zm := _zmin()
+	if cam.zoom.x < zm: cam.zoom = Vector2(zm, zm)
+	var b := _box(view_rect(), 0.1)
+	cam.position.x = clamp(cam.position.x, b.position.x, b.end.x)
+	cam.position.y = clamp(cam.position.y, b.position.y, b.end.y)
 
 func zoom_at(f: float, screen_p: Vector2) -> void:
 	var before := screen_to_world(screen_p)
-	var nz: float = clamp(cam.zoom.x * f, ZMIN, ZMAX)
+	var nz: float = clamp(cam.zoom.x * f, _zmin(), ZMAX)
 	cam.zoom = Vector2(nz, nz)
 	cam.position += before - screen_to_world(screen_p)
 	_clamp_cam()
@@ -527,14 +641,20 @@ func _unhandled_input(e: InputEvent) -> void:
 			_touches[e.index] = e.position
 			if _touches.size() == 1:
 				_drag_from = e.position; _drag_cam = cam.position; _moved = false
+				_press_wk = _walker_at(screen_to_world(e.position)) if G.placing.is_empty() else null
+				_press_t = 0.0; _press_pos = e.position
 			elif _touches.size() == 2:
 				var v: Array = _touches.values()
 				_pinch_d = max(1.0, (v[0] - v[1]).length()); _pinch_z = cam.zoom.x; _moved = true
 		else:
 			var was := _touches.size()
 			_touches.erase(e.index)
-			if was == 1 and not _moved:
+			if _drag_wk != null:
+				var wk: Dictionary = _drag_wk; _drag_wk = null; _press_wk = null
+				wk.lift = 0.0; wk.wait = 2.5; wk.emote = 1.2; wk.emk = "heart"; SND.play("drop")
+			elif was == 1 and not _moved:
 				pick(screen_to_world(e.position))
+			_press_wk = null
 			if _touches.size() == 1:
 				_drag_from = _touches.values()[0]; _drag_cam = cam.position
 		get_viewport().set_input_as_handled()
@@ -547,8 +667,11 @@ func _unhandled_input(e: InputEvent) -> void:
 			var f: float = _pinch_z * d / _pinch_d / cam.zoom.x
 			zoom_at(f, mid)
 		elif _touches.size() == 1:
+			if _drag_wk != null:
+				_move_walker_to(_drag_wk, screen_to_world(e.position))
+				get_viewport().set_input_as_handled(); return
 			var dv: Vector2 = e.position - _drag_from
-			if dv.length() > 9: _moved = true
+			if dv.length() > 9: _moved = true; _press_wk = null
 			if _moved:
 				cam.position = _drag_cam - dv / cam.zoom.x; _clamp_cam()
 		get_viewport().set_input_as_handled()
@@ -556,28 +679,52 @@ func _unhandled_input(e: InputEvent) -> void:
 		if e.button_index == MOUSE_BUTTON_WHEEL_UP: zoom_at(1.12, e.position)
 		elif e.button_index == MOUSE_BUTTON_WHEEL_DOWN: zoom_at(0.89, e.position)
 
+func _walker_at(w: Vector2):
+	var best = null; var by := -1e9
+	for wk in walkers:
+		var n: Node2D = wk.node
+		var d: Vector2 = w - n.position
+		if n.scale.x < 0: d.x = -d.x
+		if D.hit(wk.spr.get_meta("k", ""), d) and n.position.y > by:
+			best = wk; by = n.position.y
+	return best
+
+func _move_walker_to(wk: Dictionary, w: Vector2) -> void:
+	var R: Dictionary = D.RECTS[G.S.land]
+	var u: float = clamp((w.x / D.W2 + (w.y + 12) / D.H2) / 2.0, R.x0 + 0.2, R.x1 - 0.2)
+	var v: float = clamp(((w.y + 12) / D.H2 - w.x / D.W2) / 2.0, R.y0 + 0.2, R.y1 - 0.2)
+	if G.S.tiles[int(v) * D.COLS + int(u)].t == "castle": return
+	wk.u = u; wk.v = v; wk.tu = u; wk.tv = v
+
+## 보이는 그림 모양대로 누르기: 앞에 있는 것부터, 그림의 투명한 곳은 건너뜀
+func _cell_hit(e: Dictionary, w: Vector2) -> bool:
+	var n: Node2D = e.node
+	for ch in n.get_children():
+		if ch is Sprite2D and ch.texture != null:
+			if D.hit(ch.get_meta("k", ""), w - n.position - ch.position): return true
+		elif ch is Node2D:
+			var d: Vector2 = w - n.position
+			if abs(d.x) < 26 and d.y < 6 and d.y > -46: return true
+	return false
+
 func pick(w: Vector2) -> void:
 	var st: Dictionary = G.S.get("star", {})
 	if st.size():
 		var sp := D.P(int(st.i) % D.COLS + 0.5, int(st.i) / D.COLS + 0.5, 30)
-		if w.distance_to(sp) < 26: tapped.emit(int(st.i)); return
+		if w.distance_to(sp) < 24: tapped.emit(int(st.i)); return
 	if G.placing.is_empty():
-		for wk in walkers:
-			var p := D.P(wk.u, wk.v)
-			if abs(w.x - p.x) < 12 and w.y < p.y + 3 and w.y > p.y - 44:
-				greet(wk); return
+		var wk = _walker_at(w)
 		var list: Array = []
-		for i in cells:
-			var e: Dictionary = cells[i]
-			list.append(i)
+		for i in cells: list.append(i)
 		list.sort_custom(func(a, b): return cells[a].node.position.y > cells[b].node.position.y)
 		for i in list:
 			var e: Dictionary = cells[i]
-			if e.h < 34: continue
-			var p: Vector2 = e.node.position
-			var hw: float = D.W2 * (1.9 if e.big else 0.62)
-			if w.x > p.x - hw and w.x < p.x + hw and w.y > p.y - e.h - 8 and w.y < p.y + (D.H2 * 2 if e.big else D.H2 * 0.6):
+			if wk != null and wk.node.position.y > e.node.position.y:
+				greet(wk); return
+			if _cell_hit(e, w):
 				tapped.emit(i); return
+		if wk != null:
+			greet(wk); return
 	var u := (w.x / D.W2 + w.y / D.H2) / 2.0; var v := (w.y / D.H2 - w.x / D.W2) / 2.0
 	var c := int(floor(u)); var r := int(floor(v))
 	if c < 0 or r < 0 or c >= D.COLS or r >= D.ROWS: return
@@ -585,6 +732,10 @@ func pick(w: Vector2) -> void:
 
 func _process(delta: float) -> void:
 	t += delta
+	if _press_wk != null and _drag_wk == null and _touches.size() == 1 and not _moved:
+		_press_t += delta
+		if _press_t > 0.45:
+			_drag_wk = _press_wk; _drag_wk.lift = 1.0; _drag_wk.talk = 0.0; SND.play("pickup")
 	step_walkers(delta)
 	for e in cells.values():
 		for ch in e.node.get_children():
@@ -648,7 +799,9 @@ func step_walkers(dt: float) -> void:
 		if wk.talk > 0: wk.talk -= dt
 		if wk.emote > 0: wk.emote -= dt
 		var du: float = wk.tu - wk.u; var dv: float = wk.tv - wk.v; var d := sqrt(du * du + dv * dv)
-		if d > 0.02 and wk.talk <= 1.2:
+		if wk.get("lift", 0.0) > 0:
+			wk.moving = false
+		elif d > 0.02 and wk.talk <= 1.2:
 			var sp: float = wk.speed * dt
 			wk.u += du / d * min(sp, d); wk.v += dv / d * min(sp, d)
 			wk.dir = -1 if (du - dv) < 0 else 1; wk.up = (du + dv) < 0; wk.moving = true
@@ -669,6 +822,7 @@ func step_walkers(dt: float) -> void:
 		var k := "ch_%s_%s_%s%d" % [wk.type, "ur" if wk.up else "dr", anim, f]
 		if wk.spr.get_meta("k", "") != k: D.set_sprite(wk.spr, k)
 		wk.node.position = D.P(wk.u, wk.v)
+		wk.spr.position.y = -14.0 * wk.get("lift", 0.0) + (sin(t * 18.0) * 1.5 if wk.get("lift", 0.0) > 0 else 0.0)
 		wk.node.scale.x = -1 if wk.dir < 0 else 1
 
 var _roads: Array = []
@@ -681,6 +835,7 @@ func _collect_roads() -> void:
 			if T.t == "bld" and D.BUILDS.has(T.b) and D.BUILDS[T.b].cat == "road": _roads.append(r * D.COLS + c)
 
 func greet(wk: Dictionary) -> void:
+	if not SND.huh(): return     # 마구 눌러도 1초에 한 번
 	var L: Array = D.CHARS[wk.type].say
 	wk.say = L[randi() % L.size()]; wk.talk = 2.4; wk.emote = 1.2; wk.emk = "heart" if randf() < 0.5 else "note"
 	wk.wait = max(wk.wait, 2.5); wk.tu = wk.u; wk.tv = wk.v

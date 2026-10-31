@@ -115,7 +115,7 @@ func remain_txt(s: float) -> String:
 # ---------- 행동 ----------
 func pay(n: float) -> bool:
 	if S.gold < n:
-		toast.emit("골드가 %s 모자라요" % D.comma(n - floor(S.gold))); return false
+		SND.play("error"); toast.emit("골드가 %s 모자라요" % D.comma(n - floor(S.gold))); return false
 	S.gold -= n; return true
 
 func gain_xp(x: int, i: int = -1) -> void:
@@ -129,7 +129,7 @@ func gain_xp(x: int, i: int = -1) -> void:
 
 func harvest(i: int) -> void:
 	var T: Dictionary = S.tiles[i]; var C: Dictionary = D.CROPS[T.crop]
-	S.gold += C.g; pop.emit(i, "+%d" % C.g, "gd")
+	S.gold += C.g; pop.emit(i, "+%d" % C.g, "gd"); SND.play("harvest"); SND.play("coin", -6.0)
 	if T.crop == "corn": inc("corn")
 	inc("harvest"); inc("c_" + T.crop)
 	gain_xp(int(C.x), i); T.erase("crop")
@@ -139,19 +139,19 @@ func plant(i: int, k: String) -> bool:
 	var C: Dictionary = D.CROPS[k]
 	if not pay(C.cost): return false
 	var T: Dictionary = S.tiles[i]
-	T.crop = k; T.plantedAt = S.gt; T.readyAt = S.gt + float(C.t)
+	T.crop = k; T.plantedAt = S.gt; T.readyAt = S.gt + float(C.t); SND.play("plant")
 	pop.emit(i, ("-%d" % C.cost) if C.cost else "심었어요", "gd" if C.cost else "")
 	done_action(); return true
 
 func collect_tax(i: int) -> void:
 	var T: Dictionary = S.tiles[i]; var B: Dictionary = D.BUILDS[T.b]
-	S.gold += B.g; pop.emit(i, "+%d" % B.g, "gd"); inc("tax")
+	S.gold += B.g; pop.emit(i, "+%d" % B.g, "gd"); inc("tax"); SND.play("coin")
 	gain_xp(max(1, int(round(float(B.g) / 10.0))), i); T.taxAt = S.gt + float(B.every)
 	done_action()
 
 func collect_job(i: int) -> void:
 	var T: Dictionary = S.tiles[i]; var B: Dictionary = D.BUILDS[T.b]
-	S.gold += B.g; pop.emit(i, "+%d" % B.g, "gd"); inc("job"); gain_xp(int(B.jx), i); T.erase("job")
+	S.gold += B.g; pop.emit(i, "+%d" % B.g, "gd"); inc("job"); SND.play("coin2"); gain_xp(int(B.jx), i); T.erase("job")
 	done_action()
 
 func start_job(i: int) -> void:
@@ -162,17 +162,17 @@ func make_plot(i: int) -> bool:
 	if cnt(func(T): return T.t == "plot") >= plot_cap():
 		toast.emit("밭은 지금 %d개까지예요. 레벨이 오르면 늘어나요" % plot_cap()); return false
 	if not pay(D.PLOT_COST): return false
-	S.tiles[i] = {"t": "plot"}; inc("plots"); pop.emit(i, "-%d" % D.PLOT_COST, "gd"); gain_xp(5, i)
+	S.tiles[i] = {"t": "plot"}; inc("plots"); SND.play("place"); pop.emit(i, "-%d" % D.PLOT_COST, "gd"); gain_xp(5, i)
 	done_action(); return true
 
 func do_build(i: int, k: String) -> bool:
 	var B: Dictionary = D.BUILDS[k]
 	if S.level < B.lv:
-		toast.emit("레벨 %d부터 지을 수 있어요" % B.lv); return false
+		SND.play("error"); toast.emit("레벨 %d부터 지을 수 있어요" % B.lv); return false
 	if not pay(B.cost): return false
 	var T := {"t": "bld", "b": k, "startAt": S.gt, "doneAt": S.gt + float(B.t)}
 	if B.cat == "house": T.taxAt = T.doneAt + float(B.every)
-	S.tiles[i] = T; pop.emit(i, "-%s" % D.comma(B.cost), "gd"); gain_xp(int(B.x), i)
+	S.tiles[i] = T; pop.emit(i, "-%s" % D.comma(B.cost), "gd"); SND.play("build" if float(B.t) > 0 else "place"); gain_xp(int(B.x), i)
 	if k == "pine": inc("pine")
 	if B.cat == "house": inc("cottage")
 	inc("b_" + k)
@@ -195,7 +195,7 @@ func finish_now(i: int, cost: int) -> bool:
 				if B.cat == "house": T.taxAt = S.gt + float(B.every)
 			"work": T.job.doneAt = S.gt
 			"idle": T.taxAt = S.gt
-	pop.emit(i, "뿅! 완성", "mj"); done_action(); return true
+	pop.emit(i, "뿅! 완성", "mj"); SND.play("mojo"); done_action(); return true
 
 func sell(i: int) -> void:
 	var B: Dictionary = D.BUILDS[S.tiles[i].b]; var g := int(B.cost / 4)
@@ -330,7 +330,7 @@ func star_tick() -> void:
 func catch_star(i: int) -> bool:
 	var st: Dictionary = S.get("star", {})
 	if st.is_empty() or int(st.i) != i: return false
-	S.star = {}; S.mojo += 1; S.nextStar = S.gt + randf_range(D.H, 3 * D.H)
+	SND.play("star"); S.star = {}; S.mojo += 1; S.nextStar = S.gt + randf_range(D.H, 3 * D.H)
 	pop.emit(i, "모조 +1", "mj"); toast.emit("반짝별을 잡았어요! 모조 +1"); done_action(); return true
 
 # ---------- 밤낮 ----------

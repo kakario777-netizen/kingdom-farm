@@ -24,4 +24,16 @@ names=[]
 for n,s in enumerate(sheets):
     f=f'sheet{n}.png';s.save(f'{DST}/{f}',optimize=True);names.append(f)
 json.dump({'sheets':names,'s':atlas},open(f'{DST}/atlas.json','w'),separators=(',',':'))
+# 터치 판정용 모양(투명한 곳은 안 눌리게): 그림 1px = 세상 1단위로 줄인 알파 비트맵
+import base64,math
+masks={}
+for k,im in items:
+    m=meta[k];res=m['res'];w=max(1,math.ceil(im.width/res));h=max(1,math.ceil(im.height/res))
+    a=im.getchannel('A').resize((w,h),Image.BILINEAR)
+    px=a.load();bits=bytearray((w*h+7)//8)
+    for y in range(h):
+        for x in range(w):
+            if px[x,y]>90:n=y*w+x;bits[n>>3]|=1<<(n&7)
+    masks[k]=[w,h,base64.b64encode(bytes(bits)).decode()]
+json.dump(masks,open(f'{DST}/masks.json','w'),separators=(',',':'))
 print(len(atlas),'sprites',[(f,os.path.getsize(f'{DST}/{f}')//1024) for f in names])

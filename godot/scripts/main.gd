@@ -70,4 +70,10 @@ func _shots(dir: String) -> void:
 	G.S.gt = floor(G.S.gt / D.DAY) * D.DAY + 11 * D.H; G.set_goal(D.GOALS.size()); ui.open_quests()
 	await get_tree().create_timer(0.8).timeout
 	await shot(dir + "/g9_quests.png")
+	ui.close_sheet(); G.S.gold = 99999; ui.start_land_preview()
+	await get_tree().create_timer(0.8).timeout
+	await shot(dir + "/g10_buy.png")
+	ui.end_land_preview(); world.fit_cam()
+	await get_tree().create_timer(0.5).timeout
+	await shot(dir + "/g11_normal.png")
 	get_tree().quit()

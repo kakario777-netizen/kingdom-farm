@@ -46,6 +46,25 @@ func _init() -> void:
 	for n in aj.sheets:
 		sheets.append(load("res://sprites/" + n))
 	font = load("res://fonts/Jua-Regular.ttf")
+	var mf := FileAccess.open("res://sprites/masks.json", FileAccess.READ)
+	if mf: _masks_raw = JSON.parse_string(mf.get_as_text())
+
+var _masks_raw: Dictionary = {}
+var _masks := {}
+## 그림의 보이는 부분인지 (d: 그림 발밑 기준 세상 좌표 차이)
+func hit(k: String, d: Vector2) -> bool:
+	var kk := key_of(k)
+	if kk == "" or not _masks_raw.has(kk): return false
+	if not _masks.has(kk):
+		var e: Array = _masks_raw[kk]
+		_masks[kk] = [int(e[0]), int(e[1]), Marshalls.base64_to_raw(e[2])]
+	var m: Array = _masks[kk]
+	var a: Array = atlas[kk]; var res: float = a[7]
+	var x := int(floor(d.x + float(a[5]) / res)); var y := int(floor(d.y + float(a[6]) / res))
+	if x < 0 or y < 0 or x >= m[0] or y >= m[1]: return false
+	var n: int = y * int(m[0]) + x
+	var bytes: PackedByteArray = m[2]
+	return (bytes[n >> 3] >> (n & 7)) & 1 == 1
 
 static func P(u: float, v: float, z: float = 0.0) -> Vector2:
 	return Vector2((u - v) * W2, (u + v) * H2 - z)

@@ -8,3 +8,13 @@ huh|https://opengameart.org/sites/default/files/huh.wav
 bgm-relaxed|https://opengameart.org/sites/default/files/relaxed_village.mp3
 bgm-loopcity|https://opengameart.org/sites/default/files/loopcity.ogg
 bgm-peaceful|https://opengameart.org/sites/default/files/abeth.mp3
+rib-204638|https://openclipart.org/image/800px/204638
+rib-235029|https://openclipart.org/image/800px/235029
+rib-238238|https://openclipart.org/image/800px/238238
+rib-181711|https://openclipart.org/image/800px/181711
+rib-189972|https://openclipart.org/image/800px/189972
+rib-svg-204638|https://openclipart.org/download/204638
+rib-svg-235029|https://openclipart.org/download/235029
+rib-svg-238238|https://openclipart.org/download/238238
+rib-svg-181711|https://openclipart.org/download/181711
+rib-svg-189972|https://openclipart.org/download/189972

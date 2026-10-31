@@ -11,6 +11,7 @@ boot_splash/show_image=false
 [autoload]
 D="*res://scripts/data.gd"
 G="*res://scripts/game.gd"
+SND="*res://scripts/snd.gd"
 
 [display]
 window/size/viewport_width=832
