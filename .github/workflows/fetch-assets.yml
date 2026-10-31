@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: [tools/asset-sources.txt]
+    paths: [tools/asset-sources.txt, tools/asset-extra.txt]
 
 permissions:
   contents: write
@@ -36,6 +36,23 @@ jobs:
           mkdir -p $GITHUB_WORKSPACE/tools/three/jsm
           cp -r package/examples/jsm/loaders package/examples/jsm/utils $GITHUB_WORKSPACE/tools/three/jsm/
           ls -la $GITHUB_WORKSPACE/tools/three
+      - name: 추가 에셋(소리·UI) 받기 — 실패해도 계속
+        run: |
+          grep -v '^#' tools/asset-extra.txt | while IFS='|' read -r name url; do
+            [ -z "$name" ] && continue
+            rm -rf "assets-src/$name"; mkdir -p "assets-src/$name"
+            f="/tmp/$name.dl"
+            if curl -fsL --retry 2 -A "Mozilla/5.0" -o "$f" "$url"; then
+              case "$url" in
+                *.zip) unzip -q -o "$f" -d "assets-src/$name" || echo "풀기 실패 $name" ;;
+                *) cp "$f" "assets-src/$name/$(basename "$url" | sed 's/%20/ /g')" ;;
+              esac
+              echo "OK $name"
+            else
+              echo "FAIL $name"; rmdir "assets-src/$name" 2>/dev/null || true
+            fi
+          done
+          find assets-src -type d -empty -delete
       - name: 글꼴 받기(OFL)
         run: |
           mkdir -p game/fonts

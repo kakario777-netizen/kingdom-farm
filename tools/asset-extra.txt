@@ -1,0 +1,13 @@
+# 이름|주소  (못 받아도 계속 진행)
+ui-adventure|https://opengameart.org/sites/default/files/kenney_ui-pack-adventure.zip
+interface-sounds|https://opengameart.org/sites/default/files/kenney_interfaceSounds.zip
+rpg-audio|https://opengameart.org/sites/default/files/kenney_rpgaudio.zip
+rpg-audio2|https://opengameart.org/sites/default/files/kenney_rpgAudio.zip
+rpg-audio3|https://opengameart.org/sites/default/files/RPG%20Audio.zip
+jingles|https://opengameart.org/sites/default/files/kenney_musicJingles.zip
+jingles2|https://opengameart.org/sites/default/files/Music%20Jingles.zip
+creature|https://opengameart.org/sites/default/files/80-CC0-creature-SFX.zip
+huh|https://opengameart.org/sites/default/files/huh.wav
+bgm-relaxed|https://opengameart.org/sites/default/files/relaxed_village.mp3
+bgm-loopcity|https://opengameart.org/sites/default/files/loopcity.ogg
+bgm-peaceful|https://opengameart.org/sites/default/files/abeth.mp3
