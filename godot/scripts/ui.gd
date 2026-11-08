@@ -27,7 +27,8 @@ var goal_p: Label
 var sheet_bg: Control
 var sheet: PanelContainer
 var sheet_title: Label
-var sheet_rib: NinePatchRect
+var sheet_rib: TextureRect
+var rib_color := "coral"
 var sheet_body: VBoxContainer
 var sheet_scroll: ScrollContainer
 var live_l: Label = null
@@ -384,24 +385,25 @@ func _build_sheet() -> void:
 		if _tap(e): close_sheet())
 	sheet_bg.add_child(dim)
 	sheet = PanelContainer.new()
-	var s := sbox(Color("#fff8ec"), L, 4, 28, 0, 10); s.corner_radius_bottom_left = 0; s.corner_radius_bottom_right = 0
-	s.content_margin_left = 14; s.content_margin_right = 14; s.content_margin_top = 8; s.content_margin_bottom = 6
+	var s := StyleBoxEmpty.new()
+	s.content_margin_left = 20; s.content_margin_right = 20; s.content_margin_top = 14; s.content_margin_bottom = 24
 	sheet.add_theme_stylebox_override("panel", s)
+	# 나무 테두리 창 그림(9조각: 모서리 꽃장식은 그대로, 변·가운데만 늘림)
+	var nine := NineTex.new(); nine.tex = load("res://ui/panel_wood.png"); nine.m = 130; nine.k = 0.34
+	nine.mouse_filter = Control.MOUSE_FILTER_STOP; sheet.add_child(nine)
 	sheet.anchor_left = 0.5; sheet.anchor_right = 0.5; sheet.anchor_top = 1; sheet.anchor_bottom = 1
 	sheet_bg.add_child(sheet)
 	var vb := VBoxContainer.new(); vb.add_theme_constant_override("separation", 8); sheet.add_child(vb)
 	# 리본 제목 + 닫기
-	var head := Control.new(); head.custom_minimum_size = Vector2(0, 48); vb.add_child(head)
-	var rib := NinePatchRect.new(); rib.texture = load("res://ui/ribbon.png")
-	rib.patch_margin_left = 128; rib.patch_margin_right = 128; rib.patch_margin_top = 0; rib.patch_margin_bottom = 0
-	rib.scale = Vector2(1, 1) / 3.0; rib.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	rib.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	var head := Control.new(); head.custom_minimum_size = Vector2(0, 30); vb.add_child(head)
+	var rib := TextureRect.new(); rib.expand_mode = TextureRect.EXPAND_IGNORE_SIZE; rib.stretch_mode = TextureRect.STRETCH_SCALE
+	rib.mouse_filter = Control.MOUSE_FILTER_IGNORE; rib.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	head.add_child(rib)
-	sheet_title = lab("", 23, Color.WHITE, 9, Color("#8a2350")); sheet_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	sheet_title = lab("", 22, Color.WHITE, 8, L); sheet_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	sheet_title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	head.add_child(sheet_title)
 	sheet_rib = rib
-	var close := round_btn("✕", "red"); close.anchor_left = 1; close.anchor_right = 1; close.offset_left = -48; close.offset_right = -2; close.offset_top = 1
+	var close := round_btn("✕", "red"); close.anchor_left = 1; close.anchor_right = 1; close.offset_left = -48; close.offset_right = -2; close.offset_top = -30
 	close.pressed.connect(close_sheet); head.add_child(close)
 	sheet_scroll = ScrollContainer.new(); sheet_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	sheet_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -421,14 +423,24 @@ func open_sheet(title: String) -> VBoxContainer:
 	var vs := root.size
 	var w: float = min(780.0, vs.x - 20)
 	var h: float = min(vs.y * 0.8, 520.0)
-	sheet.offset_left = -w / 2; sheet.offset_right = w / 2; sheet.offset_top = -h; sheet.offset_bottom = 0
-	var tsz: float = D.font.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, 23).x
-	var rw: float = max(230.0, tsz + 120.0)
-	sheet_rib.size = Vector2(rw * 3.0, 192)
-	sheet_rib.position = Vector2((w - 28) / 2 - rw / 2, -12)
-	sheet_title.size = Vector2(rw, 40); sheet_title.position = Vector2((w - 28) / 2 - rw / 2, -7)
+	sheet.offset_left = -w / 2; sheet.offset_right = w / 2; sheet.offset_top = -h - 6; sheet.offset_bottom = -6
+	# 리본: 늘이지 않고 길이별 그림(짧음·보통·김) 중 골라 통째로 축소 → 아치가 살아 있음
+	var fs := 22; var tsz: float = D.font.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+	var rh := 60.0; var pick := "l"
+	for t in ["s", "m", "l"]:
+		var tx: Texture2D = load("res://ui/ribbon_%s_%s.png" % [rib_color, t])
+		var band: float = rh * tx.get_width() / tx.get_height() * 0.6
+		if tsz <= band or t == "l": pick = t; break
+	var tex: Texture2D = load("res://ui/ribbon_%s_%s.png" % [rib_color, pick])
+	var rw: float = rh * tex.get_width() / tex.get_height()
+	while tsz > rw * 0.6 and fs > 14:
+		fs -= 1; tsz = D.font.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+	sheet_title.add_theme_font_size_override("font_size", fs)
+	sheet_rib.texture = tex; sheet_rib.size = Vector2(rw, rh)
+	sheet_rib.position = Vector2((w - 28) / 2 - rw / 2, -44)       # 창 윗테두리에 반쯤 걸치게
+	sheet_title.size = Vector2(rw, rh * 0.5); sheet_title.position = Vector2((w - 28) / 2 - rw / 2, -44 + rh * 0.13)
 	sheet.position.y = vs.y
-	var tw := sheet.create_tween(); tw.tween_property(sheet, "position:y", vs.y - h, 0.32).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	var tw := sheet.create_tween(); tw.tween_property(sheet, "position:y", vs.y - h - 6, 0.32).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	sheet_scroll.scroll_vertical = 0
 	return sheet_body
 
@@ -1019,3 +1031,19 @@ func _intro_name() -> void:
 			{"t": "%s은 아직 작고 조용하지만, 폐하와 함께라면 금방 북적북적해질 거예요." % G.S.name},
 			{"t": "건국 기념으로 모조 10개를 드릴게요. 모조를 쓰면 기다리지 않고 바로 완성할 수 있어요.", "rw": [["mojo", 10]]},
 			{"t": D.GOALS[0].d, "btn": "해볼게요!"}]))
+
+
+# 9조각 그림 판: 텍스처 여백 m(그림 픽셀)을 k배로 줄여 그림 → 고해상도 그림을 선명하게 씀
+class NineTex extends Control:
+	var tex: Texture2D
+	var m := 100
+	var k := 0.33
+	func _draw() -> void:
+		var tw := tex.get_width(); var th := tex.get_height(); var d := m * k
+		var xs := [0.0, d, size.x - d, size.x]; var ys := [0.0, d, size.y - d, size.y]
+		var us := [0, m, tw - m, tw]; var vs := [0, m, th - m, th]
+		for i in 3:
+			for j in 3:
+				draw_texture_rect_region(tex, Rect2(xs[i], ys[j], xs[i + 1] - xs[i], ys[j + 1] - ys[j]), Rect2(us[i], vs[j], us[i + 1] - us[i], vs[j + 1] - vs[j]))
+	func _notification(what: int) -> void:
+		if what == NOTIFICATION_RESIZED: queue_redraw()

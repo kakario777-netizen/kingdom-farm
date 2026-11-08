@@ -13,6 +13,7 @@ func _ready() -> void:
 	world.tapped.connect(ui.on_tap)
 	var args := OS.get_cmdline_user_args()
 	if "--shots" in args: _shots(args[args.find("--shots") + 1])
+	if "--ribshots" in args: _ribshots(args[args.find("--ribshots") + 1])
 	if "--touchtest" in args:
 		tt = preload("res://scripts/touch_test.gd").new(); tt.run(self)
 
@@ -76,4 +77,23 @@ func _shots(dir: String) -> void:
 	ui.end_land_preview(); world.fit_cam()
 	await get_tree().create_timer(0.5).timeout
 	await shot(dir + "/g11_normal.png")
+	get_tree().quit()
+
+func _ribshots(dir: String) -> void:
+	await get_tree().create_timer(1.0).timeout
+	G.reset(); G.S.started = true
+	if ui.intro: ui.intro.queue_free()
+	ui.intro = null; G.set_goal(D.GOALS.size()); G.S.level = 10; ui.update_hud(); ui.toast_p.visible = false; G.S.daily = G.today()
+	for col in ["coral", "pink"]:
+		ui.rib_color = col
+		ui.shop_tab = "house"; ui.open_shop(false)
+		await get_tree().create_timer(0.7).timeout
+		await shot(dir + "/rib_%s_shop.png" % col)
+		ui.close_sheet(); ui.shop_tab = "house"; ui.open_shop(true)
+		await get_tree().create_timer(0.7).timeout
+		await shot(dir + "/rib_%s_long.png" % col)
+		ui.close_sheet(); ui.open_quests()
+		await get_tree().create_timer(0.7).timeout
+		await shot(dir + "/rib_%s_quest.png" % col)
+		ui.close_sheet()
 	get_tree().quit()
