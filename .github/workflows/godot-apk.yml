@@ -5,7 +5,7 @@ on:
     branches: [ main ]
     paths: [ 'godot/**', '.github/workflows/godot-apk.yml' ]
 permissions:
-  contents: read
+  contents: write
 concurrency: { group: godot-apk, cancel-in-progress: true }
 jobs:
   build:
@@ -34,9 +34,12 @@ jobs:
           godot --headless --export-debug "Android" ../build/malang-kingdom.apk 2>&1 | grep -iE "error|fail|export" | head -40 || true
           ls -la ../build
           test -f ../build/malang-kingdom.apk
-      - name: 결과물 보관 (배포는 공개 릴리스 저장소 kingdom-farm-release로 따로)
-        uses: actions/upload-artifact@v4
+      - name: 결과물 보관 (비공개 코드 저장소 안 임시 릴리스, 공개 배포는 kingdom-farm-release로 따로)
+        uses: softprops/action-gh-release@v2
         with:
-          name: malang-kingdom-apk
-          path: build/malang-kingdom.apk
-          retention-days: 30
+          tag_name: ci-build-${{ github.run_number }}
+          name: 내부 빌드 ${{ github.run_number }}
+          body: ${{ github.event.head_commit.message }}
+          files: build/malang-kingdom.apk
+          prerelease: true
+          make_latest: false
