@@ -277,7 +277,7 @@ func _cell(i: int) -> Node2D:
 	objs.add_child(n)
 	return n
 
-const WILD_TREES := ["wild_tree_round", "wild_tree_tall", "wild_tree_pine", "wild_tree_birch", "wild_tree_bushy", "wild_tree_fruit", "wild_tree_pine", "wild_tree_round", "pine", "fir", "oak", "maple"]
+const WILD_TREES := ["wild_tree_round", "wild_tree_tall", "wild_tree_pine", "wild_tree_birch", "wild_tree_bushy", "wild_tree_fruit", "wild_tree_pine", "wild_tree_round", "pine", "fir", "oak", "wild_tree_bushy"]
 const WILD_SMALL := ["wild_bush_1", "wild_bush_2", "wild_bush_3", "wild_rock_1", "wild_rock_2", "wild_rock_3", "wild_flowers_1", "wild_flowers_2", "wild_flowers_3", "wild_grass_1", "wild_grass_2", "wild_mushroom", "wild_stump", "wild_log"]
 
 func _build_wild() -> void:
@@ -322,7 +322,7 @@ func _update_wild_alpha() -> void:
 		var open := G.unlocked(c, r)
 		# 바로 앞(아래쪽)에서 내 땅을 가리는 나무는 아주 투명하게
 		var front: bool = (c >= cur.x1 or r >= cur.y1) and c >= cur.x0 - 1 and r >= cur.y0 - 1 and c < cur.x1 + 3 and r < cur.y1 + 3
-		var col := Color(0.8, 0.86, 0.8, 1.0)          # 사지 않은 땅의 숲은 조금 어둡게
+		var col := Color(0.96, 0.98, 0.92, 0.78)        # 사지 않은 땅의 숲은 옅게(마을이 돋보이게)
 		if preview and G.in_r(nxt, c, r): col = Color(1.0, 0.97, 0.85, 0.42)
 		for s in wilds[i]:
 			# 마을 바로 앞(아래쪽)의 큰 나무는 아예 숨김(작은 꽃·풀·덤불만 남겨 풀밭처럼)
@@ -610,13 +610,13 @@ func _fit_rect(R: Dictionary, k: float) -> void:
 	var b := _box(R, k)
 	var vs := get_viewport_rect().size
 	var top := 56.0
-	var z: float = clamp(min(vs.x / b.size.x, (vs.y - top) / b.size.y), ZMIN, 1.6)
+	var z: float = clamp(min(vs.x / b.size.x, (vs.y - top) / b.size.y), ZMIN, 2.6)
 	cam.zoom = Vector2(z, z)
 	cam.position = b.get_center() - Vector2(0, top / 2 / z)
 	_clamp_cam()
 
 func fit_cam() -> void:
-	_fit_rect(view_rect(), 0.04)
+	_fit_rect(view_rect(), 0.0)
 
 func fit_all() -> void:
 	var vs := get_viewport_rect().size

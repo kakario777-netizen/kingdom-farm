@@ -166,7 +166,7 @@ func jbtn(text: String, color := "pink", size := 17, ic: Texture2D = null) -> Bu
 	var fc := Color("#5a3010") if light else Color.WHITE
 	var l := clab(text, size, fc, Rect2(w * left, 0, w * (0.92 - left), h * 0.76), 0 if light else 5, L)
 	l.name = "T"; b.add_child(l)
-	b.set_meta("lab", l)
+	b.set_meta("lab", l); b.set_meta("fs", size)
 	b.button_down.connect(func(): bg.modulate = Color(0.88, 0.88, 0.88); SND.play("click", -4.0))
 	b.button_up.connect(func(): bg.modulate = Color.WHITE)
 	b.draw.connect(func(): bg.modulate = Color(0.72, 0.72, 0.72, 0.9) if b.disabled else bg.modulate)
@@ -179,7 +179,7 @@ func ibtn(id: String, text: String, h := 40.0, x0 := 0.3, x1 := 0.95, light := t
 	var w := h * gaspect(id); b.custom_minimum_size = Vector2(w, h)
 	var bg := gimg(id, w, h); b.add_child(bg)
 	var l := clab(text, 15, Color("#5a3010") if light else Color.WHITE, Rect2(w * x0, 0, w * (x1 - x0), h * 0.76), 0 if light else 5, L)
-	b.add_child(l); b.set_meta("lab", l)
+	b.add_child(l); b.set_meta("lab", l); b.set_meta("fs", 15)
 	b.button_down.connect(func(): bg.modulate = Color(0.88, 0.88, 0.88); SND.play("click", -4.0))
 	b.button_up.connect(func(): bg.modulate = Color.WHITE)
 	b.draw.connect(func(): bg.modulate = Color(0.72, 0.72, 0.72, 0.9) if b.disabled else bg.modulate)
@@ -188,7 +188,7 @@ func ibtn(id: String, text: String, h := 40.0, x0 := 0.3, x1 := 0.95, light := t
 ## 버튼 글자 바꾸기(그림 버튼용)
 func set_btext(b: Button, t: String) -> void:
 	var l: Label = b.get_meta("lab", null)
-	if l: l.text = t; fit(l, l.size.x, int(l.get_theme_font_size("font_size")) + 4)
+	if l: l.text = t; fit(l, l.size.x, int(b.get_meta("fs", 15)), 8)
 
 func round_btn(glyph: String, color := "white") -> Button:
 	var id: String = {"+": "btn_zoom_in", "−": "btn_zoom_out", "⌂": "btn_zoom_home", "✕": "btn_close", "⚙": "hud_settings_btn"}.get(glyph, "btn_zoom_home")
@@ -253,6 +253,7 @@ func _build_hud() -> void:
 	xp_bar = ProgressBar.new(); xp_bar.show_percentage = false; xp_bar.position = Vector2(xf.size.x * 0.031, xf.size.y * 0.17); xp_bar.size = Vector2(xf.size.x * 0.938, xf.size.y * 0.66)
 	var fill := StyleBoxTexture.new(); fill.texture = gtex("hud_xp_fill")
 	xp_bar.add_theme_stylebox_override("background", StyleBoxEmpty.new()); xp_bar.add_theme_stylebox_override("fill", fill); xf.add_child(xp_bar)
+	xp_l = clab("", 10, INK, Rect2(0, 0, xf.size.x, xf.size.y), 3, Color(1, 0.98, 0.9)); xf.add_child(xp_l)
 	# 골드·보석·시계 (홈 중심·글자칸은 그림을 재서 얻은 비율)
 	var cap := func(id: String, x: float, w: float, hole: Vector2, hd: float, ic: String, tx0: float, tx1: float) -> Label:
 		var c := gimg(id, w, -1); c.position = Vector2(x, 26 - c.size.y / 2); top.add_child(c)
@@ -270,6 +271,7 @@ func _tap(e: InputEvent) -> bool:
 	return (e is InputEventScreenTouch and not e.pressed) or (e is InputEventMouseButton and not e.pressed and e.button_index == MOUSE_BUTTON_LEFT)
 
 var _last_gold := -1.0
+var xp_l: Label
 func update_hud() -> void:
 	var S := G.S
 	var g: float = floor(S.gold)
@@ -279,6 +281,7 @@ func update_hud() -> void:
 	_last_gold = g
 	var a := D.lv_xp(S.level); var b := D.lv_xp(S.level + 1)
 	xp_bar.value = 100.0 * (S.xp - a) / max(1, b - a)
+	xp_l.text = "%d / %d" % [clamp(S.xp - a, 0, b - a), b - a]; fit(xp_l, xp_l.size.x - 6, 10, 7)
 	name_l.text = S.name; sub_l.text = "%s · %s" % [_ruler_name(), D.LANDS[S.land].n]
 	face_r.texture = D.face(S.ruler)
 	_update_clock(); _update_goal()
@@ -295,7 +298,7 @@ func _ruler_name() -> String:
 func _update_clock() -> void:
 	var gt: float = G.S.gt
 	var day := int(gt / D.DAY) + 1; var h := int(fmod(gt, D.DAY) / D.H); var m := int(fmod(gt, D.H) / D.M)
-	clock_l.text = "%d일차 %02d:%02d" % [day, h, m] + (" ×%d" % G.S.speed if float(G.S.speed) != 1.0 else "")
+	clock_l.text = "%d일차 %02d:%02d" % [day, h, m]
 	fit(clock_l, clock_l.size.x, 13)
 
 # =============== 목표 카드 ===============
@@ -316,7 +319,7 @@ func _update_goal() -> void:
 	if not G.S.started:
 		goal_btn.visible = false; return
 	var g := G.goal_now()
-	goal_btn.visible = true
+	goal_btn.visible = not sheet_bg.visible
 	if g.is_empty():
 		var dn := G.quests_done()
 		goal_t.text = "왕국 목표"; goal_p.text = ("%d개 완료! 보상 받기" % dn) if dn else "눌러서 목표 보기"; goal_ic.texture = D.thumb("castle1")
@@ -430,11 +433,11 @@ func open_sheet(title: String, kind := "") -> VBoxContainer:
 	if not sheet_bg.visible: SND.play("open", -3.0)
 	for c in sheet_body.get_children(): c.queue_free()
 	live_l = null
-	sheet_bg.visible = true
+	sheet_bg.visible = true; goal_btn.visible = false; shop_btn.get_parent().visible = false
 	var vs := root.size
 	# 창 그림 비율 그대로: 화면에 들어가는 가장 큰 크기(위 자원칸은 가리지 않게 y≥62)
 	var a := gaspect("win_" + k)
-	var maxw: float = min(740.0, vs.x - 24); var maxh: float = min(vs.y - 74, 320.0)
+	var maxw: float = min(720.0, vs.x - 40); var maxh: float = min(vs.y - 70, 310.0)
 	var w: float = min(maxw, maxh * a); var h: float = w / a
 	var x: float = (vs.x - w) / 2; var y: float = vs.y - h - 8
 	var win: TextureRect = sheet_bg.get_node("Win"); win.texture = gtex("win_" + k); win.position = Vector2(x, y); win.size = Vector2(w, h)
@@ -460,6 +463,7 @@ func open_sheet(title: String, kind := "") -> VBoxContainer:
 func close_sheet() -> void:
 	if sheet_bg.visible: SND.play("close", -4.0)
 	sheet_bg.visible = false; live_l = null
+	shop_btn.get_parent().visible = not talking; _update_goal()
 
 func is_sheet_open() -> bool: return sheet_bg.visible
 
@@ -479,15 +483,18 @@ func card(tex: Texture2D, title: String, sub: String, earn: String, lock_lv: int
 	# 그림: 풀밭 받침(세로 40~62%) 위에 바닥을 맞춤
 	var pic := TextureRect.new(); pic.texture = tex; pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE; pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	pic.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS; pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	pic.position = Vector2(W * 0.12, H * 0.06); pic.size = Vector2(W * 0.76, H * 0.48); b.add_child(pic)
+	pic.position = Vector2(W * 0.1, H * 0.05); pic.size = Vector2(W * 0.8, H * 0.5)
+	if tex and float(tex.get_width()) / max(1, tex.get_height()) > 1.5:   # 납작한 것(밭·길)은 받침 가운데에 얹음
+		pic.size = Vector2(W * 0.7, H * 0.24); pic.position = Vector2(W * 0.15, H * 0.52 - pic.size.y / 2)
+	b.add_child(pic)
 	if locked: pic.modulate = Color(1, 1, 1, 0.5)
-	b.add_child(clab(title, 14, INK, Rect2(W * 0.08, H * 0.63, W * 0.84, H * 0.11)))
-	b.add_child(clab(sub, 11, INK_SOFT, Rect2(W * 0.08, H * 0.745, W * 0.84, H * 0.09)))
-	b.add_child(clab(earn, 11, Color("#c2560c"), Rect2(W * 0.08, H * 0.835, W * 0.84, H * 0.09)))
+	b.add_child(clab(title, 14, INK, Rect2(W * 0.08, H * 0.665, W * 0.84, H * 0.1)))
+	if sub != "": b.add_child(clab(sub, 11, INK_SOFT, Rect2(W * 0.08, H * 0.765, W * 0.84, H * 0.08)))
+	if earn != "" and not locked: b.add_child(clab(earn, 11, Color("#c2560c"), Rect2(W * 0.08, H * 0.85, W * 0.84, H * 0.08)))
 	if locked:
 		b.disabled = true
-		var lk := gimg("ic_lock", 24, 24); lk.position = Vector2(W - 30, 6); b.add_child(lk)
-		b.add_child(clab("Lv.%d" % lock_lv, 11, Color.WHITE, Rect2(W - 44, 30, 40, 14), 4, L))
+		var lk := gimg("ic_lock", 22, 22); lk.position = Vector2(W - 28, 6); b.add_child(lk)
+		b.add_child(clab("Lv.%d 필요" % lock_lv, 12, Color("#8a6a50"), Rect2(W * 0.08, H * 0.85, W * 0.84, H * 0.08)))
 	b.pressed.connect(on)
 	b.button_down.connect(func(): bg.modulate = Color(0.93, 0.93, 0.93))
 	b.button_up.connect(func(): bg.modulate = Color.WHITE)
@@ -524,18 +531,18 @@ func live(fn: Callable) -> Label:
 func _build_talk() -> void:
 	talk_box = Control.new(); talk_box.set_anchors_preset(Control.PRESET_FULL_RECT); talk_box.visible = false
 	var block := ColorRect.new(); block.color = Color(0, 0, 0, 0); block.set_anchors_preset(Control.PRESET_FULL_RECT); talk_box.add_child(block)
-	var who := gimg("pt_advisor", 116, -1); who.anchor_top = 1; who.anchor_bottom = 1
+	var who := gimg("pt_advisor", 92, -1); who.anchor_top = 1; who.anchor_bottom = 1
 	who.offset_left = 8; who.offset_right = 8 + who.size.x; who.offset_top = -who.size.y - 4; who.offset_bottom = -4
 	talk_box.add_child(who)
 	var tw := who.create_tween().set_loops(); var t0 := who.offset_top
 	tw.tween_property(who, "offset_top", t0 - 5, 1.2).set_trans(Tween.TRANS_SINE); tw.tween_property(who, "offset_top", t0, 1.2).set_trans(Tween.TRANS_SINE)
 	# 대화판 그림(비율 그대로): 이름표·본문 칸은 그림을 잰 비율
-	var W := 470.0; var H := W / gaspect("talk_box")
-	var p := Control.new(); p.anchor_top = 1; p.anchor_bottom = 1; p.offset_left = 130; p.offset_right = 130 + W; p.offset_top = -H - 8; p.offset_bottom = -8
+	var W := 420.0; var H := W / gaspect("talk_box")
+	var p := Control.new(); p.anchor_top = 1; p.anchor_bottom = 1; p.offset_left = 104; p.offset_right = 104 + W; p.offset_top = -H - 8; p.offset_bottom = -8
 	p.size = Vector2(W, H); talk_box.add_child(p)
 	p.add_child(gimg("talk_box", W, H))
 	var nm := clab("몽실 대신", 13, Color.WHITE, Rect2(W * 0.051, H * 0.026, W * 0.32, H * 0.205), 5, Color("#c0506a")); p.add_child(nm)
-	talk_txt = lab("", 15); talk_txt.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; talk_txt.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	talk_txt = lab("", 14); talk_txt.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; talk_txt.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	talk_txt.position = Vector2(W * 0.05, H * 0.26); talk_txt.size = Vector2(W * 0.9, H * 0.42); p.add_child(talk_txt)
 	var r := HBoxContainer.new(); r.add_theme_constant_override("separation", 8); r.alignment = BoxContainer.ALIGNMENT_END
 	r.position = Vector2(W * 0.05, H * 0.66); r.size = Vector2(W * 0.9, H * 0.28); p.add_child(r)
@@ -551,7 +558,7 @@ func _next_talk() -> void:
 	var f := talk_fn; talk_fn = Callable()
 	var n0 := _say_n
 	if talk_queue.is_empty():
-		talk_box.visible = false; talking = false
+		talk_box.visible = false; talking = false; shop_btn.get_parent().visible = not sheet_bg.visible
 	if f.is_valid(): f.call()
 	if _say_n != n0: return
 	if not talk_queue.is_empty(): _show_line()
@@ -565,7 +572,7 @@ func _show_line() -> void:
 	var p: Control = talk_txt.get_parent()
 	p.pivot_offset = p.size / 2; p.scale = Vector2(0.9, 0.9)
 	p.create_tween().tween_property(p, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	talk_box.visible = true; talking = true
+	talk_box.visible = true; talking = true; shop_btn.get_parent().visible = false
 
 func reward_chip(kind: String, n: int) -> Control:
 	var h := 28.0; var w := h * gaspect("reward_chip")
@@ -582,7 +589,7 @@ func _build_lv() -> void:
 	rays.draw.connect(func():
 		for k in 18:
 			var a := k * TAU / 18.0
-			rays.draw_colored_polygon(PackedVector2Array([Vector2.ZERO, Vector2(cos(a), sin(a)) * 420, Vector2(cos(a + 0.17), sin(a + 0.17)) * 420]), Color(1, 0.93, 0.6, 0.28)))
+			rays.draw_colored_polygon(PackedVector2Array([Vector2.ZERO, Vector2(cos(a), sin(a)) * 300, Vector2(cos(a + 0.17), sin(a + 0.17)) * 300]), Color(1, 0.93, 0.6, 0.16)))
 	var rt := rays.create_tween().set_loops(); rt.tween_property(rays, "rotation", TAU, 14.0).from(0.0)
 	root.add_child(lv_box)
 
@@ -603,12 +610,17 @@ func _show_lv() -> void:
 	if lv_queue.is_empty(): return
 	var q: Array = lv_queue.pop_front(); var lv: int = q[0]; var mj: int = q[1]
 	for c in lv_box.get_children():
-		if c is PanelContainer: c.queue_free()
-	var p := panel(Color("#fffaf0"), 26, 4, 10)
-	p.anchor_left = 0.5; p.anchor_right = 0.5; p.anchor_top = 0.5; p.anchor_bottom = 0.5
-	p.grow_horizontal = Control.GROW_DIRECTION_BOTH; p.grow_vertical = Control.GROW_DIRECTION_BOTH
-	var vb := VBoxContainer.new(); vb.alignment = BoxContainer.ALIGNMENT_CENTER; vb.add_theme_constant_override("separation", 8); p.add_child(vb)
-	var t := lab("레벨 %d!" % lv, 40, Color("#ffd84a"), 12); t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; vb.add_child(t)
+		if c.name.begins_with("LvWin"): c.queue_free()
+	# 레벨업 창 그림(비율 그대로) + 위 리본에 제목
+	var vs := root.size
+	var wh: float = min(290.0, vs.y - 56); var ww: float = wh * gaspect("win_levelup")
+	var p := Control.new(); p.name = "LvWin"; p.size = Vector2(ww, wh); p.position = (vs - p.size) / 2 + Vector2(0, 12)
+	p.add_child(gimg("win_levelup", ww, wh))
+	var rw: float = ww * 0.66; var rh: float = rw / gaspect("rib_levelup")
+	var rib := gimg("rib_levelup", rw, rh); rib.position = Vector2((ww - rw) / 2, -rh * 0.42); p.add_child(rib)
+	rib.add_child(clab("레벨 %d!" % lv, 26, Color.WHITE, Rect2(rw * 0.2, rh * 0.06, rw * 0.6, rh * 0.54), 6, Color("#c98a1a")))
+	var vb := VBoxContainer.new(); vb.alignment = BoxContainer.ALIGNMENT_CENTER; vb.add_theme_constant_override("separation", 6)
+	vb.position = Vector2(ww * 0.14, wh * 0.16); vb.size = Vector2(ww * 0.72, wh * 0.76); p.add_child(vb)
 	var r := row(6); r.alignment = BoxContainer.ALIGNMENT_CENTER; r.add_child(reward_chip("mojo", mj)); vb.add_child(r)
 	var un := []
 	for k in D.CROP_ORDER:
@@ -616,13 +628,18 @@ func _show_lv() -> void:
 	for k in D.BUILD_ORDER:
 		if int(D.BUILDS[k].lv) == lv: un.append([k, D.BUILDS[k].n])
 	if un.size():
-		var s := lab("새로 열렸어요", 15, INK_SOFT); s.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; vb.add_child(s)
-		var ur := row(14); ur.alignment = BoxContainer.ALIGNMENT_CENTER; vb.add_child(ur)
-		for u in un.slice(0, 5):
-			var c := VBoxContainer.new(); c.add_child(pic(D.thumb(u[0]), 54, false)); var nl := lab(u[1], 13); nl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; c.add_child(nl); ur.add_child(c)
-	var ok := jbtn("좋아요!", "yellow", 22); ok.size_flags_horizontal = Control.SIZE_SHRINK_CENTER; ok.custom_minimum_size.x = 170
+		var s := lab("새로 열렸어요", 14, INK_SOFT); s.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; vb.add_child(s)
+		var ur := row(10); ur.alignment = BoxContainer.ALIGNMENT_CENTER; vb.add_child(ur)
+		for u in un.slice(0, 4):
+			var c := Control.new(); c.custom_minimum_size = Vector2(70, 66)
+			var pc := pic(D.thumb(u[0]), 44, false); pc.position = Vector2(10, 0); c.add_child(pc)
+			c.add_child(clab(u[1], 12, INK, Rect2(0, 50, 70, 16))); ur.add_child(c)
+	var was_talking := talk_box.visible
+	talk_box.visible = false
+	var ok := jbtn("좋아요!", "yellow", 20); ok.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	ok.pressed.connect(func():
 		lv_box.visible = false
+		if was_talking and talking: talk_box.visible = true
 		if lv_queue.size(): get_tree().create_timer(0.2).timeout.connect(_show_lv))
 	vb.add_child(ok)
 	lv_box.add_child(p)
@@ -723,8 +740,12 @@ func on_tap(i: int) -> void:
 # =============== 창 종류 ===============
 func open_seeds() -> void:
 	var b := open_sheet("무엇을 심을까요?", "seed"); var gr := grid(); b.add_child(gr)
+	var nlock := 0
 	for k in D.CROP_ORDER:
 		var C: Dictionary = D.CROPS[k]; var kk: String = k
+		if int(C.lv) > int(G.S.level):   # 잠긴 건 다음 2개만 보여줌
+			nlock += 1
+			if nlock > 2: continue
 		gr.add_child(card(D.thumb("crop_%s_2" % k), C.n, "%s · %s" % [D.fmt(C.t), ("%dG" % C.cost) if C.cost else "무료"], "+%dG · +%dXP" % [C.g, C.x], int(C.lv),
 			func():
 				if G.plant(G.sel, kk): close_sheet()))
@@ -858,11 +879,22 @@ func open_shop(here: bool) -> void:
 				if G.make_plot(G.sel): close_sheet()
 			else: start_placing({"kind": "plot"}))
 		c.disabled = n >= G.plot_cap(); gr.add_child(c)
+		var cl := 0
+		for k in D.CROP_ORDER:   # 심을 수 있는 작물 미리보기(밭을 눌러 심음)
+			var C: Dictionary = D.CROPS[k]
+			if int(C.lv) > int(G.S.level):
+				cl += 1
+				if cl > 2: continue
+			gr.add_child(card(D.thumb("crop_%s_2" % k), C.n, "%s · %s" % [D.fmt(C.t), ("%dG" % C.cost) if C.cost else "무료"], "+%dG · +%dXP" % [C.g, C.x], int(C.lv), func(): toast("밭을 눌러서 심어요")))
 		return
+	var nlock := 0
 	for k in D.BUILD_ORDER:
 		var B: Dictionary = D.BUILDS[k]
 		var ok: bool = (B.cat in ["road", "fence"]) if shop_tab == "road" else B.cat == shop_tab
 		if not ok: continue
+		if int(B.lv) > int(G.S.level):
+			nlock += 1
+			if nlock > 2: continue
 		var earn: String = B.d if B.cat == "house" else ("%s · %s · +%dG" % [B.item, D.fmt(B.jt), B.g] if B.cat == "shop" else "+%dXP" % B.x)
 		var kk: String = k
 		gr.add_child(card(D.thumb(k), B.n, "%sG" % D.comma(B.cost) + (" · 공사 %s" % D.fmt(B.t) if float(B.t) > 0 else ""), earn, int(B.lv), func():
@@ -1040,7 +1072,7 @@ func _intro_title() -> void:
 	var lg := gimg("logo_board", 400, -1); var lt := clab("말랑 왕국", 46, Color("#ff8ab4"), Rect2(lg.size.x * 0.17, lg.size.y * 0.2, lg.size.x * 0.66, lg.size.y * 0.6), 10, L); lg.add_child(lt)
 	var lw := Control.new(); lw.custom_minimum_size = lg.size; lw.add_child(lg); vb.add_child(_center(lw))
 	var s := lab("작은 왕국을 말랑말랑 키워봐요", 18); s.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; vb.add_child(s)
-	var go := jbtn("시작하기", "pink", 24); go.custom_minimum_size = Vector2(200, 56); go.name = "GoStart"; go.pressed.connect(_intro_ruler); vb.add_child(_center(go))
+	var go := jbtn("시작하기", "pink", 24); go.name = "GoStart"; go.pressed.connect(_intro_ruler); vb.add_child(_center(go))
 
 func _intro_ruler() -> void:
 	var vb := _intro_box()
@@ -1048,11 +1080,18 @@ func _intro_ruler() -> void:
 	var r := row(12); r.alignment = BoxContainer.ALIGNMENT_CENTER; vb.add_child(r)
 	for ru in D.RULERS:
 		var k: String = ru.k
-		var b := card(D.thumb("pt_" + k), ru.n, "", "", 0, func(): G.S.ruler = k; _intro_ruler())
-		b.custom_minimum_size = Vector2(110, 140)
-		if G.S.ruler == k: b.add_theme_stylebox_override("normal", sbox(Color("#fff1c9"), L, 4, 18, 7, 3))
-		r.add_child(b)
-	var go := jbtn("다음", "pink", 22); go.custom_minimum_size = Vector2(170, 52); go.name = "GoName"; go.pressed.connect(_intro_name); vb.add_child(_center(go))
+		var b := card(D.thumb("pt_" + k), ru.n, {"king": "든든한 임금님", "queen": "우아한 여왕님", "prince": "씩씩한 왕자님", "princess": "명랑한 공주님"}.get(k, ""), "", 0, func(): G.S.ruler = k; _intro_ruler())
+		var on: bool = G.S.ruler == k
+		var cw := Control.new(); cw.custom_minimum_size = b.custom_minimum_size; cw.add_child(b)
+		b.pivot_offset = b.custom_minimum_size / 2
+		if on:
+			b.scale = Vector2(1.06, 1.06)
+			var ck := gimg("ic_check", 28, 28) if gtex("ic_check") else gimg("ic_xp", 28, 28)
+			ck.position = Vector2(b.custom_minimum_size.x - 30, b.custom_minimum_size.y * 0.86); b.add_child(ck)
+		else:
+			for ch in b.get_children(): ch.modulate = Color(0.8, 0.8, 0.8)
+		r.add_child(cw)
+	var go := jbtn("다음", "pink", 22); go.name = "GoName"; go.pressed.connect(_intro_name); vb.add_child(_center(go))
 
 func _intro_name() -> void:
 	var vb := _intro_box()
@@ -1062,7 +1101,7 @@ func _intro_name() -> void:
 	le.add_theme_font_size_override("font_size", 22); le.add_theme_color_override("font_color", INK)
 	le.add_theme_stylebox_override("normal", sbox(Color.WHITE, L, 3, 16)); le.add_theme_stylebox_override("focus", sbox(Color.WHITE, Color("#ff8ab4"), 3, 16))
 	vb.add_child(_center(le))
-	var go := jbtn("건국하기!", "pink", 24); go.custom_minimum_size = Vector2(200, 56); go.name = "GoPlay"; vb.add_child(_center(go))
+	var go := jbtn("건국하기!", "pink", 24); go.name = "GoPlay"; vb.add_child(_center(go))
 	go.pressed.connect(func():
 		var v := le.text.strip_edges(); G.S.name = v if v != "" else "말랑 왕국"; G.S.started = true; G.set_goal(0)
 		intro.queue_free(); intro = null; G.check_daily(); G.save_game(); update_hud(); world.fit_cam()

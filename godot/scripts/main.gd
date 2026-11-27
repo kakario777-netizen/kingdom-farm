@@ -25,6 +25,22 @@ func shot(path: String) -> void:
 func _shots(dir: String) -> void:
 	await get_tree().create_timer(1.0).timeout
 	await shot(dir + "/g0_intro.png")
+	ui.show_intro(); ui._intro_ruler()
+	await get_tree().create_timer(0.6).timeout
+	await shot(dir + "/g0b_ruler.png")
+	G.reset(); G.S.started = true
+	if ui.intro: ui.intro.queue_free()
+	ui.intro = null; G.set_goal(0); G.land_changed.emit(); G.tiles_changed.emit(); ui.update_hud(); world.fit_cam()
+	ui.say([{"t": "빈 밭을 눌러 옥수수를 심어보세요. 다 자라면 한 번 더 눌러서 거두면 돼요!", "btn": "해볼게요!"}])
+	await get_tree().create_timer(0.8).timeout
+	await shot(dir + "/g0c_start.png")
+	ui._next_talk(); ui.open_seeds()
+	await get_tree().create_timer(0.8).timeout
+	await shot(dir + "/g0d_seed.png")
+	ui.close_sheet(); ui.shop_tab = "farm"; ui.open_shop(false)
+	await get_tree().create_timer(0.8).timeout
+	await shot(dir + "/g0e_farm.png")
+	ui.close_sheet()
 	G.reset(); G.S.started = true
 	if ui.intro: ui.intro.queue_free()
 	ui.intro = null; G.set_goal(0)
