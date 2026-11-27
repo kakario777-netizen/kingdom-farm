@@ -71,6 +71,9 @@ static func P(u: float, v: float, z: float = 0.0) -> Vector2:
 
 func key_of(k: String) -> String:
 	if atlas.has(k): return k
+	if k.begins_with("ch_"):   # 주민은 앞·뒤 한 장씩 (걷기는 코드로 통통 튀게)
+		var p := k.split("_")
+		if p.size() >= 3 and atlas.has("ch_%s_%s" % [p[1], p[2]]): return "ch_%s_%s" % [p[1], p[2]]
 	return ALIAS.get(k, "")
 
 func has_spr(k: String) -> bool:
@@ -94,7 +97,7 @@ func set_sprite(s: Sprite2D, k: String) -> void:
 	s.centered = false
 	s.offset = Vector2(-float(e[5]), -float(e[6]))
 	s.scale = Vector2.ONE / res
-	s.set_meta("k", kk)
+	s.set_meta("k", kk); s.set_meta("res", res)
 
 ## 그림의 화면 높이(누르기 판정용)
 func spr_h(k: String) -> float:
@@ -119,8 +122,7 @@ func face(k: String) -> AtlasTexture:
 	var e: Array = atlas[kk]
 	var t := AtlasTexture.new()
 	t.atlas = sheets[int(e[0])]
-	var w: float = e[3]; var h: float = e[4]
-	t.region = Rect2(float(e[1]) + w * 0.2, e[2], w * 0.6, h * 0.58)
+	t.region = Rect2(e[1], e[2], e[3], e[4])
 	return t
 
 func lv_xp(l: int) -> int:

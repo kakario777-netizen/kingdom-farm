@@ -110,12 +110,13 @@ func _build_island() -> void:
 				cliff.draw_line(p + Vector2(0, 14 + (k % 3) * 4), p + Vector2(4, 24 + (k % 3) * 4), Color(0.43, 0.27, 0.16, 0.45), 1.4, true)
 	)
 	ground_poly = Polygon2D.new()
-	ground_poly.texture = _grass_texture()
+	var gt := load("res://ui/g/ground_grass.webp") as Texture2D
+	ground_poly.texture = gt if gt else _grass_texture()
 	ground_poly.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 	var pts := PackedVector2Array([D.P(0, 0), D.P(C, 0), D.P(C, R), D.P(0, R)])
 	ground_poly.polygon = pts
 	var uv := PackedVector2Array()
-	for p in pts: uv.append(p * 1.6)
+	for p in pts: uv.append(p * (2.4 if gt else 1.6))
 	ground_poly.uv = uv
 	add_child(ground_poly)
 
@@ -123,9 +124,23 @@ func _build_island() -> void:
 func _build_stakes() -> void:
 	for n in stakes: n.queue_free()
 	stakes.clear()
-	_stake_ring(D.RECTS[G.S.land], Color("#ff6f9f"), false)
+	_fence_ring(D.RECTS[G.S.land])
 	if preview and G.S.land + 1 < D.RECTS.size():
 		_stake_ring(D.RECTS[G.S.land + 1], Color("#ffd23c"), true)
+
+## 내 땅 둘레: 낮은 나무 울타리(그림 그대로). 위·왼쪽 변은 안쪽 칸의 뒤쪽 변, 아래·오른쪽 변은 바깥 칸의 뒤쪽 변
+func _fence_ring(R: Dictionary) -> void:
+	var put := func(k: String, c: int, r: int, back: bool):
+		var s := D.make_sprite(k)
+		if s == null: return
+		var base := D.P(c + 0.5, r + 0.5)
+		s.position = base + (Vector2(0, -3) if back else Vector2.ZERO)
+		if back: s.offset.y += 3.0 * float(s.get_meta("res", 1.0))
+		objs.add_child(s); stakes.append(s)
+	for x in range(R.x0, R.x1):
+		put.call("fence_wood_r", x, R.y0, true); put.call("fence_wood_r", x, R.y1, false)
+	for y in range(R.y0, R.y1):
+		put.call("fence_wood_l", R.x0, y, true); put.call("fence_wood_l", R.x1, y, false)
 
 func _stake_ring(R: Dictionary, flag: Color, sign: bool) -> void:
 	var pts: Array = []
@@ -222,6 +237,12 @@ func _road_mask(c: int, r: int) -> int:
 	return m
 
 func _draw_road(c: int, r: int, k: String) -> void:
+	# 길 그림(한 칸 꽉 찬 마름모)이 있으면 그대로 깔기 → 옆 칸과 틈 없이 이어짐
+	if D.atlas.has(k):
+		var e: Array = D.atlas[k]; var res: float = e[7]
+		var at := D.P(c + 0.5, r + 0.5) - Vector2(float(e[5]), float(e[6])) / res
+		ground.draw_texture_rect_region(D.sheets[int(e[0])], Rect2(at, Vector2(e[3], e[4]) / res), Rect2(e[1], e[2], e[3], e[4]))
+		return
 	var B: Dictionary = D.BUILDS[k]; var m := _road_mask(c, r)
 	var sq := func(a: float, b: float, col: Color):
 		_quad(ground, c + a, r + a, c + b, r + b, col)
@@ -256,8 +277,8 @@ func _cell(i: int) -> Node2D:
 	objs.add_child(n)
 	return n
 
-const WILD_TREES := ["wpine", "wpine2", "woak", "woak2", "wpine", "woak", "pine", "fir", "oak", "ash", "maple", "willow"]
-const WILD_SMALL := ["wbush", "wbush", "wrock", "wlog", "wmush"]
+const WILD_TREES := ["wild_tree_round", "wild_tree_tall", "wild_tree_pine", "wild_tree_birch", "wild_tree_bushy", "wild_tree_fruit", "wild_tree_pine", "wild_tree_round", "pine", "fir", "oak", "maple"]
+const WILD_SMALL := ["wild_bush_1", "wild_bush_2", "wild_bush_3", "wild_rock_1", "wild_rock_2", "wild_rock_3", "wild_flowers_1", "wild_flowers_2", "wild_flowers_3", "wild_grass_1", "wild_grass_2", "wild_mushroom", "wild_stump", "wild_log"]
 
 func _build_wild() -> void:
 	# 안 열린 땅: 무늬 없이 제멋대로 자란 숲(뭉쳐 자라는 곳·듬성한 곳·덤불·바위가 섞임)
@@ -301,11 +322,12 @@ func _update_wild_alpha() -> void:
 		var open := G.unlocked(c, r)
 		# 바로 앞(아래쪽)에서 내 땅을 가리는 나무는 아주 투명하게
 		var front: bool = (c >= cur.x1 or r >= cur.y1) and c >= cur.x0 - 1 and r >= cur.y0 - 1 and c < cur.x1 + 3 and r < cur.y1 + 3
-		var col := Color(0.42, 0.5, 0.44, 1.0)          # 사지 않은 땅의 숲은 조금 어둡게
+		var col := Color(0.8, 0.86, 0.8, 1.0)          # 사지 않은 땅의 숲은 조금 어둡게
 		if preview and G.in_r(nxt, c, r): col = Color(1.0, 0.97, 0.85, 0.42)
-		if front: col.a = 0.22
 		for s in wilds[i]:
-			s.visible = not open
+			# 마을 바로 앞(아래쪽)의 큰 나무는 아예 숨김(작은 꽃·풀·덤불만 남겨 풀밭처럼)
+			var big: bool = str(s.get_meta("k", "")).contains("tree") or str(s.get_meta("k", "")) in ["pine", "fir", "oak", "maple"]
+			s.visible = not open and not (front and big)
 			s.modulate = col
 
 func _sig(i: int, T: Dictionary) -> String:
@@ -819,10 +841,14 @@ func step_walkers(dt: float) -> void:
 		var anim := "idle"; var f := int(t * 1.6 + wk.blink) % 2
 		if wk.talk > 1.2: anim = "emote-yes"; f = int((2.4 - wk.talk) * 7) % 4
 		elif wk.moving: anim = "walk"; f = int(t * 11 + wk.blink * 5) % 8
-		var k := "ch_%s_%s_%s%d" % [wk.type, "ur" if wk.up else "dr", anim, f]
+		var k := D.key_of("ch_%s_%s_%s%d" % [wk.type, "ur" if wk.up else "dr", anim, f])
 		if wk.spr.get_meta("k", "") != k: D.set_sprite(wk.spr, k)
 		wk.node.position = D.P(wk.u, wk.v)
-		wk.spr.position.y = -14.0 * wk.get("lift", 0.0) + (sin(t * 18.0) * 1.5 if wk.get("lift", 0.0) > 0 else 0.0)
+		# 걸을 땐 아주 살짝 통통, 말할 땐 콩콩
+		var hop := 0.0
+		if wk.moving: hop = absf(sin(t * 9.0 + wk.blink)) * 3.0
+		elif wk.talk > 1.2: hop = absf(sin(t * 14.0)) * 2.0
+		wk.spr.position.y = -14.0 * wk.get("lift", 0.0) + (sin(t * 18.0) * 1.5 if wk.get("lift", 0.0) > 0 else 0.0) - hop
 		wk.node.scale.x = -1 if wk.dir < 0 else 1
 
 var _roads: Array = []
